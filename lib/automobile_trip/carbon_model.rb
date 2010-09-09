@@ -31,7 +31,7 @@ module BrighterPlanet
           end
           
           committee :fuel_consumed do
-            quorum 'from fuel cost and fuel price'
+            quorum 'from fuel cost and fuel price' do
               fuel_cost / fuel_price
             end
             
@@ -45,42 +45,42 @@ module BrighterPlanet
             #   
             # end
             
-            quorum 'from fuel type'
+            quorum 'from fuel type' do
               
             end
           end
           
           committee :distance do
-            quorum 'from duration and speed'
+            quorum 'from duration and speed' do
               duration * speed
             end
           end
           
           commitee :average_fuel_efficiency do
-            quorum 'from variant' # variant includes make, year, and model
+            quorum 'from variant' do # variant includes make, year, and model
             end
             
-            quorum 'from model' # model includes make and year
+            quorum 'from model' do # model includes make and year
             end
             
-            quorum 'from year' # year includes make
+            quorum 'from year' do # year includes make
             end
             
-            quorum 'from make'
+            quorum 'from make' do
             end
           end
           
           committee :fuel_type do
-            quorum 'from variant'
+            quorum 'from variant' do
             end
             
-            quorum 'from model'
+            quorum 'from model' do
             end
             
-            quorum 'from make'
+            quorum 'from make' do
             end
             
-            quorum 'default'
+            quorum 'default' do
               AutomobileTrip.fallback.fuel_type
             end
           end
