@@ -7,12 +7,11 @@ module BrighterPlanet
       def self.included(base)
         base.extend ::Leap::Subject
         base.decide :emission, :with => :characteristics do
-          
           committee :emission do
             quorum 'from fuel consumed and emission factor' do
             #, :needs => [:fuel_consumed, :emission_factor] do |characteristics|
 #              characteristics[:fuel_consumed] * characteristics[:emission_factor]
-              16
+              16.0
             end
             
             quorum 'default' do
@@ -22,21 +21,21 @@ module BrighterPlanet
           
           committee :emission_factor do
             quorum 'from fuel type', :needs => :fuel_type do |characteristics|
-              characteristics[:fuel_type].emission_factor
+#              characteristics[:fuel_type].emission_factor
             end
             
             quorum 'default' do
-              AutomobileTrip.fallback.emission_factor
+#              AutomobileTrip.fallback.emission_factor
             end
           end
           
           committee :fuel_consumed do
             quorum 'from fuel cost and fuel price' do
-              fuel_cost / fuel_price
+#              fuel_cost / fuel_price
             end
             
             quorum 'from distance and fuel efficiency', :needs => [:distance, :average_fuel_efficiency] do |characteristics|
-              characteristics[:distance] / characteristics[:average_fuel_efficiency]
+#              characteristics[:distance] / characteristics[:average_fuel_efficiency]
             end
           end
           
@@ -52,11 +51,11 @@ module BrighterPlanet
           
           committee :distance do
             quorum 'from duration and speed' do
-              duration * speed
+#              duration * speed
             end
           end
           
-          commitee :average_fuel_efficiency do
+          committee :average_fuel_efficiency do
             quorum 'from variant' do # variant includes make, year, and model
             end
             
@@ -81,7 +80,7 @@ module BrighterPlanet
             end
             
             quorum 'default' do
-              AutomobileTrip.fallback.fuel_type
+#              AutomobileTrip.fallback.fuel_type
             end
           end
         end
