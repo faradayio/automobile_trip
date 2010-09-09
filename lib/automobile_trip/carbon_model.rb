@@ -8,11 +8,11 @@ module BrighterPlanet
         base.extend ::Leap::Subject
         base.decide :emission, :with => :characteristics do
           
-          A bunch of this can be copied from Automobile
-          
           committee :emission do
-            quorum 'from fuel consumed and emission factor', :needs => [:fuel_consumed, :emission_factor] do |characteristics|
-              characteristics[:fuel_consumed] * characteristics[:emission_factor]
+            quorum 'from fuel consumed and emission factor' do
+            #, :needs => [:fuel_consumed, :emission_factor] do |characteristics|
+#              characteristics[:fuel_consumed] * characteristics[:emission_factor]
+              16
             end
             
             quorum 'default' do
