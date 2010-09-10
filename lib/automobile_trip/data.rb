@@ -6,6 +6,9 @@ module BrighterPlanet
       def self.included(base)
         base.data_miner do
           schema do
+            float 'emission'
+            float 'emission_factor'
+            float 'fuel_use'
           end
 
           process :run_data_miner_on_belongs_to_associations
