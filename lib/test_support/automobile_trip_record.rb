@@ -3,7 +3,7 @@ require 'falls_back_on'
 require 'automobile_trip'
 require 'sniff'
 
-class LodgingRecord < ActiveRecord::Base
+class AutomobileTripRecord < ActiveRecord::Base
   include Sniff::Emitter
   include BrighterPlanet::AutomobileTrip
 

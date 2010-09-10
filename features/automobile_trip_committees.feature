@@ -17,5 +17,6 @@ Feature: Automobile Trip Committee Calculations
     Given an automobile_trip emitter
     And a characteristic "fuel_use" of "100"
     And a characteristic "emission_factor" of "1.5"
+    When the "emission" committee is calculated
     Then the committee should have used quorum "from fuel use and emission factor"
     And the conclusion of the committee should be "150"

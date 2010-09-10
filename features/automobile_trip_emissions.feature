@@ -9,4 +9,4 @@ Feature: Automobile Trip Emissions Calculations
   Scenario: Calculations starting from fuel use
     Given an automobile_trip has "fuel_use" of "100"
     When emissions are calculated
-    Then the emission_value should be within "0.1" kgs of "246.3"
+    Then the emission value should be within "0.1" kgs of "246.3"
