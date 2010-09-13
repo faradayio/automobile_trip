@@ -7,6 +7,13 @@ Feature: Automobile Trip Committee Calculations
     Then the committee should have used quorum "default"
     And the conclusion of the committee should be "57.0"
 
+  Scenario: Emission factor committee from fuel type
+    Given an automobile_trip emitter
+    And a characteristic "fuel_type.name" of "Gasoline"
+    And the "emission_factor" committee is calculated
+    Then the committee should have used quorum "from fuel type"
+    And the conclusion of the committee should be "10.0"
+
   Scenario: Emission factor committee from default
     Given an automobile_trip emitter
     When the "emission_factor" committee is calculated
