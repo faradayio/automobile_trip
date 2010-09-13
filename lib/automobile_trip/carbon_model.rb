@@ -18,9 +18,9 @@ module BrighterPlanet
           end
           
           committee :emission_factor do # returns lbs CO2e / l
-            # quorum 'from fuel type', :needs => :fuel_type do |characteristics|
-            #   characteristics[:fuel_type].emission_factor
-            # end
+            quorum 'from fuel type', :needs => :fuel_type do |characteristics|
+              characteristics[:fuel_type].emission_factor
+            end
             
             quorum 'default' do
               base.fallback.emission_factor

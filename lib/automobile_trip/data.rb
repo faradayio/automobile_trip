@@ -8,7 +8,8 @@ module BrighterPlanet
           schema do
             float 'emission'
             float 'emission_factor'
-            float 'fuel_use'
+            float  'fuel_use'
+            string 'fuel_type_name'
           end
 
           process :run_data_miner_on_belongs_to_associations
