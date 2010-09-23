@@ -4,6 +4,7 @@ module BrighterPlanet
       def self.included(base)
         base.data_miner do
           schema do
+            float  'emission_factor'
             float  'fuel_use'
             string 'fuel_type_name'
           end
