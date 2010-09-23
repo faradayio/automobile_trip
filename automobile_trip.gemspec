@@ -25,8 +25,7 @@ Gem::Specification.new do |s|
      "lib/automobile_trip/committee_structure.rb",
      "lib/automobile_trip/data.rb",
      "lib/automobile_trip/summarization.rb",
-     "lib/test_support/automobile_trip_record.rb",
-     "lib/test_support/db/schema.rb"
+     "lib/test_support/automobile_trip_record.rb"
   ]
   s.homepage = %q{http://github.com/brighterplanet/automobile_trip}
   s.rdoc_options = ["--charset=UTF-8"]
@@ -37,8 +36,7 @@ Gem::Specification.new do |s|
     "features/support/env.rb",
      "features/automobile_trip_committees.feature",
      "features/automobile_trip_emissions.feature",
-     "lib/test_support/automobile_trip_record.rb",
-     "lib/test_support/db/schema.rb"
+     "lib/test_support/automobile_trip_record.rb"
   ]
 
   if s.respond_to? :specification_version then
@@ -53,7 +51,7 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<rake>, [">= 0"])
       s.add_development_dependency(%q<rdoc>, [">= 0"])
       s.add_development_dependency(%q<rspec>, ["~> 2.0.0.beta.17"])
-      s.add_development_dependency(%q<sniff>, ["~> 0.1.12"])
+      s.add_development_dependency(%q<sniff>, ["~> 0.2.0"])
       s.add_runtime_dependency(%q<emitter>, ["~> 0.1.4"])
     else
       s.add_dependency(%q<activerecord>, ["~> 3.0.0"])
@@ -63,7 +61,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<rake>, [">= 0"])
       s.add_dependency(%q<rdoc>, [">= 0"])
       s.add_dependency(%q<rspec>, ["~> 2.0.0.beta.17"])
-      s.add_dependency(%q<sniff>, ["~> 0.1.12"])
+      s.add_dependency(%q<sniff>, ["~> 0.2.0"])
       s.add_dependency(%q<emitter>, ["~> 0.1.4"])
     end
   else
@@ -74,7 +72,7 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<rake>, [">= 0"])
     s.add_dependency(%q<rdoc>, [">= 0"])
     s.add_dependency(%q<rspec>, ["~> 2.0.0.beta.17"])
-    s.add_dependency(%q<sniff>, ["~> 0.1.12"])
+    s.add_dependency(%q<sniff>, ["~> 0.2.0"])
     s.add_dependency(%q<emitter>, ["~> 0.1.4"])
   end
 end
