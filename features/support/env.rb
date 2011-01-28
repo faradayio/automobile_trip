@@ -3,6 +3,9 @@ Bundler.setup
 
 require 'cucumber'
 require 'cucumber/formatter/unicode'
+require 'rspec'
+require 'rspec/expectations'
+require 'cucumber/rspec/doubles'
 
 require 'sniff'
-Sniff.init File.join(File.dirname(__FILE__), '..', '..'), :earth => :fuel, :cucumber => true
+Sniff.init File.join(File.dirname(__FILE__), '..', '..'), :cucumber => true, :earth => :automobile

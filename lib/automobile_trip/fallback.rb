@@ -2,8 +2,12 @@ module BrighterPlanet
   module AutomobileTrip
     module Fallback
       def self.included(base)
-        base.falls_back_on :emission_factor => 20.556.pounds_per_gallon.to(:kilograms_per_litre), # from footprint model gasoline car CO2e / gallon
-                           :fuel_use        => 57.0                                               # based on wikianswers average tank size of 15 gallons
+        base.falls_back_on :urbanity => 0.43,
+                           :city_speed => 19.9.miles.to(:kilometres),
+                           :highway_speed => 57.1.miles.to(:kilometres),
+                           :hybridity_multiplier => 1.0,
+                           :fuel_efficiency => 20.182.miles_per_gallon.to(:kilometres_per_litre),
+                           :distance => 10.15.miles.to(:kilometres)
       end
     end
   end

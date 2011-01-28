@@ -35,16 +35,20 @@ require_or_fail('jeweler', 'Jeweler (or a dependency) not available. Install it 
       Dir.glob(File.join('lib', '**','*.rb'))
     gem.test_files = Dir.glob(File.join('features', '**', '*.rb')) +
       Dir.glob(File.join('features', '**', '*.feature')) +
-      Dir.glob(File.join('lib', 'test_support', '**/*.rb'))
+      Dir.glob(File.join('lib', 'test_support', '**/*.rb')) +
+      Dir.glob(File.join('vendor', '**/*.rb'))
     gem.add_development_dependency 'activerecord', '~>3'
     gem.add_development_dependency 'bundler', '~>1.0.0'
-    gem.add_development_dependency 'cucumber', '~>0.8.3'
-    gem.add_development_dependency 'jeweler', '~>1.4.0'
     gem.add_development_dependency 'rake'
+    gem.add_development_dependency 'cucumber'
+    gem.add_development_dependency 'jeweler', '~>1.4.0'
     gem.add_development_dependency 'rdoc'
-    gem.add_development_dependency 'rspec', '~>2.0.0.beta.17'
-    gem.add_development_dependency 'sniff' unless ENV['LOCAL_SNIFF']
-    gem.add_dependency 'emitter', '~>0.3' unless ENV['LOCAL_EMITTER']
+    gem.add_development_dependency 'rspec', '~>2'
+    gem.add_development_dependency 'sniff', '~>0.5.3' unless ENV['LOCAL_SNIFF']
+    gem.add_development_dependency 'fastercsv'
+    gem.add_dependency 'emitter', '~>0.3.3' unless ENV['LOCAL_EMITTER']
+    gem.add_dependency 'earth' unless ENV['LOCAL_EARTH']
+    gem.add_dependency 'geokit'
   end
   Jeweler::GemcutterTasks.new
 end
