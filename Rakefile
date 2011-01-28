@@ -54,8 +54,8 @@ require_or_fail('jeweler', 'Jeweler (or a dependency) not available. Install it 
 end
 
 require_or_fail('sniff', 'Sniff gem not found, sniff tasks unavailable') do
-  require 'sniff/rake_task'
-  Sniff::RakeTask.new(:console) do |t|
+  require 'sniff/rake_tasks'
+  Sniff::RakeTasks.new do |t|
     t.earth_domains = :automobile
   end
 end
