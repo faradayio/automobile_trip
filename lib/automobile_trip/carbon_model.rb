@@ -429,7 +429,7 @@ module BrighterPlanet
             #### Date from timeframe
             # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO-14064-1, Climate Registry Protocol
             #
-            # Assumes the flight occurred on the first day of the `timeframe`.
+            # Assumes the trip occurred on the first day of the `timeframe`.
             quorum 'from timeframe',
               :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso, :tcr] do |characteristics, timeframe|
                 timeframe.from
