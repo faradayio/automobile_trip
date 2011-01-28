@@ -123,6 +123,7 @@ Feature: Automobile Trip Emissions Calculations
     And the geocoder will encode the origin as "43,-73"
     And it has "destination" of "43.1,-73"
     And the geocoder will encode the destination as "43.1,-73"
+    And mapquest will return a distance of "57.91" kilometres
     When emissions are calculated
     Then the emission value should be within "0.01" kgs of "16.81"
 
