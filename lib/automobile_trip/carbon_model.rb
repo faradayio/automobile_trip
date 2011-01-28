@@ -69,11 +69,11 @@ module BrighterPlanet
             end
             
             #### Default emission factor
-            # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
+            # **Complies:** GHG Protocol Scope 3, ISO 14064-1
             #
             # Looks up the [fallback fuel type](http://data.brighterplanet.com/fuel_types) `emission factor` (*kg CO2e / l*)
             quorum 'default',
-              :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do
+              :complies => [:ghg_protocol_scope_3, :iso] do
                 AutomobileFuelType.fallback.emission_factor
             end
           end
@@ -119,12 +119,12 @@ module BrighterPlanet
             # Uses the client-input `distance` (*km*).
             
             #### Distance from origin and destination locations
-            # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
+            # **Complies:** GHG Protocol Scope 3, ISO 14064-1
             #
             # Uses the [Mapquest directions API](http://developer.mapquest.com/web/products/dev-services/directions-ws) to calculate distance by road between the origin and destination locations.
             quorum 'from origin and destination locations',
               :needs => [:origin_location, :destination_location, :mapquest_api_key],
-              :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
+              :complies => [:ghg_protocol_scope_3, :iso] do |characteristics|
                 mapquest = MapQuestDirections.new characteristics[:origin_location],
                                                   characteristics[:destination_location],
                                                   characteristics[:mapquest_api_key]
@@ -136,12 +136,12 @@ module BrighterPlanet
             end
             
             #### Distance from duration and speed
-            # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
+            # **Complies:** GHG Protocol Scope 3, ISO 14064-1
             #
             # Divides the `duration` (*minutes*) by 60 and multiplies by the `speed` (*km / hour*) to give *km*.
             quorum 'from duration and speed',
               :needs => [:duration, :speed],
-              :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
+              :complies => [:ghg_protocol_scope_3, :iso] do |characteristics|
                 (characteristics[:duration] / 60.0) * characteristics[:speed]
             end
             
@@ -299,13 +299,13 @@ module BrighterPlanet
             end
             
             #### Fuel efficiency from make and hybridity multiplier
-            # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
+            # **Complies:** GHG Protocol Scope 3, ISO 14064-1
             #
             # * Looks up the automobile [make](http://data.brighterplanet.com/automobile_makes) combined fuel efficiency (*km / l*)
             # * Multiplies the combined fuel efficiency by the `hybridity multiplier`
             quorum 'from make and hybridity multiplier',
               :needs => [:make, :hybridity_multiplier],
-              :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
+              :complies => [:ghg_protocol_scope_3, :iso] do |characteristics|
                 if characteristics[:make].fuel_efficiency.present?
                   characteristics[:make].fuel_efficiency * characteristics[:hybridity_multiplier]
                 else
@@ -453,7 +453,7 @@ module BrighterPlanet
           ### Mapquest API key lookup
           # Returns our Mapquest API key
           committee :mapquest_api_key do
-            quorum 'default' do
+            quorum 'default', :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do
               ENV['MAPQUEST_API_KEY']
             end
           end
