@@ -271,14 +271,14 @@ module BrighterPlanet
             end
             
             #### Fuel efficiency from size class, hybridity multiplier, and urbanity
-            # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
+            # **Complies:** GHG Protocol Scope 3, ISO 14064-1
             #
             # * Looks up the automobile [size class](http://data.brighterplanet.com/automobile_makes) city and highway fuel efficiency (*km / l*)
             # * Calculates the harmonic mean of those fuel efficiencies, weighted by `urbanity`
             # * Multiplies the result by the `hybridity multiplie`r
             quorum 'from size class, hybridity multiplier, and urbanity',
               :needs => [:size_class, :hybridity_multiplier, :urbanity],
-              :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
+              :complies => [:ghg_protocol_scope_3, :iso] do |characteristics|
                 fuel_efficiency_city = characteristics[:size_class].fuel_efficiency_city
                 fuel_efficiency_highway = characteristics[:size_class].fuel_efficiency_highway
                 urbanity = characteristics[:urbanity]
@@ -288,13 +288,13 @@ module BrighterPlanet
             end
             
             #### Fuel efficiency from make year and hybridity multiplier
-            # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
+            # **Complies:** GHG Protocol Scope 3, ISO 14064-1
             #
             # * Looks up the automobile [make year](http://data.brighterplanet.com/automobile_make_years) combined fuel efficiency (*km / l*)
             # * Multiplies the combined fuel efficiency by the `hybridity multiplier`
             quorum 'from make year and hybridity multiplier',
               :needs => [:make_year, :hybridity_multiplier],
-              :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
+              :complies => [:ghg_protocol_scope_3, :iso] do |characteristics|
                 characteristics[:make_year].fuel_efficiency * characteristics[:hybridity_multiplier]
             end
             
