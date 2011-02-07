@@ -45,14 +45,6 @@ module BrighterPlanet
                   0
                 end
             end
-            
-            #### Emission from default
-            # **Complies:**
-            #
-            # Displays an error message if the previous method fails.
-            quorum 'default' do
-              raise "The emission committee's default quorum should never be called"
-            end
           end
           
           ### Emission factor calculation
