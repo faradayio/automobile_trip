@@ -354,19 +354,28 @@ module BrighterPlanet
           # Returns the `urbanity`.
           # This is the fraction of the total distance driven that occurs on towns and city streets as opposed to highways (defined using a 45 miles per hour "speed cutpoint").
           committee :urbanity do
-            #### Urbanity from client input
-            # **Complies:** All
-            #
-            # Uses the client-input `urbanity`.
+            #### Urbanity from urbanity estimate
+            quorum 'from urbanity estimate',
+              :needs => :urbanity_estimate,
+              # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
+              :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
+                # Uses the `urbanity estimate` if it is from zero to one
+                if characteristics[:urbanity_estimate] >= 0 and characteristics[:urbanity_estimate] <= 1
+                  characteristics[:urbanity_estimate]
+                end
+            end
             
             #### Default urbanity
             quorum 'default',
               # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
               :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do
                 # Uses an `urbanity` of 0.43 after [EPA (2009) Appendix A](http://www.epa.gov/otaq/cert/mpg/fetrends/420r09014-appx-a.pdf)
-                base.fallback.urbanity
+                base.fallback.urbanity_estimate
             end
           end
+          
+          ### Urbanity estimate calculation
+          # Returns the client-input `urbanity estimate`. This is the fraction of the total distance driven that occurs on towns and city streets as opposed to highways (defined using a 45 miles per hour "speed cutpoint").
           
           ### Hybridity calculation
           # Returns the client-input `hybridity`. This indicates whether the automobile is a hybrid electric vehicle or a conventional vehicle.

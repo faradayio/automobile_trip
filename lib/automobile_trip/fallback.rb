@@ -2,7 +2,7 @@ module BrighterPlanet
   module AutomobileTrip
     module Fallback
       def self.included(base)
-        base.falls_back_on :urbanity => 0.43,
+        base.falls_back_on :urbanity_estimate => 0.43,
                            :city_speed => 19.9.miles.to(:kilometres),
                            :highway_speed => 57.1.miles.to(:kilometres),
                            :hybridity_multiplier => 1.0,

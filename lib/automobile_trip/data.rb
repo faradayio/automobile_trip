@@ -12,7 +12,7 @@ module BrighterPlanet
             string  'make_model_year_variant_row_hash'
             string  'size_class_name'
             boolean 'hybridity'
-            float   'urbanity'
+            float   'urbanity_estimate'
             float   'hybridity_multiplier'
             float   'fuel_efficiency'
             float   'speed'

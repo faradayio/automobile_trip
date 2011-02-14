@@ -11,7 +11,7 @@ module BrighterPlanet
           has :make_model_year_variant
           has :size_class
           has :hybridity
-          has :urbanity
+          has :urbanity_estimate
           has :hybridity_multiplier
           has :fuel_efficiency
           has :speed
