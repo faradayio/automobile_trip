@@ -1,0 +1,3 @@
+name,type_name,fuel_common_name,year,total_travel,total_travel_units,ch4_emission_factor,ch4_emission_factor_units,n2o_emission_factor,n2o_emission_factor_units,hfc_emission_factor,hfc_emission_factor_units
+Passenger cars gasoline 2008,Passenger cars,gasoline,2008,260,kilometres,0.0001,kilograms_per_litre,0.00002,kilograms_per_litre,0.09,kilograms_co2e_per_litre
+Light-duty trucks 2008,Light-duty trucks,gasoline,2008,170,kilometres,0.00008,kilograms_per_litre,0.00003,kilograms_per_litre,0.13,kilograms_co2e_per_litre

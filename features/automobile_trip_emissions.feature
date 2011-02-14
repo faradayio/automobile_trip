@@ -141,8 +141,8 @@ Feature: Automobile Trip Emissions Calculations
     When emissions are calculated
     Then the emission value should be within "0.01" kgs of "24.9"
 
-  Scenario: Calculations from fuel use and fuel type
+  Scenario: Calculations from fuel use and fuel
     Given an automobile_trip has "fuel_use" of "20.0"
-    And it has "fuel_type.name" of "regular gasoline"
+    And it has "fuel.name" of "regular gasoline"
     When emissions are calculated
     Then the emission value should be within "0.01" kgs of "50.0"

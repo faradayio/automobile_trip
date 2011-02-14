@@ -22,7 +22,7 @@ module BrighterPlanet
           has :destination
           has :distance
           has :fuel_use
-          has :fuel_type
+          has :fuel
           has :mapquest_api_key, :display => lambda { |key| "secret key" }
         end
       end

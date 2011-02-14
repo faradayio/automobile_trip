@@ -56,7 +56,7 @@ end
 require_or_fail('sniff', 'Sniff gem not found, sniff tasks unavailable') do
   require 'sniff/rake_tasks'
   Sniff::RakeTasks.define_tasks do |t|
-    t.earth_domains = :automobile
+    t.earth_domains = [:automobile, :fuel]
   end
 end
 

@@ -1,5 +1,14 @@
 Feature: Automobile Trip Committee Calculations
   The automobile trip model should generate correct committee calculations
+  
+  # FIXME TODO test for compliance
+  
+  # FIXME TODO write a test for the mapquest api key committee
+  # Scenario: Mapquest API key committee from default
+  #   Given an automobile_trip emitter
+  #   When the "mapquest_api_key" committee is calculated
+  #   Then the committee should have used quorum "default"
+  #   And the conclusion of the committee should be "SECRET KEY"
 
   Scenario: Date committee from timeframe
     Given an automobile_trip emitter
@@ -237,22 +246,22 @@ Feature: Automobile Trip Committee Calculations
     Then the committee should have used quorum "from fuel efficiency and distance"
     And the conclusion of the committee should be "10.0"
 
-  Scenario: Fuel type committee from make model year variant
+  Scenario: Fuel committee from default
+    Given an automobile_trip emitter
+    When the "fuel" committee is calculated
+    Then the committee should have used quorum "default"
+    And the conclusion of the committee should have "name" of "fallback"
+
+  Scenario: Fuel committee from make model year variant
     Given an automobile_trip emitter
     And a characteristic "make_model_year_variant.row_hash" of "xxx1"
-    When the "fuel_type" committee is calculated
+    When the "fuel" committee is calculated
     Then the committee should have used quorum "from make model year variant"
     And the conclusion of the committee should have "name" of "regular gasoline"
 
-  Scenario: Emission factor committee from default
+  Scenario: HFC emission factor committee from fuel
     Given an automobile_trip emitter
-    When the "emission_factor" committee is calculated
-    Then the committee should have used quorum "default"
-    And the conclusion of the committee should be "2.49011"
-
-  Scenario: Emission factor committee from fuel type
-    Given an automobile_trip emitter
-    And a characteristic "fuel_type.name" of "regular gasoline"
+    And a characteristic "fuel.name" of "regular gasoline"
     And the "emission_factor" committee is calculated
-    Then the committee should have used quorum "from fuel type"
-    And the conclusion of the committee should be "2.5"
+    Then the committee should have used quorum "from fuel"
+    And the conclusion of the committee should be "2.31000"
