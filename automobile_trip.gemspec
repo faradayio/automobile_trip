@@ -35,7 +35,7 @@ Gem::Specification.new do |s|
   s.rubygems_version = %q{1.3.7}
   s.summary = %q{A carbon model}
   s.test_files = [
-    "features/step_definitions/shipment_steps.rb",
+    "features/step_definitions/automobile_trip_steps.rb",
      "features/step_definitions/mapquest_steps.rb",
      "features/support/env.rb",
      "features/automobile_trip_committees.feature",
