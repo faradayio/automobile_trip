@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Andy Rossmeissl", "Seamus Abshere", "Ian Hough", "Matt Kling", "Derek Kastner"]
-  s.date = %q{2011-01-27}
+  s.date = %q{2011-02-14}
   s.description = %q{A software model in Ruby for the greenhouse gas emissions of an automobile trip}
   s.email = %q{andy@rossmeissl.net}
   s.extra_rdoc_files = [
@@ -36,6 +36,7 @@ Gem::Specification.new do |s|
   s.summary = %q{A carbon model}
   s.test_files = [
     "features/step_definitions/shipment_steps.rb",
+     "features/step_definitions/mapquest_steps.rb",
      "features/support/env.rb",
      "features/automobile_trip_committees.feature",
      "features/automobile_trip_emissions.feature",
@@ -58,9 +59,9 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<jeweler>, ["~> 1.4.0"])
       s.add_development_dependency(%q<rdoc>, [">= 0"])
       s.add_development_dependency(%q<rspec>, ["~> 2"])
-      s.add_development_dependency(%q<sniff>, ["~> 0.5.3"])
+      s.add_development_dependency(%q<sniff>, ["~> 0.6"])
       s.add_development_dependency(%q<fastercsv>, [">= 0"])
-      s.add_runtime_dependency(%q<emitter>, ["~> 0.3.3"])
+      s.add_runtime_dependency(%q<emitter>, ["~> 0.4.1"])
       s.add_runtime_dependency(%q<earth>, [">= 0"])
       s.add_runtime_dependency(%q<geokit>, [">= 0"])
     else
@@ -71,9 +72,9 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<jeweler>, ["~> 1.4.0"])
       s.add_dependency(%q<rdoc>, [">= 0"])
       s.add_dependency(%q<rspec>, ["~> 2"])
-      s.add_dependency(%q<sniff>, ["~> 0.5.3"])
+      s.add_dependency(%q<sniff>, ["~> 0.6"])
       s.add_dependency(%q<fastercsv>, [">= 0"])
-      s.add_dependency(%q<emitter>, ["~> 0.3.3"])
+      s.add_dependency(%q<emitter>, ["~> 0.4.1"])
       s.add_dependency(%q<earth>, [">= 0"])
       s.add_dependency(%q<geokit>, [">= 0"])
     end
@@ -85,9 +86,9 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<jeweler>, ["~> 1.4.0"])
     s.add_dependency(%q<rdoc>, [">= 0"])
     s.add_dependency(%q<rspec>, ["~> 2"])
-    s.add_dependency(%q<sniff>, ["~> 0.5.3"])
+    s.add_dependency(%q<sniff>, ["~> 0.6"])
     s.add_dependency(%q<fastercsv>, [">= 0"])
-    s.add_dependency(%q<emitter>, ["~> 0.3.3"])
+    s.add_dependency(%q<emitter>, ["~> 0.4.1"])
     s.add_dependency(%q<earth>, [">= 0"])
     s.add_dependency(%q<geokit>, [">= 0"])
   end
