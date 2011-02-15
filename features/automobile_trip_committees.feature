@@ -259,9 +259,9 @@ Feature: Automobile Trip Committee Calculations
     Then the committee should have used quorum "from make model year variant"
     And the conclusion of the committee should have "name" of "regular gasoline"
 
-  Scenario: HFC emission factor committee from fuel
+  Scenario: HFC emission factor committee from default fuel
     Given an automobile_trip emitter
-    And a characteristic "fuel.name" of "regular gasoline"
+    When the "fuel" committee is calculated
     And the "emission_factor" committee is calculated
     Then the committee should have used quorum "from fuel"
-    And the conclusion of the committee should be "2.31000"
+    And the conclusion of the committee should be "0.05"
