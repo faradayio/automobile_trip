@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    automobile_trip (0.0.9)
+    automobile_trip (0.1.0)
       emitter (~> 0.4.1)
       geokit
 
