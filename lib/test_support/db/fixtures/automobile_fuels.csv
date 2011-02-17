@@ -1,2 +1,4 @@
-code,name,base_fuel_name,blend_fuel_name,blend_portion,distance_fuel_common_name,ef_fuel_common_name
-R,regular gasoline,Motor Gasoline,,,gasoline,gasoline
+name,code,base_fuel_name,blend_fuel_name,distance_key,ef_key,blend_portion
+regular gasoline,R,Motor Gasoline,,gasoline,gasoline
+diesel,D,Distillate Fuel Oil No. 2,,diesel,diesel
+B20,BP-B20,Distillate Fuel Oil No. 2,Biodiesel,diesel,diesel,0.2

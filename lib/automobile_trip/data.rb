@@ -23,7 +23,7 @@ module BrighterPlanet
             string  'destination'
             float   'distance'
             float   'fuel_use'
-            string  'fuel_name'
+            string  'automobile_fuel_name'
             string  'mapquest_api_key'
           end
           process :run_data_miner_on_belongs_to_associations

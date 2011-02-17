@@ -1,2 +1,4 @@
-name,oxidation_factor,biogenic_fraction
-Motor Gasoline,1,0
+name,co2_emission_factor,co2_biogenic_emission_factor
+Motor Gasoline
+Distillate Fuel Oil No. 2,2.7,0
+Biodiesel,0,2.5

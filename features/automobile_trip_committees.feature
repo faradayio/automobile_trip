@@ -99,7 +99,7 @@ Feature: Automobile Trip Committee Calculations
     Examples:
       | multiplier | fe       |
       | 1.0        |  8.58025 |
-      | 1.5        | 12.87038 |
+      | 10         | 85.80250 |
 
   Scenario: Fuel efficiency committee from make and hybridity multiplier
     Given an automobile_trip emitter
@@ -248,20 +248,181 @@ Feature: Automobile Trip Committee Calculations
 
   Scenario: Fuel committee from default
     Given an automobile_trip emitter
-    When the "fuel" committee is calculated
+    When the "automobile_fuel" committee is calculated
     Then the committee should have used quorum "default"
-    And the conclusion of the committee should have "name" of "fallback"
+    And the conclusion of the committee should have "base_fuel_name" of "Motor Gasoline"
+    And the conclusion of the committee should have "blend_fuel_name" of "Distillate Fuel Oil No. 2"
+    And the conclusion of the committee should have "distance_key" of "fallback"
+    And the conclusion of the committee should have "ef_key" of "fallback"
 
   Scenario: Fuel committee from make model year variant
     Given an automobile_trip emitter
     And a characteristic "make_model_year_variant.row_hash" of "xxx1"
-    When the "fuel" committee is calculated
+    When the "automobile_fuel" committee is calculated
     Then the committee should have used quorum "from make model year variant"
     And the conclusion of the committee should have "name" of "regular gasoline"
 
-  Scenario: HFC emission factor committee from default fuel
+  Scenario: HFC emission factor committee from default automobile fuel
     Given an automobile_trip emitter
-    When the "fuel" committee is calculated
-    And the "emission_factor" committee is calculated
-    Then the committee should have used quorum "from fuel"
-    And the conclusion of the committee should be "0.05"
+    When the "automobile_fuel" committee is calculated
+    And the "hfc_emission_factor" committee is calculated
+    Then the committee should have used quorum "from automobile fuel"
+    And the conclusion of the committee should be "0.10627"
+
+  Scenario Outline: HFC emission factor committee from automobile fuel
+    Given an automobile_trip emitter
+    And a characteristic "automobile_fuel.name" of "<fuel>"
+    When the "hfc_emission_factor" committee is calculated
+    Then the committee should have used quorum "from automobile fuel"
+    And the conclusion of the committee should be "<ef>"
+    Examples:
+      | fuel             | ef      |
+      | regular gasoline | 0.10592 |
+      | diesel           | 0.12401 |
+      | B20              | 0.12401 |
+
+  Scenario: N2O emission factor committee from default automobile fuel
+    Given an automobile_trip emitter
+    When the "automobile_fuel" committee is calculated
+    And the "n2o_emission_factor" committee is calculated
+    Then the committee should have used quorum "from automobile fuel"
+    And the conclusion of the committee should be "0.00705"
+
+  Scenario Outline: N2O emission factor committee from automobile fuel
+    Given an automobile_trip emitter
+    And a characteristic "automobile_fuel.name" of "<fuel>"
+    When the "n2o_emission_factor" committee is calculated
+    Then the committee should have used quorum "from automobile fuel"
+    And the conclusion of the committee should be "<ef>"
+    Examples:
+      | fuel             | ef      |
+      | regular gasoline | 0.00715 |
+      | diesel           | 0.00200 |
+      | B20              | 0.00200 |
+
+  Scenario: CH4 emission factor committee from default automobile fuel
+    Given an automobile_trip emitter
+    When the "automobile_fuel" committee is calculated
+    And the "ch4_emission_factor" committee is calculated
+    Then the committee should have used quorum "from automobile fuel"
+    And the conclusion of the committee should be "0.00226"
+
+  Scenario Outline: CH4 emission factor committee from automobile fuel
+    Given an automobile_trip emitter
+    And a characteristic "automobile_fuel.name" of "<fuel>"
+    When the "ch4_emission_factor" committee is calculated
+    Then the committee should have used quorum "from automobile fuel"
+    And the conclusion of the committee should be "<ef>"
+    Examples:
+      | fuel             | ef      |
+      | regular gasoline | 0.00230 |
+      | diesel           | 0.00010 |
+      | B20              | 0.00010 |
+
+  Scenario: CO2 biogenic emission factor committee from default automobile fuel
+    Given an automobile_trip emitter
+    When the "automobile_fuel" committee is calculated
+    And the "co2_biogenic_emission_factor" committee is calculated
+    Then the committee should have used quorum "from automobile fuel"
+    And the conclusion of the committee should be "0.0"
+
+  Scenario Outline: CO2 biogenic emission factor committee from automobile fuel
+    Given an automobile_trip emitter
+    And a characteristic "automobile_fuel.name" of "<fuel>"
+    When the "co2_biogenic_emission_factor" committee is calculated
+    Then the committee should have used quorum "from automobile fuel"
+    And the conclusion of the committee should be "<ef>"
+    Examples:
+      | fuel             | ef    |
+      | regular gasoline | 0.0   |
+      | diesel           | 0.0   |
+      | B20              | 0.5   |
+
+  Scenario: CO2 emission factor committee from default automobile fuel
+    Given an automobile_trip emitter
+    When the "automobile_fuel" committee is calculated
+    And the "co2_emission_factor" committee is calculated
+    Then the committee should have used quorum "from automobile fuel"
+    And the conclusion of the committee should be "2.30958"
+
+  Scenario Outline: CO2 emission factor committee from automobile fuel
+    Given an automobile_trip emitter
+    And a characteristic "automobile_fuel.name" of "<fuel>"
+    When the "co2_emission_factor" committee is calculated
+    Then the committee should have used quorum "from automobile fuel"
+    And the conclusion of the committee should be "<ef>"
+    Examples:
+      | fuel             | ef    |
+      | regular gasoline | 2.3   |
+      | diesel           | 2.7   |
+      | B20              | 2.16  |
+
+  Scenario Outline: HFC emission from fuel use, hfc emission factor, date, and timeframe
+    Given an automobile_trip emitter
+    And a characteristic "fuel_use" of "<fuel_use>"
+    And a characteristic "hfc_emission_factor" of "<ef>"
+    And a characteristic "date" of "<date>"
+    And a characteristic "timeframe" of "<timeframe>"
+    When the "hfc_emission" committee is calculated
+    Then the committee should have used quorum "from fuel use, hfc emission factor, date, and timeframe"
+    And the conclusion of the committee should be "<emission>"
+    Examples:
+      | fuel_use | ef  | date       | timeframe             | emission |
+      | 10.0     | 2.0 | 2010-06-01 | 2010-01-01/2011-01-01 | 20.0     |
+      | 10.0     | 2.0 | 2009-06-01 | 2010-01-01/2011-01-01 | 0.0      |
+
+  Scenario Outline: N2O emission from fuel use, n2o emission factor, date, and timeframe
+    Given an automobile_trip emitter
+    And a characteristic "fuel_use" of "<fuel_use>"
+    And a characteristic "n2o_emission_factor" of "<ef>"
+    And a characteristic "date" of "<date>"
+    And a characteristic "timeframe" of "<timeframe>"
+    When the "n2o_emission" committee is calculated
+    Then the committee should have used quorum "from fuel use, n2o emission factor, date, and timeframe"
+    And the conclusion of the committee should be "<emission>"
+    Examples:
+      | fuel_use | ef  | date       | timeframe             | emission |
+      | 10.0     | 2.0 | 2010-06-01 | 2010-01-01/2011-01-01 | 20.0     |
+      | 10.0     | 2.0 | 2009-06-01 | 2010-01-01/2011-01-01 | 0.0      |
+
+  Scenario Outline: CH4 emission from fuel use, ch4 emission factor, date, and timeframe
+    Given an automobile_trip emitter
+    And a characteristic "fuel_use" of "<fuel_use>"
+    And a characteristic "ch4_emission_factor" of "<ef>"
+    And a characteristic "date" of "<date>"
+    And a characteristic "timeframe" of "<timeframe>"
+    When the "ch4_emission" committee is calculated
+    Then the committee should have used quorum "from fuel use, ch4 emission factor, date, and timeframe"
+    And the conclusion of the committee should be "<emission>"
+    Examples:
+      | fuel_use | ef  | date       | timeframe             | emission |
+      | 10.0     | 2.0 | 2010-06-01 | 2010-01-01/2011-01-01 | 20.0     |
+      | 10.0     | 2.0 | 2009-06-01 | 2010-01-01/2011-01-01 | 0.0      |
+
+  Scenario Outline: CO2 biogenic emission from fuel use, co2 biogenic emission factor, date, and timeframe
+    Given an automobile_trip emitter
+    And a characteristic "fuel_use" of "<fuel_use>"
+    And a characteristic "co2_biogenic_emission_factor" of "<ef>"
+    And a characteristic "date" of "<date>"
+    And a characteristic "timeframe" of "<timeframe>"
+    When the "co2_biogenic_emission" committee is calculated
+    Then the committee should have used quorum "from fuel use, co2 biogenic emission factor, date, and timeframe"
+    And the conclusion of the committee should be "<emission>"
+    Examples:
+      | fuel_use | ef  | date       | timeframe             | emission |
+      | 10.0     | 2.0 | 2010-06-01 | 2010-01-01/2011-01-01 | 20.0     |
+      | 10.0     | 2.0 | 2009-06-01 | 2010-01-01/2011-01-01 | 0.0      |
+
+  Scenario Outline: CO2 emission from fuel use, co2 emission factor, date, and timeframe
+    Given an automobile_trip emitter
+    And a characteristic "fuel_use" of "<fuel_use>"
+    And a characteristic "co2_emission_factor" of "<ef>"
+    And a characteristic "date" of "<date>"
+    And a characteristic "timeframe" of "<timeframe>"
+    When the "co2_emission" committee is calculated
+    Then the committee should have used quorum "from fuel use, co2 emission factor, date, and timeframe"
+    And the conclusion of the committee should be "<emission>"
+    Examples:
+      | fuel_use | ef  | date       | timeframe             | emission |
+      | 10.0     | 2.0 | 2010-06-01 | 2010-01-01/2011-01-01 | 20.0     |
+      | 10.0     | 2.0 | 2009-06-01 | 2010-01-01/2011-01-01 | 0.0      |

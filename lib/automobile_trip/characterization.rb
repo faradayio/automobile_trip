@@ -22,7 +22,7 @@ module BrighterPlanet
           has :destination
           has :distance
           has :fuel_use
-          has :fuel
+          has :automobile_fuel # don't call this fuel b/c then if you specify fuel.name in tests sniff will try to look it up in the fuels fixture, not automobile_fuels
           has :mapquest_api_key, :display => lambda { |key| "secret key" }
         end
       end

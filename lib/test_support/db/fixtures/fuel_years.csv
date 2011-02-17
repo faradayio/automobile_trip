@@ -1,2 +1,2 @@
-name,fuel_name,year,energy_content,energy_content_units,carbon_content,carbon_content_units
-Motor Gasoline 2008,Motor Gasoline,2008,35,megajoules_per_litre,18,grams_per_megajoule
+name,fuel_name,co2_emission_factor,co2_biogenic_emission_factor
+Motor Gasoline 2008,Motor Gasoline,2.3,0
