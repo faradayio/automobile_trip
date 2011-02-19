@@ -110,7 +110,7 @@ Feature: Automobile Trip Emissions Calculations
     Given an automobile_trip has "urbanity_estimate" of "0.5"
     And it has "make_model_year_variant.row_hash" of "xxx1"
     When emissions are calculated
-    Then the emission value should be within "0.01" kgs of "0.89"
+    Then the emission value should be within "0.01" kgs of "1.04"
 
   Scenario: Calculations from speed and duration
     Given an automobile_trip has "speed" of "5.0"
@@ -148,6 +148,6 @@ Feature: Automobile Trip Emissions Calculations
     Then the emission value should be within "0.01" kgs of "<emission>"
     Examples:
       | fuel             | emission |
-      | regular gasoline | 48.31    |
-      | diesel           | 56.52    |
-      | B20              | 45.72    |
+      | regular gasoline | 48.20    |
+      | diesel           | 56.44    |
+      | B20              | 46.44    |

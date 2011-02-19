@@ -47,7 +47,7 @@ require_or_fail('jeweler', 'Jeweler (or a dependency) not available. Install it 
     gem.add_development_dependency 'sniff', '~>0.6' unless ENV['LOCAL_SNIFF']
     gem.add_development_dependency 'fastercsv'
     gem.add_dependency 'emitter', '~>0.4.1' unless ENV['LOCAL_EMITTER']
-    gem.add_dependency 'earth' unless ENV['LOCAL_EARTH']
+    gem.add_dependency 'earth', '~>0.4.1' unless ENV['LOCAL_EARTH']
     gem.add_dependency 'geokit'
   end
   Jeweler::GemcutterTasks.new

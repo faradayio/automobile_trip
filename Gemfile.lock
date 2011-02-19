@@ -1,7 +1,8 @@
 PATH
   remote: .
   specs:
-    automobile_trip (0.1.0)
+    automobile_trip (0.0.9)
+      earth (~> 0.4.1)
       emitter (~> 0.4.1)
       geokit
 
@@ -54,7 +55,7 @@ GEM
       remote_table (>= 1.1.0)
       taps (>= 0.3.11)
     diff-lcs (1.1.2)
-    earth (0.4.0)
+    earth (0.4.1)
       activerecord (~> 3)
       cohort_scope (>= 0.0.7)
       conversions (>= 1.4.5)
@@ -84,6 +85,7 @@ GEM
       activerecord
     fast_timestamp (0.0.4)
     fastercsv (1.5.4)
+    gemcutter (0.6.1)
     geokit (1.5.0)
     geokit-rails (1.1.4)
       geokit (>= 1.5.0)
@@ -94,7 +96,12 @@ GEM
       nokogiri (>= 1.4.3.1)
       oauth (>= 0.3.6)
     i18n (0.5.0)
+    jeweler (1.4.0)
+      gemcutter (>= 0.1.0)
+      git (>= 1.2.5)
+      rubyforge (>= 2.0.0)
     json (1.4.6)
+    json_pure (1.5.1)
     leap (0.4.6)
       activesupport (>= 2.3.4)
       blockenspiel (>= 0.3.2)
@@ -142,6 +149,8 @@ GEM
       rspec-core (~> 2.0.1)
       rspec-expectations (~> 2.0.1)
     ruby-ole (1.2.11.1)
+    rubyforge (2.0.4)
+      json_pure (>= 1.1.7)
     sequel (3.17.0)
     sinatra (1.0)
       rack (>= 1.0)
@@ -195,6 +204,14 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  activerecord (~> 3)
   automobile_trip!
+  bundler (~> 1.0.0)
+  cucumber
+  fastercsv
+  jeweler (~> 1.4.0)
+  rake
+  rdoc
   roo (~> 1.9.3)
-  sniff (~> 0.6.0)
+  rspec (~> 2)
+  sniff (~> 0.6)

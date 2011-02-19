@@ -250,17 +250,18 @@ Feature: Automobile Trip Committee Calculations
     Given an automobile_trip emitter
     When the "automobile_fuel" committee is calculated
     Then the committee should have used quorum "default"
-    And the conclusion of the committee should have "base_fuel_name" of "Motor Gasoline"
-    And the conclusion of the committee should have "blend_fuel_name" of "Distillate Fuel Oil No. 2"
-    And the conclusion of the committee should have "distance_key" of "fallback"
-    And the conclusion of the committee should have "ef_key" of "fallback"
+    And the conclusion of the committee should have "co2_emission_factor" of "2.30958"
+    And the conclusion of the committee should have "co2_biogenic_emission_factor" of "0.0"
+    And the conclusion of the committee should have "ch4_emission_factor" of "0.00226"
+    And the conclusion of the committee should have "n2o_emission_factor" of "0.00705"
+    And the conclusion of the committee should have "hfc_emission_factor" of "0.10627"
 
   Scenario: Fuel committee from make model year variant
     Given an automobile_trip emitter
     And a characteristic "make_model_year_variant.row_hash" of "xxx1"
     When the "automobile_fuel" committee is calculated
     Then the committee should have used quorum "from make model year variant"
-    And the conclusion of the committee should have "name" of "regular gasoline"
+    And the conclusion of the committee should have "name" of "diesel"
 
   Scenario: HFC emission factor committee from default automobile fuel
     Given an automobile_trip emitter
@@ -276,10 +277,10 @@ Feature: Automobile Trip Committee Calculations
     Then the committee should have used quorum "from automobile fuel"
     And the conclusion of the committee should be "<ef>"
     Examples:
-      | fuel             | ef      |
-      | regular gasoline | 0.10592 |
-      | diesel           | 0.12401 |
-      | B20              | 0.12401 |
+      | fuel             | ef   |
+      | regular gasoline | 0.1  |
+      | diesel           | 0.12 |
+      | B20              | 0.12 |
 
   Scenario: N2O emission factor committee from default automobile fuel
     Given an automobile_trip emitter
@@ -295,10 +296,10 @@ Feature: Automobile Trip Committee Calculations
     Then the committee should have used quorum "from automobile fuel"
     And the conclusion of the committee should be "<ef>"
     Examples:
-      | fuel             | ef      |
-      | regular gasoline | 0.00715 |
-      | diesel           | 0.00200 |
-      | B20              | 0.00200 |
+      | fuel             | ef    |
+      | regular gasoline | 0.008 |
+      | diesel           | 0.002 |
+      | B20              | 0.002 |
 
   Scenario: CH4 emission factor committee from default automobile fuel
     Given an automobile_trip emitter
@@ -314,10 +315,10 @@ Feature: Automobile Trip Committee Calculations
     Then the committee should have used quorum "from automobile fuel"
     And the conclusion of the committee should be "<ef>"
     Examples:
-      | fuel             | ef      |
-      | regular gasoline | 0.00230 |
-      | diesel           | 0.00010 |
-      | B20              | 0.00010 |
+      | fuel             | ef     |
+      | regular gasoline | 0.002  |
+      | diesel           | 0.0001 |
+      | B20              | 0.0001 |
 
   Scenario: CO2 biogenic emission factor committee from default automobile fuel
     Given an automobile_trip emitter
@@ -333,10 +334,10 @@ Feature: Automobile Trip Committee Calculations
     Then the committee should have used quorum "from automobile fuel"
     And the conclusion of the committee should be "<ef>"
     Examples:
-      | fuel             | ef    |
-      | regular gasoline | 0.0   |
-      | diesel           | 0.0   |
-      | B20              | 0.5   |
+      | fuel             | ef  |
+      | regular gasoline | 0.0 |
+      | diesel           | 0.0 |
+      | B20              | 0.5 |
 
   Scenario: CO2 emission factor committee from default automobile fuel
     Given an automobile_trip emitter
@@ -352,10 +353,10 @@ Feature: Automobile Trip Committee Calculations
     Then the committee should have used quorum "from automobile fuel"
     And the conclusion of the committee should be "<ef>"
     Examples:
-      | fuel             | ef    |
-      | regular gasoline | 2.3   |
-      | diesel           | 2.7   |
-      | B20              | 2.16  |
+      | fuel             | ef  |
+      | regular gasoline | 2.3 |
+      | diesel           | 2.7 |
+      | B20              | 2.2 |
 
   Scenario Outline: HFC emission from fuel use, hfc emission factor, date, and timeframe
     Given an automobile_trip emitter
