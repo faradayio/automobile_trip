@@ -30,71 +30,71 @@ module BrighterPlanet
           ### Emission calculation
           # Returns the `emission` estimate (*kg CO<sub>2</sub>e*).
           committee :emission do
-            #### Emission from co2 emission, ch4 emission, n2o emission, and hfc emission
+            #### Emission from CO<sub>2</sub> emission, CH<sub>4</sub> emission, N<sub>2</sub>O emission, and HFC emission
             quorum 'from co2 emission, ch4 emission, n2o emission, and hfc emission',
               :needs => [:co2_emission, :ch4_emission, :n2o_emission, :hfc_emission],
               # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
               :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
-                # Sums the non-biogenic emissions
+                # Sums the non-biogenic emissions to give *kg CO<sub>2</sub>e*.
                 characteristics[:co2_emission] + characteristics[:ch4_emission] + characteristics[:n2o_emission] + characteristics[:hfc_emission]
             end
           end
           
           ### CO<sub>2</sub> emission calculation
-          # Returns the `co2 emission` (*kg CO<sub>2</sub>e*)
+          # Returns the `co2 emission` (*kg*).
           committee :co2_emission do
-            #### CO<sub>2</sub> emission from fuel use, co2 emission factor, date, and timeframe
+            #### CO<sub>2</sub> emission from fuel use, CO<sub>2</sub> emission factor, date, and timeframe
             quorum 'from fuel use, co2 emission factor, date, and timeframe',
               :needs => [:fuel_use, :co2_emission_factor, :date],
               # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
               :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics, timeframe|
-                # - Checks whether the trip `date` falls within the `timeframe`
+                # Checks whether the trip `date` falls within the `timeframe`.
                 date = characteristics[:date].is_a?(Date) ? characteristics[:date] : Date.parse(characteristics[:date].to_s)
                 if timeframe.include? date
-                  # - Multiplies `fuel use` (*l*) by the `co2 emission factor` (*kg CO<sub>2</sub>e / l*) to give *kg CO<sub>2</sub>e*
+                  # Multiplies `fuel use` (*l*) by the `co2 emission factor` (*kg / l*) to give *kg*.
                   characteristics[:fuel_use] * characteristics[:co2_emission_factor]
                 else
-                  # - If the `date` does not fall within the `timeframe`, `co2 emission` is zero
+                  # If the `date` does not fall within the `timeframe`, `co2 emission` is zero.
                   0
                 end
             end
           end
           
           ### CO<sub>2</sub> biogenic emission calculation
-          # Returns the `co2 biogenic emission` (*kg CO<sub>2</sub>e*)
+          # Returns the `co2 biogenic emission` (*kg*).
           committee :co2_biogenic_emission do
-            #### CO<sub>2</sub> biogenic emission from fuel use, co2 biogenic emission factor, date, and timeframe
+            #### CO<sub>2</sub> biogenic emission from fuel use, CO<sub>2</sub> biogenic emission factor, date, and timeframe
             quorum 'from fuel use, co2 biogenic emission factor, date, and timeframe',
               :needs => [:fuel_use, :co2_biogenic_emission_factor, :date],
               # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
               :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics, timeframe|
-                # - Checks whether the trip `date` falls within the `timeframe`
+                # Checks whether the trip `date` falls within the `timeframe`.
                 date = characteristics[:date].is_a?(Date) ? characteristics[:date] : Date.parse(characteristics[:date].to_s)
                 if timeframe.include? date
-                  # - Multiplies `fuel use` (*l*) by the `co2 biogenic emission factor` (*kg CO<sub>2</sub>e / l*) to give *kg CO<sub>2</sub>e*
+                  # Multiplies `fuel use` (*l*) by the `co2 biogenic emission factor` (*kg / l*) to give *kg*.
                   characteristics[:fuel_use] * characteristics[:co2_biogenic_emission_factor]
                 else
-                  # - If the `date` does not fall within the `timeframe`, `co2 biogenic emission` is zero
+                  # If the `date` does not fall within the `timeframe`, `co2 biogenic emission` is zero.
                   0
                 end
             end
           end
           
           ### CH<sub>4</sub> emission calculation
-          # Returns the `ch4 emission` (*kg CO<sub>2</sub>e*)
+          # Returns the `ch4 emission` (*kg CO<sub>2</sub>e*).
           committee :ch4_emission do
-            #### CH<sub>4</sub> emission from fuel use, ch4 emission factor, date, and timeframe
+            #### CH<sub>4</sub> emission from fuel use, CH<sub>4</sub> emission factor, date, and timeframe
             quorum 'from fuel use, ch4 emission factor, date, and timeframe',
               :needs => [:fuel_use, :ch4_emission_factor, :date],
               # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
               :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics, timeframe|
-                # - Checks whether the trip `date` falls within the `timeframe`
+                # Checks whether the trip `date` falls within the `timeframe`.
                 date = characteristics[:date].is_a?(Date) ? characteristics[:date] : Date.parse(characteristics[:date].to_s)
                 if timeframe.include? date
-                  # - Multiplies `fuel use` (*l*) by the `ch4 emission factor` (*kg CO<sub>2</sub>e / l*) to give *kg CO<sub>2</sub>e*
+                  # Multiplies `fuel use` (*l*) by the `ch4 emission factor` (*kg CO<sub>2</sub>e / l*) to give *kg CO<sub>2</sub>e*.
                   characteristics[:fuel_use] * characteristics[:ch4_emission_factor]
                 else
-                  # - If the `date` does not fall within the `timeframe`, `ch4 emission` is zero
+                  # If the `date` does not fall within the `timeframe`, `ch4 emission` is zero.
                   0
                 end
             end
@@ -103,117 +103,117 @@ module BrighterPlanet
           ### N<sub>2</sub>O emission calculation
           # Returns the `n2o emission` (*kg CO<sub>2</sub>e*)
           committee :n2o_emission do
-            #### N<sub>2</sub>O emission from fuel use, n2o emission factor, date, and timeframe
+            #### N<sub>2</sub>O emission from fuel use, N<sub>2</sub>O emission factor, date, and timeframe
             quorum 'from fuel use, n2o emission factor, date, and timeframe',
               :needs => [:fuel_use, :n2o_emission_factor, :date],
               # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
               :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics, timeframe|
-                # - Checks whether the trip `date` falls within the `timeframe`
+                # Checks whether the trip `date` falls within the `timeframe`.
                 date = characteristics[:date].is_a?(Date) ? characteristics[:date] : Date.parse(characteristics[:date].to_s)
                 if timeframe.include? date
-                  # - Multiplies `fuel use` (*l*) by the `n2o emission factor` (*kg CO<sub>2</sub>e / l*) to give *kg CO<sub>2</sub>e*
+                  # Multiplies `fuel use` (*l*) by the `n2o emission factor` (*kg CO<sub>2</sub>e / l*) to give *kg CO<sub>2</sub>e*.
                   characteristics[:fuel_use] * characteristics[:n2o_emission_factor]
                 else
-                  # - If the `date` does not fall within the `timeframe`, `n2o emission` is zero
+                  # If the `date` does not fall within the `timeframe`, `n2o emission` is zero.
                   0
                 end
             end
           end
           
           ### HFC emission calculation
-          # Returns the `hfc emission` (*kg CO<sub>2</sub>e*)
+          # Returns the `hfc emission` (*kg CO<sub>2</sub>e*).
           committee :hfc_emission do
-            #### HFC emission from fuel use, hfc emission factor, date, and timeframe
+            #### HFC emission from fuel use, HFC emission factor, date, and timeframe
             quorum 'from fuel use, hfc emission factor, date, and timeframe',
               :needs => [:fuel_use, :hfc_emission_factor, :date],
               # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
               :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics, timeframe|
-                # - Checks whether the trip `date` falls within the `timeframe`
+                # Checks whether the trip `date` falls within the `timeframe`.
                 date = characteristics[:date].is_a?(Date) ? characteristics[:date] : Date.parse(characteristics[:date].to_s)
                 if timeframe.include? date
-                  # - Multiplies `fuel use` (*l*) by the `hfc emission factor` (*kg CO<sub>2</sub>e / l*) to give *kg CO<sub>2</sub>e*
+                  # Multiplies `fuel use` (*l*) by the `hfc emission factor` (*kg CO<sub>2</sub>e / l*) to give *kg CO<sub>2</sub>e*.
                   characteristics[:fuel_use] * characteristics[:hfc_emission_factor]
                 else
-                  # - If the `date` does not fall within the `timeframe`, `hfc emission` is zero
+                  # If the `date` does not fall within the `timeframe`, `hfc emission` is zero.
                   0
                 end
             end
           end
           
           ### CO<sub>2</sub> emission factor calculation
-          # Returns the `co2 emission factor` (*kg CO<sub>2</sub>e / l*)
+          # Returns the `co2 emission factor` (*kg / l*).
           committee :co2_emission_factor do
             #### CO<sub>2</sub> emission factor from automobile fuel
             quorum 'from automobile fuel',
               :needs => :automobile_fuel,
               # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
               :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
-                # Looks up the [fuel](http://data.brighterplanet.com/fuels) `co2 emission factor` (*kg CO</sub>2</sub>e / l*)
+                # Looks up the [fuel](http://data.brighterplanet.com/fuels) `co2 emission factor` (*kg / l*).
                 characteristics[:automobile_fuel].co2_emission_factor
             end
           end
           
           ### CO<sub>2</sub> biogenic emission factor calculation
-          # Returns the `co2 biogenic emission factor` (*kg CO<sub>2</sub>e / l*)
+          # Returns the `co2 biogenic emission factor` (*kg / l*).
           committee :co2_biogenic_emission_factor do
             #### CO<sub>2</sub> biogenic emission factor from automobile fuel
             quorum 'from automobile fuel',
               :needs => :automobile_fuel,
               # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
               :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
-                # Looks up the [fuel](http://data.brighterplanet.com/fuels) `co2 biogenic emission factor` (*kg CO</sub>2</sub>e / l*)
+                # Looks up the [fuel](http://data.brighterplanet.com/fuels) `co2 biogenic emission factor` (*kg / l*).
                 characteristics[:automobile_fuel].co2_biogenic_emission_factor
             end
           end
           
           ### CH<sub>4</sub> emission factor calculation
-          # Returns the `ch4 emission factor` (*kg CO<sub>2</sub>e / l*)
+          # Returns the `ch4 emission factor` (*kg CO<sub>2</sub>e / l*).
           committee :ch4_emission_factor do
             #### CH<sub>4</sub> emission factor from automobile fuel
             quorum 'from automobile fuel',
               :needs => :automobile_fuel,
               # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
               :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
-                # Looks up the [fuel](http://data.brighterplanet.com/fuels) `ch4 emission factor` (*kg CO</sub>2</sub>e / l*)
+                # Looks up the [fuel](http://data.brighterplanet.com/fuels) `ch4 emission factor` (*kg CO</sub>2</sub>e / l*).
                 characteristics[:automobile_fuel].ch4_emission_factor
             end
           end
           
           ### N<sub>2</sub>O emission factor calculation
-          # Returns the `n2o emission factor` (*kg CO<sub>2</sub>e / l*)
+          # Returns the `n2o emission factor` (*kg CO<sub>2</sub>e / l*).
           committee :n2o_emission_factor do
             #### N<sub>2</sub>O emission factor from automobile fuel
             quorum 'from automobile fuel',
               :needs => :automobile_fuel,
               # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
               :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
-                # Looks up the [fuel](http://data.brighterplanet.com/fuels) `n2o emission factor` (*kg CO</sub>2</sub>e / l*)
+                # Looks up the [fuel](http://data.brighterplanet.com/fuels) `n2o emission factor` (*kg CO</sub>2</sub>e / l*).
                 characteristics[:automobile_fuel].n2o_emission_factor
             end
           end
           
           ### HFC emission factor calculation
-          # Returns the `hfc emission factor` (*kg CO<sub>2</sub>e / l*)
+          # Returns the `hfc emission factor` (*kg CO<sub>2</sub>e / l*).
           committee :hfc_emission_factor do
             #### HFC emission factor from automobile fuel
             quorum 'from automobile fuel',
               :needs => :automobile_fuel,
               # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
               :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
-                # Looks up the [fuel](http://data.brighterplanet.com/fuels) `hfc emission factor` (*kg CO</sub>2</sub>e / l*)
+                # Looks up the [fuel](http://data.brighterplanet.com/fuels) `hfc emission factor` (*kg CO</sub>2</sub>e / l*).
                 characteristics[:automobile_fuel].hfc_emission_factor
             end
           end
           
-          ### Fuel calculation
-          # Returns the `fuel` used by the automobile.
+          ### Automobile fuel calculation
+          # Returns the type of `automobile fuel` used.
           committee :automobile_fuel do
-            #### Fuel from client input
+            #### Automobile fuel from client input
             # **Complies:** All
             #
             # Uses the client-input [automobile fuel](http://data.brighterplanet.com/automobile_fuels).
             
-            #### Fuel from make model year variant
+            #### Automobile fuel from make model year variant
             quorum 'from make model year variant',
               :needs => :make_model_year_variant,
               # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
@@ -222,7 +222,7 @@ module BrighterPlanet
                 characteristics[:make_model_year_variant].fuel
             end
             
-            #### Default fuel
+            #### Default automobile fuel
             quorum 'default',
               # **Complies:** GHG Protocol Scope 3, ISO 14064-1
               :complies => [:ghg_protocol_scope_3, :iso] do |characteristics|
@@ -324,26 +324,25 @@ module BrighterPlanet
           # Returns the client-input `duration` (*minutes*).
           
           ### Speed calculation
-          # Returns the average `speed` at which the automobile travels (*km / hour*)
+          # Returns the average `speed` at which the automobile travels (*km / hour*).
           committee :speed do
             #### Speed from client input
             # **Complies:** All
             #
-            # Uses the client-input `speed` (*km / hour*)
+            # Uses the client-input `speed` (*km / hour*).
             
             #### Speed from urbanity
             quorum 'from urbanity',
               :needs => :urbanity,
               # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
               :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
-                # * Takes average city and highway driving speeds from [EPA (2006)](http://www.epa.gov/fueleconomy/420r06017.pdf) and converts from *miles / hour* to *km / hour*
-                # * Calculates the harmonic mean of those speeds, weighted by `urbanity`
+                # Takes average city and highway driving speeds from [EPA (2006)](http://www.epa.gov/fueleconomy/420r06017.pdf) and converts from *miles / hour* to *km / hour*, then calculates the harmonic mean of those speeds weighted by `urbanity`.
                 1 / (characteristics[:urbanity] / base.fallback.city_speed + (1 - characteristics[:urbanity]) / base.fallback.highway_speed)
             end
           end
           
           ### Fuel efficiency calculation
-          # Returns the `fuel efficiency` (*km / l*)
+          # Returns the `fuel efficiency` (*km / l*).
           committee :fuel_efficiency do
             #### Fuel efficiency from client input
             # **Complies:** All
@@ -355,12 +354,12 @@ module BrighterPlanet
               :needs => [:make_model_year_variant, :urbanity],
               # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
               :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
-                # * Looks up the city and highway fuel efficiencies of the automobile [make model year variant](http://data.brighterplanet.com/automobile_make_model_year_variants) (*km / l*)
+                # Looks up the city and highway fuel efficiencies of the automobile [make model year variant](http://data.brighterplanet.com/automobile_make_model_year_variants) (*km / l*).
                 fuel_efficiency_city = characteristics[:make_model_year_variant].fuel_efficiency_city
                 fuel_efficiency_highway = characteristics[:make_model_year_variant].fuel_efficiency_highway
                 urbanity = characteristics[:urbanity]
                 if fuel_efficiency_city.present? and fuel_efficiency_highway.present?
-                  # * Calculates the harmonic mean of those fuel efficiencies, weighted by `urbanity`
+                  # Calculates the harmonic mean of those fuel efficiencies, weighted by `urbanity`.
                   1.0 / ((urbanity / fuel_efficiency_city) + ((1.0 - urbanity) / fuel_efficiency_highway))
                 end
             end
@@ -370,12 +369,12 @@ module BrighterPlanet
               :needs => [:make_model_year, :urbanity],
               # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
               :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
-                # * Looks up the city and highway fuel efficiencies of the automobile [make model year](http://data.brighterplanet.com/automobile_make_model_years) (*km / l*)
+                # Looks up the city and highway fuel efficiencies of the automobile [make model year](http://data.brighterplanet.com/automobile_make_model_years) (*km / l*).
                 fuel_efficiency_city = characteristics[:make_model_year].fuel_efficiency_city
                 fuel_efficiency_highway = characteristics[:make_model_year].fuel_efficiency_highway
                 urbanity = characteristics[:urbanity]
                 if fuel_efficiency_city.present? and fuel_efficiency_highway.present?
-                  # * Calculates the harmonic mean of those fuel efficiencies, weighted by `urbanity`
+                  # Calculates the harmonic mean of those fuel efficiencies, weighted by `urbanity`.
                   1.0 / ((urbanity / fuel_efficiency_city) + ((1.0 - urbanity) / fuel_efficiency_highway))
                 end
             end
@@ -385,12 +384,12 @@ module BrighterPlanet
               :needs => [:make_model, :urbanity],
               # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
               :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
-                # * Looks up the city and highway fuel efficiencies of the automobile [make model](http://data.brighterplanet.com/automobile_make_models) (*km / l*)
+                # Looks up the city and highway fuel efficiencies of the automobile [make model](http://data.brighterplanet.com/automobile_make_models) (*km / l*).
                 fuel_efficiency_city = characteristics[:make_model].fuel_efficiency_city
                 fuel_efficiency_highway = characteristics[:make_model].fuel_efficiency_highway
                 urbanity = characteristics[:urbanity]
                 if fuel_efficiency_city.present? and fuel_efficiency_highway.present?
-                  # * Calculates the harmonic mean of those fuel efficiencies, weighted by `urbanity`
+                  # Calculates the harmonic mean of those fuel efficiencies, weighted by `urbanity`.
                   1.0 / ((urbanity / fuel_efficiency_city) + ((1.0 - urbanity) / fuel_efficiency_highway))
                 end
             end
@@ -400,13 +399,12 @@ module BrighterPlanet
               :needs => [:size_class, :hybridity_multiplier, :urbanity],
               # **Complies:** GHG Protocol Scope 3, ISO 14064-1
               :complies => [:ghg_protocol_scope_3, :iso] do |characteristics|
-                # * Looks up the automobile [size class](http://data.brighterplanet.com/automobile_makes) city and highway fuel efficiency (*km / l*)
+                # Looks up the automobile [size class](http://data.brighterplanet.com/automobile_makes) city and highway fuel efficiency (*km / l*).
                 fuel_efficiency_city = characteristics[:size_class].fuel_efficiency_city
                 fuel_efficiency_highway = characteristics[:size_class].fuel_efficiency_highway
                 urbanity = characteristics[:urbanity]
                 if fuel_efficiency_city.present? and fuel_efficiency_highway.present?
-                  # * Calculates the harmonic mean of those fuel efficiencies, weighted by `urbanity`
-                  # * Multiplies the result by the `hybridity multiplier`
+                  # Calculates the harmonic mean of those fuel efficiencies, weighted by `urbanity`, and multiplies the result by the `hybridity multiplier`.
                   (1.0 / ((urbanity / fuel_efficiency_city) + ((1.0 - urbanity) / fuel_efficiency_highway))) * characteristics[:hybridity_multiplier]
                 end
             end
@@ -416,8 +414,7 @@ module BrighterPlanet
               :needs => [:make_year, :hybridity_multiplier],
               # **Complies:** GHG Protocol Scope 3, ISO 14064-1
               :complies => [:ghg_protocol_scope_3, :iso] do |characteristics|
-                # * Looks up the automobile [make year](http://data.brighterplanet.com/automobile_make_years) combined fuel efficiency (*km / l*)
-                # * Multiplies the combined fuel efficiency by the `hybridity multiplier`
+                # Looks up the automobile [make year](http://data.brighterplanet.com/automobile_make_years) combined fuel efficiency (*km / l*) and multiplies it by the `hybridity multiplier`.
                 characteristics[:make_year].fuel_efficiency * characteristics[:hybridity_multiplier]
             end
             
@@ -426,8 +423,7 @@ module BrighterPlanet
               :needs => [:make, :hybridity_multiplier],
               # **Complies:** GHG Protocol Scope 3, ISO 14064-1
               :complies => [:ghg_protocol_scope_3, :iso] do |characteristics|
-                # * Looks up the automobile [make](http://data.brighterplanet.com/automobile_makes) combined fuel efficiency (*km / l*)
-                # * Multiplies the combined fuel efficiency by the `hybridity multiplier`
+                # Looks up the automobile [make](http://data.brighterplanet.com/automobile_makes) combined fuel efficiency (*km / l*) and multiplies it by the `hybridity multiplier`.
                 if characteristics[:make].fuel_efficiency.present?
                   characteristics[:make].fuel_efficiency * characteristics[:hybridity_multiplier]
                 else
@@ -440,8 +436,7 @@ module BrighterPlanet
               :needs => :hybridity_multiplier,
               # **Complies:** GHG Protocol Scope 3, ISO 14064-1
               :complies => [:ghg_protocol_scope_3, :iso] do |characteristics|
-                # * Takes a default `fuel efficiency` of 8.58 *km / l*, calculated from total US automobile vehicle miles travelled and gasoline and diesel consumption.
-                # * Multiplies the `fuel efficiency` by the `hybridity multiplier`
+                # Takes a default `fuel efficiency` of 8.58 *km / l*, calculated from total US automobile vehicle miles travelled and gasoline and diesel consumption, and multiplies it by the `hybridity multiplier`.
                 base.fallback.fuel_efficiency * characteristics[:hybridity_multiplier]
             end
           end
@@ -455,7 +450,7 @@ module BrighterPlanet
               :needs => [:size_class, :hybridity, :urbanity],
               # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
               :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
-                # * Looks up the appropriate city and highway hybridity multipliers for the automobile [size class](http://data.brighterplanet.com/automobile_size_classes)
+                # Looks up the appropriate city and highway hybridity multipliers for the automobile [size class](http://data.brighterplanet.com/automobile_size_classes).
                 drivetrain = characteristics[:hybridity] ? :hybrid : :conventional
                 urbanity = characteristics[:urbanity]
                 size_class = characteristics[:size_class]
@@ -464,7 +459,7 @@ module BrighterPlanet
                   :highway => size_class.send(:"#{drivetrain}_fuel_efficiency_highway_multiplier")
                 }
                 if fuel_efficiency_multipliers.values.any?(&:present?)
-                  # * Calculates the harmonic mean of those multipliers, weighted by `urbanity`
+                  # Calculates the harmonic mean of those multipliers, weighted by `urbanity`.
                   1.0 / ((urbanity / fuel_efficiency_multipliers[:city]) + ((1.0 - urbanity) / fuel_efficiency_multipliers[:highway]))
                 else
                   nil
@@ -476,14 +471,14 @@ module BrighterPlanet
               :needs => [:hybridity, :urbanity],
               # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
               :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
-                # * Looks up the appropriate default city and highway hybridity multipliers
+                # Looks up the appropriate default city and highway hybridity multipliers.
                 drivetrain = characteristics[:hybridity] ? :hybrid : :conventional
                 urbanity = characteristics[:urbanity]
                 fuel_efficiency_multipliers = {
                   :city => AutomobileSizeClass.fallback.send(:"#{drivetrain}_fuel_efficiency_city_multiplier"),
                   :highway => AutomobileSizeClass.fallback.send(:"#{drivetrain}_fuel_efficiency_highway_multiplier")
                 }
-                # * Calculates the harmonic mean of those multipliers, weighted by `urbanity`
+                # Calculates the harmonic mean of those multipliers, weighted by `urbanity`.
                 1.0 / ((urbanity / fuel_efficiency_multipliers[:city]) + ((1.0 - urbanity) / fuel_efficiency_multipliers[:highway]))
             end
             
@@ -505,7 +500,7 @@ module BrighterPlanet
               :needs => :urbanity_estimate,
               # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
               :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
-                # Uses the `urbanity estimate` if it is from zero to one
+                # Uses the `urbanity estimate` if it is from zero to one.
                 if characteristics[:urbanity_estimate] >= 0 and characteristics[:urbanity_estimate] <= 1
                   characteristics[:urbanity_estimate]
                 end
@@ -515,7 +510,7 @@ module BrighterPlanet
             quorum 'default',
               # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
               :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do
-                # Uses an `urbanity` of 0.43 after [EPA (2009) Appendix A](http://www.epa.gov/otaq/cert/mpg/fetrends/420r09014-appx-a.pdf)
+                # Uses an `urbanity` of 0.43 after [EPA (2009) Appendix A](http://www.epa.gov/otaq/cert/mpg/fetrends/420r09014-appx-a.pdf).
                 base.fallback.urbanity_estimate
             end
           end
