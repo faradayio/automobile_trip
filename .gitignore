@@ -13,6 +13,9 @@ tmtags
 ## VIM
 *.swp
 
+## gh-pages
+docs
+
 ## PROJECT::GENERAL
 coverage
 rdoc
