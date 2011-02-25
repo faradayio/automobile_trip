@@ -246,7 +246,7 @@ Feature: Automobile Trip Committee Calculations
     Then the committee should have used quorum "from fuel efficiency and distance"
     And the conclusion of the committee should be "10.0"
 
-  Scenario: Fuel committee from default
+  Scenario: Automobile fuel committee from default
     Given an automobile_trip emitter
     When the "automobile_fuel" committee is calculated
     Then the committee should have used quorum "default"
@@ -256,7 +256,7 @@ Feature: Automobile Trip Committee Calculations
     And the conclusion of the committee should have "n2o_emission_factor" of "0.00705"
     And the conclusion of the committee should have "hfc_emission_factor" of "0.10627"
 
-  Scenario: Fuel committee from make model year variant
+  Scenario: Automobile fuel committee from make model year variant
     Given an automobile_trip emitter
     And a characteristic "make_model_year_variant.row_hash" of "xxx1"
     When the "automobile_fuel" committee is calculated
