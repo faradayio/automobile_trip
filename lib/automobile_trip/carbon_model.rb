@@ -225,7 +225,7 @@ module BrighterPlanet
             #### Default automobile fuel
             quorum 'default',
               # **Complies:** GHG Protocol Scope 3, ISO 14064-1
-              :complies => [:ghg_protocol_scope_3, :iso] do |characteristics|
+              :complies => [:ghg_protocol_scope_3, :iso] do
                 # Looks up the default [automobile fuel](http://data.brighterplanet.com/automobile_fuels).
                 AutomobileFuel.fallback
             end
@@ -277,12 +277,13 @@ module BrighterPlanet
                 (characteristics[:duration] / 60.0) * characteristics[:speed]
             end
             
-            #### Default distance
-            quorum 'default',
+            #### Distance from country
+            quorum 'from country',
+              :needs => :country,
               # **Complies:** GHG Protocol Scope 3, ISO 14064-1
-              :complies => [:ghg_protocol_scope_3, :iso] do
-                # Uses a default `distance` of 16.33 *km*, [calculated from NHTS 2009 data](https://spreadsheets.google.com/pub?key=0AoQJbWqPrREqdFhib1FaNVp5VDkxejh4N3FWQmp2VUE&hl=en&output=html).
-                base.fallback.distance
+              :complies => [:ghg_protocol_scope_3, :iso] do |characteristics|
+                # Looks up the [country](http://data.brighterplanet.com/countries) `automobile trip distance`.
+                characteristics[:country].automobile_trip_distance
             end
           end
           
@@ -331,13 +332,13 @@ module BrighterPlanet
             #
             # Uses the client-input `speed` (*km / hour*).
             
-            #### Speed from urbanity
-            quorum 'from urbanity',
-              :needs => :urbanity,
+            #### Speed from urbanity and country
+            quorum 'from urbanity and country',
+              :needs => [:urbanity, :country],
               # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
               :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
-                # Takes average city and highway driving speeds from [EPA (2006)](http://www.epa.gov/fueleconomy/420r06017.pdf) and converts from *miles / hour* to *km / hour*, then calculates the harmonic mean of those speeds weighted by `urbanity`.
-                1 / (characteristics[:urbanity] / base.fallback.city_speed + (1 - characteristics[:urbanity]) / base.fallback.highway_speed)
+                # Looks up the [country](http://data.brighterplanet.com/countries) average city and highway driving speeds and calculates the harmonic mean of those speeds weighted by `urbanity`.
+                1 / (characteristics[:urbanity] / characteristics[:country].automobile_city_speed + (1 - characteristics[:urbanity]) / characteristics[:country].automobile_highway_speed)
             end
           end
           
@@ -431,13 +432,13 @@ module BrighterPlanet
                 end
             end
             
-            #### Fuel efficiency from hybridity multiplier
-            quorum 'from hybridity multiplier',
-              :needs => :hybridity_multiplier,
+            #### Fuel efficiency from hybridity multiplier and country
+            quorum 'from hybridity multiplier and country',
+              :needs => [:hybridity_multiplier, :country],
               # **Complies:** GHG Protocol Scope 3, ISO 14064-1
               :complies => [:ghg_protocol_scope_3, :iso] do |characteristics|
-                # Takes a default `fuel efficiency` of 8.58 *km / l*, calculated from total US automobile vehicle miles travelled and gasoline and diesel consumption, and multiplies it by the `hybridity multiplier`.
-                base.fallback.fuel_efficiency * characteristics[:hybridity_multiplier]
+                # Looks up the [country](http://data.brighterplanet.com/countries) `automobile fuel efficiency` and multiplies it by the `hybridity multiplier`.
+                characteristics[:country].automobile_fuel_efficiency * characteristics[:hybridity_multiplier]
             end
           end
           
@@ -506,12 +507,13 @@ module BrighterPlanet
                 end
             end
             
-            #### Default urbanity
-            quorum 'default',
+            #### Urbanity from country
+            quorum 'from country',
+              :needs => :country,
               # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
-              :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do
-                # Uses an `urbanity` of 0.43 after [EPA (2009) Appendix A](http://www.epa.gov/otaq/cert/mpg/fetrends/420r09014-appx-a.pdf).
-                base.fallback.urbanity_estimate
+              :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
+                # Looks up the [country](http://data.brighterplanet.com/countries) `automobile urbanity`.
+                characteristics[:country].automobile_urbanity
             end
           end
           
@@ -538,6 +540,23 @@ module BrighterPlanet
           
           ### Make calculation
           # Returns the client-input automobile [make](http://data.brighterplanet.com/automobile_makes).
+          
+          ### Country calculation
+          # Returns the `country` in which the trip occurred.
+          committee :country do
+            #### Country from client input
+            # **Complies:** All
+            #
+            # Uses the client-input `date`.
+            
+            #### Default country
+            quorum 'default',
+              # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
+              :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do
+                # Uses an artificial country that contains global averages.
+                Country.fallback
+            end
+          end
           
           ### Date calculation
           # Returns the `date` on which the trip occurred.

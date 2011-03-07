@@ -17,10 +17,24 @@ Feature: Automobile Trip Committee Calculations
     Then the committee should have used quorum "from timeframe"
     And the conclusion of the committee should be "2009-06-06"
 
-  Scenario: Urbanity committee from default
+  Scenario: Country committee from default
     Given an automobile_trip emitter
-    When the "urbanity" committee is calculated
+    When the "country" committee is calculated
     Then the committee should have used quorum "default"
+    And the conclusion of the committee should have "name" of "fallback"
+
+  Scenario: Urbanity committee from default country
+    Given an automobile_trip emitter
+    When the "country" committee is calculated
+    And the "urbanity" committee is calculated
+    Then the committee should have used quorum "from country"
+    And the conclusion of the committee should be "0.43"
+
+  Scenario: Urbanity committee from country
+    Given an automobile_trip emitter
+    And a characteristic "country.iso_3166_code" of "US"
+    When the "urbanity" committee is calculated
+    Then the committee should have used quorum "from country"
     And the conclusion of the committee should be "0.43"
 
   Scenario Outline: Urbanity committee from valid urbanity estimate
@@ -38,8 +52,9 @@ Feature: Automobile Trip Committee Calculations
   Scenario Outline: Urbanity committee from invalid urbanity estimate
     Given an automobile_trip emitter
     And a characteristic "urbanity_estimate" of "<estimate>"
-    When the "urbanity" committee is calculated
-    Then the committee should have used quorum "default"
+    When the "country" committee is calculated
+    And the "urbanity" committee is calculated
+    Then the committee should have used quorum "from country"
     And the conclusion of the committee should be "0.43"
     Examples:
       | estimate |
@@ -55,7 +70,8 @@ Feature: Automobile Trip Committee Calculations
   Scenario Outline: Hybridity multiplier committee from hybridity and urbanity
     Given an automobile_trip emitter
     And a characteristic "hybridity" of "<hybridity>"
-    When the "urbanity" committee is calculated
+    When the "country" committee is calculated
+    And the "urbanity" committee is calculated
     And the "hybridity_multiplier" committee is calculated
     Then the committee should have used quorum "from hybridity and urbanity"
     And the conclusion of the committee should be "<multiplier>"
@@ -68,7 +84,8 @@ Feature: Automobile Trip Committee Calculations
     Given an automobile_trip emitter
     And a characteristic "hybridity" of "<hybridity>"
     And a characteristic "size_class.name" of "<size_class>"
-    When the "urbanity" committee is calculated
+    When the "country" committee is calculated
+    And the "urbanity" committee is calculated
     And the "hybridity_multiplier" committee is calculated
     Then the committee should have used quorum "from hybridity and urbanity"
     And the conclusion of the committee should be "<multiplier>"
@@ -81,7 +98,8 @@ Feature: Automobile Trip Committee Calculations
     Given an automobile_trip emitter
     And a characteristic "hybridity" of "<hybridity>"
     And a characteristic "size_class.name" of "<size_class>"
-    When the "urbanity" committee is calculated
+    When the "country" committee is calculated
+    And the "urbanity" committee is calculated
     And the "hybridity_multiplier" committee is calculated
     Then the committee should have used quorum "from size class, hybridity, and urbanity"
     And the conclusion of the committee should be "<multiplier>"
@@ -90,16 +108,29 @@ Feature: Automobile Trip Committee Calculations
       | true      | Midsize Car | 1.68067    |
       | false     | Midsize Car | 0.87464    |
 
-  Scenario Outline: Fuel efficiency committee from hybridity multiplier
+  Scenario Outline: Fuel efficiency committee from hybridity multiplier and default country
     Given an automobile_trip emitter
     And a characteristic "hybridity_multiplier" of "<multiplier>"
-    When the "fuel_efficiency" committee is calculated
-    Then the committee should have used quorum "from hybridity multiplier"
+    When the "country" committee is calculated
+    And the "fuel_efficiency" committee is calculated
+    Then the committee should have used quorum "from hybridity multiplier and country"
     And the conclusion of the committee should be "<fe>"
     Examples:
       | multiplier | fe       |
-      | 1.0        |  8.58025 |
-      | 10         | 85.80250 |
+      | 1.0        |  8.22653 |
+      | 10         | 82.26531 |
+
+  Scenario Outline: Fuel efficiency committee from hybridity multiplier and country
+    Given an automobile_trip emitter
+    And a characteristic "hybridity_multiplier" of "<multiplier>"
+    And a characteristic "country.iso_3166_code" of "US"
+    When the "fuel_efficiency" committee is calculated
+    Then the committee should have used quorum "from hybridity multiplier and country"
+    And the conclusion of the committee should be "<fe>"
+    Examples:
+      | multiplier | fe   |
+      | 1.0        |  9.0 |
+      | 10         | 90.0 |
 
   Scenario: Fuel efficiency committee from make and hybridity multiplier
     Given an automobile_trip emitter
@@ -150,12 +181,21 @@ Feature: Automobile Trip Committee Calculations
     Then the committee should have used quorum "from make model year variant and urbanity"
     And the conclusion of the committee should be "44.44444"
 
-  Scenario: Speed committee from urbanity
+  Scenario: Speed committee from urbanity and default country
     Given an automobile_trip emitter
+    When the "country" committee is calculated
+    And the "urbanity" committee is calculated
+    And the "speed" committee is calculated
+    Then the committee should have used quorum "from urbanity and country"
+    And the conclusion of the committee should be "50.93426"
+
+  Scenario: Speed committee from urbanity and country
+    Given an automobile_trip emitter
+    And a characteristic "country.iso_3166_code" of "US"
     When the "urbanity" committee is calculated
     And the "speed" committee is calculated
-    Then the committee should have used quorum "from urbanity"
-    And the conclusion of the committee should be "50.94388"
+    Then the committee should have used quorum "from urbanity and country"
+    And the conclusion of the committee should be "50.93426"
 
   Scenario Outline: Origin location from geocodeable origin
     Given a automobile_trip emitter
@@ -199,11 +239,19 @@ Feature: Automobile Trip Committee Calculations
     When the "destination_location" committee is calculated
     Then the conclusion of the committee should be nil
 
-  Scenario: Distance committee from default
+  Scenario: Distance committee from default country
     Given an automobile_trip emitter
+    When the "country" committee is calculated
+    And the "distance" committee is calculated
+    Then the committee should have used quorum "from country"
+    And the conclusion of the committee should be "16.0"
+
+  Scenario: Distance committee from country
+    Given an automobile_trip emitter
+    And a characteristic "country.iso_3166_code" of "US"
     When the "distance" committee is calculated
-    Then the committee should have used quorum "default"
-    And the conclusion of the committee should be "16.33484"
+    Then the committee should have used quorum "from country"
+    And the conclusion of the committee should be "16.0"
 
   Scenario: Distance committee from duration and speed
     Given an automobile_trip emitter
@@ -232,11 +280,12 @@ Feature: Automobile Trip Committee Calculations
     And a characteristic "origin" of "Lansing, MI"
     And a characteristic "destination" of "Canterbury, Kent, UK"
     And a characteristic "mapquest_api_key" of "ABC123"
-    When the "origin_location" committee is calculated
+    When the "country" committee is calculated
+    And the "origin_location" committee is calculated
     And the "destination_location" committee is calculated
     And the "distance" committee is calculated
-    Then the committee should have used quorum "default"
-    And the conclusion of the committee should be "16.33484"
+    Then the committee should have used quorum "from country"
+    And the conclusion of the committee should be "16.0"
 
   Scenario: Fuel use committee from fuel efficiency and distance
     Given an automobile_trip emitter
@@ -250,11 +299,7 @@ Feature: Automobile Trip Committee Calculations
     Given an automobile_trip emitter
     When the "automobile_fuel" committee is calculated
     Then the committee should have used quorum "default"
-    And the conclusion of the committee should have "co2_emission_factor" of "2.30958"
-    And the conclusion of the committee should have "co2_biogenic_emission_factor" of "0.0"
-    And the conclusion of the committee should have "ch4_emission_factor" of "0.00226"
-    And the conclusion of the committee should have "n2o_emission_factor" of "0.00705"
-    And the conclusion of the committee should have "hfc_emission_factor" of "0.10627"
+    And the conclusion of the committee should have "name" of "fallback"
 
   Scenario: Automobile fuel committee from make model year variant
     Given an automobile_trip emitter
