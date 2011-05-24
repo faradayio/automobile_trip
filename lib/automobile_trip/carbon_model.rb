@@ -547,7 +547,7 @@ module BrighterPlanet
             #### Country from client input
             # **Complies:** All
             #
-            # Uses the client-input `date`.
+            # Uses the client-input `country`.
             
             #### Default country
             quorum 'default',
