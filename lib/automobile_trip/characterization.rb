@@ -4,6 +4,7 @@ module BrighterPlanet
       def self.included(base)
         base.characterize do
           has :date
+          has :country
           has :make
           has :make_year
           has :make_model

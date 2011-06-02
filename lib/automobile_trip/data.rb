@@ -5,6 +5,7 @@ module BrighterPlanet
         base.data_miner do
           schema do
             date    'date'
+            string  'country_iso_3166_code'
             string  'make_name'
             string  'make_year_name'
             string  'make_model_name'

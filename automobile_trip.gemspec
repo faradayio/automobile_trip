@@ -27,4 +27,3 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'sniff'
   s.add_runtime_dependency 'emitter'
 end
-
