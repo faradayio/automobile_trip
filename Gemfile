@@ -4,5 +4,3 @@ gem 'earth', :path => ENV['LOCAL_EARTH'] if ENV['LOCAL_EARTH']
 source :rubygems
 
 gemspec :path => '.'
-
-gem 'roo', '~> 1.9.3'
