@@ -11,19 +11,19 @@ Gem::Specification.new do |s|
   s.summary = %q{A carbon model}
   s.description = %q{A software model in Ruby for the greenhouse gas emissions of an automobile trip}
   s.email = %q{andy@rossmeissl.net}
-  s.homepage = %q{http://github.com/brighterplanet/automobile_trip}
+  s.homepage = %q{https://github.com/brighterplanet/automobile_trip}
 
   s.files = `git ls-files`.split("\n")
   s.test_files = `git ls-files -- {test,spec,features}/*`.split("\n")
   s.executables = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.extra_rdoc_files = [
     "LICENSE",
-     "LICENSE-PREAMBLE",
-     "README.rdoc"
+    "LICENSE-PREAMBLE",
+    "README.rdoc"
   ]
   s.require_paths = ["lib"]
   s.rdoc_options = ["--charset=UTF-8"]
 
-  s.add_development_dependency 'sniff'
-  s.add_runtime_dependency 'emitter'
+  s.add_development_dependency 'sniff', '>=0.8.0'
+  s.add_runtime_dependency 'emitter', '>=0.5.0'
 end
