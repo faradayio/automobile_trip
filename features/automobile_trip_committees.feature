@@ -255,7 +255,7 @@ Feature: Automobile Trip Committee Calculations
 
   Scenario: Distance committee from duration and speed
     Given an automobile_trip emitter
-    And a characteristic "duration" of "120.0"
+    And a characteristic "duration" of "7200.0"
     And a characteristic "speed" of "5.0"
     When the "distance" committee is calculated
     Then the committee should have used quorum "from duration and speed"

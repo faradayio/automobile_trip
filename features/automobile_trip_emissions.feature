@@ -119,7 +119,7 @@ Feature: Automobile Trip Emissions Calculations
 
   Scenario: Calculations from speed and duration
     Given an automobile_trip has "speed" of "5.0"
-    And it has "duration" of "120.0"
+    And it has "duration" of "7200.0"
     When emissions are calculated
     Then the emission value should be within "0.01" kgs of "2.95"
 

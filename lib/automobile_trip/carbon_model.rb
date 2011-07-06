@@ -273,8 +273,8 @@ module BrighterPlanet
               :needs => [:duration, :speed],
               # **Complies:** GHG Protocol Scope 3, ISO 14064-1
               :complies => [:ghg_protocol_scope_3, :iso] do |characteristics|
-                # Divides the `duration` (*minutes*) by 60 and multiplies by the `speed` (*km / hour*) to give *km*.
-                (characteristics[:duration] / 60.0) * characteristics[:speed]
+                # Divides the `duration` (*seconds*) by 3600 and multiplies by the `speed` (*km / hour*) to give *km*.
+                (characteristics[:duration] / 60.0 / 60.0) * characteristics[:speed]
             end
             
             #### Distance from country
@@ -322,7 +322,7 @@ module BrighterPlanet
           # Returns the client-input `origin`.
           
           ### Duration calculation
-          # Returns the client-input `duration` (*minutes*).
+          # Returns the client-input `duration` (*seconds*).
           
           ### Speed calculation
           # Returns the average `speed` at which the automobile travels (*km / hour*).

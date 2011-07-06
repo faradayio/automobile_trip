@@ -14,15 +14,15 @@ module BrighterPlanet
           has :hybridity
           has :urbanity_estimate
           has :hybridity_multiplier
-          has :fuel_efficiency
-          has :speed
-          has :city_speed
-          has :highway_speed
-          has :duration
+          has :fuel_efficiency, :measures => Measurement::BigLengthPerVolumne
+          has :speed, :measures => Measurement::BigSpeed
+          has :city_speed, :measures => Measurement::BigSpeed
+          has :highway_speed, :measures => Measurement::BigSpeed
+          has :duration, :measures => :time
           has :origin
           has :destination
-          has :distance
-          has :fuel_use
+          has :distance, :measures => Measurement::BigLength
+          has :fuel_use, :measures => :volume
           has :automobile_fuel # don't call this fuel b/c then if you specify fuel.name in tests sniff will try to look it up in the fuels fixture, not automobile_fuels
           has(:mapquest_api_key) { 'secret key' }
         end
