@@ -3,13 +3,6 @@ Feature: Automobile Trip Committee Calculations
   
   # FIXME TODO test for compliance
   
-  # FIXME TODO write a test for the mapquest api key committee
-  # Scenario: Mapquest API key committee from default
-  #   Given an automobile_trip emitter
-  #   When the "mapquest_api_key" committee is calculated
-  #   Then the committee should have used quorum "default"
-  #   And the conclusion of the committee should be "SECRET KEY"
-
   Scenario: Date committee from timeframe
     Given an automobile_trip emitter
     And a characteristic "timeframe" of "2009-06-06/2010-01-01"
@@ -265,7 +258,6 @@ Feature: Automobile Trip Committee Calculations
     Given an automobile_trip emitter
     And a characteristic "origin_location" of "<origin>"
     And a characteristic "destination_location" of "<destination>"
-    And a characteristic "mapquest_api_key" of "ABC123"
     And mapquest determines the distance to be "<mapquest_distance>"
     When the "distance" committee is calculated
     Then the committee should have used quorum "from origin and destination locations"
@@ -279,7 +271,6 @@ Feature: Automobile Trip Committee Calculations
     Given an automobile_trip emitter
     And a characteristic "origin" of "Lansing, MI"
     And a characteristic "destination" of "Canterbury, Kent, UK"
-    And a characteristic "mapquest_api_key" of "ABC123"
     When the "country" committee is calculated
     And the "origin_location" committee is calculated
     And the "destination_location" committee is calculated

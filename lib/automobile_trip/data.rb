@@ -24,7 +24,6 @@ module BrighterPlanet
           float   'distance'
           float   'fuel_use'
           string  'automobile_fuel_name'
-          string  'mapquest_api_key'
         end
       end
     end

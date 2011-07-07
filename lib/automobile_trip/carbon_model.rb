@@ -2,9 +2,6 @@
 # See LICENSE for details.
 # Contact Brighter Planet for dual-license arrangements.
 
-require File.expand_path('../../vendor/plugin/mapquest/lib/mapquest_directions', File.dirname(__FILE__))
-require 'geokit'
-
 ## Automobile trip carbon model
 # This model is used by [Brighter Planet](http://brighterplanet.com)'s carbon emission [web service](http://carbon.brighterplanet.com) to estimate the **greenhouse gas emissions of an automobile trip**.
 #
@@ -254,13 +251,11 @@ module BrighterPlanet
             
             #### Distance from origin and destination locations
             quorum 'from origin and destination locations',
-              :needs => [:origin_location, :destination_location, :mapquest_api_key],
+              :needs => [:origin_location, :destination_location],
               # **Complies:** GHG Protocol Scope 3, ISO 14064-1
               :complies => [:ghg_protocol_scope_3, :iso] do |characteristics|
                 # Uses the [Mapquest directions API](http://developer.mapquest.com/web/products/dev-services/directions-ws) to calculate distance by road between the origin and destination locations.
-                mapquest = MapQuestDirections.new characteristics[:origin_location],
-                                                  characteristics[:destination_location],
-                                                  characteristics[:mapquest_api_key]
+                mapquest = ::MapQuestDirections.new characteristics[:origin_location], characteristics[:destination_location]
                 begin
                   mapquest.distance_in_kilometres
                 rescue
@@ -296,7 +291,7 @@ module BrighterPlanet
               # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
               :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
                 # Uses the [Geokit](http://geokit.rubyforge.org/) geocoder to determine the destination location (*lat / lng*).
-                code = Geokit::Geocoders::MultiGeocoder.geocode characteristics[:destination].to_s
+                code = ::Geokit::Geocoders::MultiGeocoder.geocode characteristics[:destination].to_s
                 code.ll == ',' ? nil : code.ll
             end
           end
@@ -310,7 +305,7 @@ module BrighterPlanet
               # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
               :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
                 # Uses the [Geokit](http://geokit.rubyforge.org/) geocoder to determine the origin location (*lat / lng*).
-                code = Geokit::Geocoders::MultiGeocoder.geocode characteristics[:origin].to_s
+                code = ::Geokit::Geocoders::MultiGeocoder.geocode characteristics[:origin].to_s
                 code.ll == ',' ? nil : code.ll
             end
           end
@@ -588,23 +583,7 @@ module BrighterPlanet
             # **Complies:** All
             #
             # Uses the current calendar year.
-          
-          ### Mapquest API key lookup
-          # Returns Brighter Planet's Mapquest API key
-          committee :mapquest_api_key do
-            #### Default Mapquest API key
-            quorum 'default',
-              # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
-              :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do
-                # Uses Brighter Planet's Mapquest API key.
-                ENV['MAPQUEST_API_KEY']
-            end
-          end
         end
-      end
-      
-      class Mapper
-        include Geokit::Mappable
       end
     end
   end

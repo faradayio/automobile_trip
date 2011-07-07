@@ -1,5 +1,8 @@
 require 'emitter'
 
+require 'mapquest_directions'
+require 'geokit'
+
 module BrighterPlanet
   module AutomobileTrip
     extend BrighterPlanet::Emitter
