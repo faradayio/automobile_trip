@@ -2,7 +2,7 @@ module BrighterPlanet
   module AutomobileTrip
     module Data
       def self.included(base)
-        base.create_table do
+        base.force_schema do
           date    'date'
           string  'country_iso_3166_code'
           string  'make_name'
