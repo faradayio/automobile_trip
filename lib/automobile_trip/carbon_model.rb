@@ -411,7 +411,7 @@ module BrighterPlanet
               # **Complies:** GHG Protocol Scope 3, ISO 14064-1
               :complies => [:ghg_protocol_scope_3, :iso] do |characteristics|
                 # Looks up the automobile [make year](http://data.brighterplanet.com/automobile_make_years) combined fuel efficiency (*km / l*) and multiplies it by the `hybridity multiplier`.
-                characteristics[:make_year].fuel_efficiency * characteristics[:hybridity_multiplier]
+                characteristics[:make_year].fuel_efficiency.try :*, characteristics[:hybridity_multiplier]
             end
             
             #### Fuel efficiency from make and hybridity multiplier
@@ -420,11 +420,7 @@ module BrighterPlanet
               # **Complies:** GHG Protocol Scope 3, ISO 14064-1
               :complies => [:ghg_protocol_scope_3, :iso] do |characteristics|
                 # Looks up the automobile [make](http://data.brighterplanet.com/automobile_makes) combined fuel efficiency (*km / l*) and multiplies it by the `hybridity multiplier`.
-                if characteristics[:make].fuel_efficiency.present?
-                  characteristics[:make].fuel_efficiency * characteristics[:hybridity_multiplier]
-                else
-                  nil
-                end
+                characteristics[:make].fuel_efficiency.try :*, characteristics[:hybridity_multiplier]
             end
             
             #### Fuel efficiency from hybridity multiplier and country
@@ -433,7 +429,7 @@ module BrighterPlanet
               # **Complies:** GHG Protocol Scope 3, ISO 14064-1
               :complies => [:ghg_protocol_scope_3, :iso] do |characteristics|
                 # Looks up the [country](http://data.brighterplanet.com/countries) `automobile fuel efficiency` and multiplies it by the `hybridity multiplier`.
-                characteristics[:country].automobile_fuel_efficiency * characteristics[:hybridity_multiplier]
+                characteristics[:country].automobile_fuel_efficiency.try :*, characteristics[:hybridity_multiplier]
             end
           end
           
