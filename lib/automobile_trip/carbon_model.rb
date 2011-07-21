@@ -444,17 +444,12 @@ module BrighterPlanet
               :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
                 # Looks up the appropriate city and highway hybridity multipliers for the automobile [size class](http://data.brighterplanet.com/automobile_size_classes).
                 drivetrain = characteristics[:hybridity] ? :hybrid : :conventional
-                urbanity = characteristics[:urbanity]
-                size_class = characteristics[:size_class]
-                fuel_efficiency_multipliers = {
-                  :city => size_class.send(:"#{drivetrain}_fuel_efficiency_city_multiplier"),
-                  :highway => size_class.send(:"#{drivetrain}_fuel_efficiency_highway_multiplier")
-                }
-                if fuel_efficiency_multipliers.values.any?(&:present?)
+                city_fuel_efficiency_multiplier = characteristics[:size_class].send(:"#{drivetrain}_fuel_efficiency_city_multiplier")
+                highway_fuel_efficiency_multiplier = characteristics[:size_class].send(:"#{drivetrain}_fuel_efficiency_highway_multiplier")
+
+                if city_fuel_efficiency_multiplier or highway_fuel_efficiency_multiplier
                   # Calculates the harmonic mean of those multipliers, weighted by `urbanity`.
-                  1.0 / ((urbanity / fuel_efficiency_multipliers[:city]) + ((1.0 - urbanity) / fuel_efficiency_multipliers[:highway]))
-                else
-                  nil
+                  1.0 / ((characteristics[:urbanity] / city_fuel_efficiency_multiplier) + ((1.0 - characteristics[:urbanity]) / highway_fuel_efficiency_multiplier))
                 end
             end
             
@@ -465,13 +460,11 @@ module BrighterPlanet
               :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
                 # Looks up the appropriate default city and highway hybridity multipliers.
                 drivetrain = characteristics[:hybridity] ? :hybrid : :conventional
-                urbanity = characteristics[:urbanity]
-                fuel_efficiency_multipliers = {
-                  :city => AutomobileSizeClass.fallback.send(:"#{drivetrain}_fuel_efficiency_city_multiplier"),
-                  :highway => AutomobileSizeClass.fallback.send(:"#{drivetrain}_fuel_efficiency_highway_multiplier")
-                }
+                city_fuel_efficiency_multiplier = AutomobileSizeClass.fallback.send(:"#{drivetrain}_fuel_efficiency_city_multiplier")
+                highway_fuel_efficiency_multiplier = AutomobileSizeClass.fallback.send(:"#{drivetrain}_fuel_efficiency_highway_multiplier")
+
                 # Calculates the harmonic mean of those multipliers, weighted by `urbanity`.
-                1.0 / ((urbanity / fuel_efficiency_multipliers[:city]) + ((1.0 - urbanity) / fuel_efficiency_multipliers[:highway]))
+                1.0 / ((characteristics[:urbanity] / city_fuel_efficiency_multiplier) + ((1.0 - characteristics[:urbanity]) / highway_fuel_efficiency_multiplier))
             end
             
             #### Default hybridity multiplier
