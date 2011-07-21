@@ -33,14 +33,14 @@ Feature: Automobile Trip Emissions Calculations
     When emissions are calculated
     Then the emission value should be within "0.01" kgs of "4.31"
 
-  Scenario: Calculations from urbanity estimate
-    Given an automobile_trip has "urbanity_estimate" of "0.5"
+  Scenario: Calculations from urbanity
+    Given an automobile_trip has "urbanity" of "0.5"
     When emissions are calculated
     Then the emission value should be within "0.01" kgs of "4.72"
 
-  Scenario Outline: Calculations from hybridity and urbanity estimate
+  Scenario Outline: Calculations from hybridity and urbanity
     Given an automobile_trip has "hybridity" of "<hybridity>"
-    And it has "urbanity_estimate" of "0.5"
+    And it has "urbanity" of "0.5"
     When emissions are calculated
     Then the emission value should be within "0.01" kgs of "<emission>"
     Examples:
@@ -48,15 +48,15 @@ Feature: Automobile Trip Emissions Calculations
       | true      | 3.37     |
       | false     | 4.71     |
 
-  Scenario: Calculations from make and urbanity estimate
-    Given an automobile_trip has "urbanity_estimate" of "0.5"
+  Scenario: Calculations from make and urbanity
+    Given an automobile_trip has "urbanity" of "0.5"
     And it has "make.name" of "Toyota"
     When emissions are calculated
     Then the emission value should be within "0.01" kgs of "3.88"
 
-  Scenario Outline: Calculations from make, hybridity and urbanity estimate
+  Scenario Outline: Calculations from make, hybridity and urbanity
     Given an automobile_trip has "hybridity" of "<hybridity>"
-    And it has "urbanity_estimate" of "0.5"
+    And it has "urbanity" of "0.5"
     And it has "make.name" of "Toyota"
     When emissions are calculated
     Then the emission value should be within "0.01" kgs of "<emission>"
@@ -65,15 +65,15 @@ Feature: Automobile Trip Emissions Calculations
       | true      | 2.77     |
       | false     | 3.88     |
 
-  Scenario: Calculations from make year and urbanity estimate
-    Given an automobile_trip has "urbanity_estimate" of "0.5"
+  Scenario: Calculations from make year and urbanity
+    Given an automobile_trip has "urbanity" of "0.5"
     And it has "make_year.name" of "Toyota 2003"
     When emissions are calculated
     Then the emission value should be within "0.01" kgs of "2.59"
 
-  Scenario Outline: Calculations from make year, hybridity and urbanity estimate
+  Scenario Outline: Calculations from make year, hybridity and urbanity
     Given an automobile_trip has "hybridity" of "<hybridity>"
-    And it has "urbanity_estimate" of "0.5"
+    And it has "urbanity" of "0.5"
     And it has "make_year.name" of "Toyota 2003"
     When emissions are calculated
     Then the emission value should be within "0.01" kgs of "<emission>"
@@ -82,15 +82,15 @@ Feature: Automobile Trip Emissions Calculations
       | true      | 1.85     |
       | false     | 2.58     |
 
-  Scenario: Calculations from size class and urbanity estimate
-    Given an automobile_trip has "urbanity_estimate" of "0.5"
+  Scenario: Calculations from size class and urbanity
+    Given an automobile_trip has "urbanity" of "0.5"
     And it has "size_class.name" of "Midsize Car"
     When emissions are calculated
     Then the emission value should be within "0.01" kgs of "2.91"
 
-  Scenario Outline: Calculations from size class, hybridity, and urbanity estimate
+  Scenario Outline: Calculations from size class, hybridity, and urbanity
     Given an automobile_trip has "hybridity" of "<hybridity>"
-    And it has "urbanity_estimate" of "0.5"
+    And it has "urbanity" of "0.5"
     And it has "size_class.name" of "Midsize Car"
     When emissions are calculated
     Then the emission value should be within "0.01" kgs of "<emission>"
@@ -99,20 +99,20 @@ Feature: Automobile Trip Emissions Calculations
       | true      | 1.70     |
       | false     | 2.91     |
 
-  Scenario: Calculations from make model and urbanity estimate
-    Given an automobile_trip has "urbanity_estimate" of "0.5"
+  Scenario: Calculations from make model and urbanity
+    Given an automobile_trip has "urbanity" of "0.5"
     And it has "make_model.name" of "Toyota Prius"
     When emissions are calculated
     Then the emission value should be within "0.01" kgs of "1.62"
 
-  Scenario: Calculations from make model year and urbanity estimate
-    Given an automobile_trip has "urbanity_estimate" of "0.5"
+  Scenario: Calculations from make model year and urbanity
+    Given an automobile_trip has "urbanity" of "0.5"
     And it has "make_model_year.name" of "Toyota Prius 2003"
     When emissions are calculated
     Then the emission value should be within "0.01" kgs of "1.13"
 
-  Scenario: Calculations from make model year variant and urbanity estimate
-    Given an automobile_trip has "urbanity_estimate" of "0.5"
+  Scenario: Calculations from make model year variant and urbanity
+    Given an automobile_trip has "urbanity" of "0.5"
     And it has "make_model_year_variant.row_hash" of "xxx1"
     When emissions are calculated
     Then the emission value should be within "0.01" kgs of "1.02"

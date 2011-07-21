@@ -30,30 +30,6 @@ Feature: Automobile Trip Committee Calculations
     Then the committee should have used quorum "from country"
     And the conclusion of the committee should be "0.43"
 
-  Scenario Outline: Urbanity committee from valid urbanity estimate
-    Given an automobile_trip emitter
-    And a characteristic "urbanity_estimate" of "<estimate>"
-    When the "urbanity" committee is calculated
-    Then the committee should have used quorum "from urbanity estimate"
-    And the conclusion of the committee should be "<urbanity>"
-    Examples:
-      | estimate | urbanity |
-      | 0.0      | 0.0      |
-      | 0.3      | 0.3      |
-      | 1        | 1.0      |
-
-  Scenario Outline: Urbanity committee from invalid urbanity estimate
-    Given an automobile_trip emitter
-    And a characteristic "urbanity_estimate" of "<estimate>"
-    When the "country" committee is calculated
-    And the "urbanity" committee is calculated
-    Then the committee should have used quorum "from country"
-    And the conclusion of the committee should be "0.43"
-    Examples:
-      | estimate |
-      | -0.1     |
-      | 1.1      |
-
   Scenario: Hybridity multiplier committee from default
     Given an automobile_trip emitter
     When the "hybridity_multiplier" committee is calculated
