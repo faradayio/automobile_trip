@@ -11,6 +11,6 @@ require 'data_miner'
 DataMiner.logger = Logger.new(nil)
 
 require 'sniff'
-Sniff.init File.join(File.dirname(__FILE__), '..', '..'), :cucumber => true, :earth => [:automobile, :fuel, :locality]
+Sniff.init File.join(File.dirname(__FILE__), '..', '..'), :cucumber => true, :earth => [:automobile, :fuel, :locality], :logger => 'log/test_log.txt'
 
 MAPQUEST_KEY = 'ABC123'
