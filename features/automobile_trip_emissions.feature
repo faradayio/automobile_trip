@@ -124,13 +124,13 @@ Feature: Automobile Trip Emissions Calculations
     Then the emission value should be within "0.01" kgs of "2.95"
 
   Scenario: Calculations from driveable locations
-    Given an automobile_trip has "origin" of "43,-73"
-    And the geocoder will encode the origin as "43,-73"
-    And it has "destination" of "43.1,-73"
-    And the geocoder will encode the destination as "43.1,-73"
-    And mapquest will return a distance of "57.93638" kilometres
+    Given an automobile_trip has "origin" of "44,-73.15"
+    And the geocoder will encode the origin as "44,-73.15"
+    And it has "destination" of "44.1,-73.15"
+    And the geocoder will encode the destination as "44.1,-73.15"
+    And mapquest determines the distance in miles to be "8.142"
     When emissions are calculated
-    Then the emission value should be within "0.01" kgs of "17.08"
+    Then the emission value should be within "0.01" kgs of "3.86"
 
   Scenario: Calculations from non-driveable locations
     Given an automobile_trip has "origin" of "Lansing, MI"

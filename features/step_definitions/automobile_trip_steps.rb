@@ -1,5 +1,5 @@
-Given /^mapquest determines the distance to be "([^\"]*)"$/ do |distance|
-  mockquest = mock MapQuestDirections, :distance_in_kilometres => distance
+Given /^mapquest determines the distance in miles to be "([^\"]*)"$/ do |distance|
+  mockquest = mock MapQuestDirections, :xml => "<distance>" + distance.to_s + "</distance>"
   MapQuestDirections.stub!(:new).and_return mockquest
 end
 

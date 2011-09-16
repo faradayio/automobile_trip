@@ -234,14 +234,14 @@ Feature: Automobile Trip Committee Calculations
     Given an automobile_trip emitter
     And a characteristic "origin_location" of "<origin>"
     And a characteristic "destination_location" of "<destination>"
-    And mapquest determines the distance to be "<mapquest_distance>"
+    And mapquest determines the distance in miles to be "<mapquest_distance>"
     When the "distance" committee is calculated
     Then the committee should have used quorum "from origin and destination locations"
     And the conclusion of the committee should be "<distance>"
     Examples:
-      | origin | destination | mapquest_distance | distance |
-      | 43,-73 | 43,-73      | 0.0               | 0.0      |
-      | 43,-73 | 43.1,-73    | 57.93638          | 57.93638 |
+      | origin      | destination | mapquest_distance | distance |
+      | 44.0,-73.15 | 44.0,-73.15 | 0.0               | 0.0      |
+      | 44.0,-73.15 | 44.1,-73.15 | 8.142             | 13.10328 |
 
   Scenario: Distance commitee from undriveable origin and destination locations
     Given an automobile_trip emitter

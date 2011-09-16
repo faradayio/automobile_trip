@@ -257,7 +257,7 @@ module BrighterPlanet
                 # Uses the [Mapquest directions API](http://developer.mapquest.com/web/products/dev-services/directions-ws) to calculate distance by road between the origin and destination locations.
                 mapquest = ::MapQuestDirections.new characteristics[:origin_location], characteristics[:destination_location]
                 begin
-                  mapquest.distance_in_kilometres
+                  Nokogiri::XML(mapquest.xml).css("distance").first.text.to_f.miles.to :kilometres
                 rescue
                   nil
                 end
