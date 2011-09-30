@@ -135,10 +135,10 @@ Feature: Automobile Trip Emissions Calculations
     Then the emission value should be within "0.01" kgs of "3.86"
 
   Scenario: Calculations from non-driveable locations
-    Given it has "origin" of "Lansing, MI"
-    And the geocoder will encode the origin as "42.732535,-84.5555347"
-    And it has "destination" of "Canterbury, Kent, UK"
-    And the geocoder will encode the destination as "51.2772689,1.0805173"
+    Given it has "origin" of "Los Angeles, CA"
+    And the geocoder will encode the origin as "34.0522342,-118.2436849"
+    And it has "destination" of "London, UK"
+    And the geocoder will encode the destination as "51.5001524,-0.1262362"
     When emissions are calculated
     Then the emission value should be within "0.01" kgs of "4.72"
 

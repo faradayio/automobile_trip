@@ -156,17 +156,17 @@ Feature: Automobile Trip Committee Calculations
     And the geocoder will encode the origin as "<geocode>"
     When the "origin_location" committee is calculated
     Then the committee should have used quorum "from origin"
-    And the conclusion of the committee should be "<location>"
+    And the conclusion of the committee should have "ll" of "<location>"
     Examples:
-      | origin                               | geocode                 | location                |
-      | 05753                                | 43.9968185,-73.1491165  | 43.9968185,-73.1491165  |
-      | San Francisco, CA                    | 37.7749295,-122.4194155 | 37.7749295,-122.4194155 |
-      | 488 Haight Street, San Francisco, CA | 37.7722302,-122.4303328 | 37.7722302,-122.4303328 |
-      | Canterbury, Kent, UK                 | 51.2772689,1.0805173    | 51.2772689,1.0805173    |
+      | origin            | geocode                 | location                |
+      | 05753             | 44.0229305,-73.1450146  | 44.0229305,-73.1450146  |
+      | San Francisco, CA | 37.7749295,-122.4194155 | 37.7749295,-122.4194155 |
+      | Los Angeles, CA   | 34.0522342,-118.2436849 | 34.0522342,-118.2436849 |
+      | London, UK        | 51.5001524,-0.1262362   | 51.5001524,-0.1262362   |
 
   Scenario: Origin location from non-geocodeable origin
     And a characteristic "origin" of "Bag End, Hobbiton, Westfarthing, The Shire, Eriador, Middle Earth"
-    And the geocoder will encode the origin as ","
+    And the geocoder will fail to encode the origin
     When the "origin_location" committee is calculated
     Then the conclusion of the committee should be nil
 
@@ -175,17 +175,17 @@ Feature: Automobile Trip Committee Calculations
     And the geocoder will encode the destination as "<geocode>"
     When the "destination_location" committee is calculated
     Then the committee should have used quorum "from destination"
-    And the conclusion of the committee should be "<location>"
+    And the conclusion of the committee should have "ll" of "<location>"
     Examples:
-      | destination                          | geocode                 | location                |
-      | 05753                                | 43.9968185,-73.1491165  | 43.9968185,-73.1491165  |
-      | San Francisco, CA                    | 37.7749295,-122.4194155 | 37.7749295,-122.4194155 |
-      | 488 Haight Street, San Francisco, CA | 37.7722302,-122.4303328 | 37.7722302,-122.4303328 |
-      | Canterbury, Kent, UK                 | 51.2772689,1.0805173    | 51.2772689,1.0805173    |
+      | destination       | geocode                 | location                |
+      | 05753             | 44.0229305,-73.1450146  | 44.0229305,-73.1450146  |
+      | San Francisco, CA | 37.7749295,-122.4194155 | 37.7749295,-122.4194155 |
+      | Los Angeles, CA   | 34.0522342,-118.2436849 | 34.0522342,-118.2436849 |
+      | London, UK        | 51.5001524,-0.1262362   | 51.5001524,-0.1262362   |
 
   Scenario: Destination location from non-geocodeable destination
     And a characteristic "destination" of "Bag End, Hobbiton, Westfarthing, The Shire, Eriador, Middle Earth"
-    And the geocoder will encode the destination as ","
+    And the geocoder will fail to encode the destination
     When the "destination_location" committee is calculated
     Then the conclusion of the committee should be nil
 
@@ -209,20 +209,25 @@ Feature: Automobile Trip Committee Calculations
     And the conclusion of the committee should be "10.0"
 
   Scenario Outline: Distance committee from origin and destination locations
-    And a characteristic "origin_location" of "<origin>"
-    And a characteristic "destination_location" of "<destination>"
+    And a characteristic "origin" of address value "<origin>"
+    And the geocoder will encode the origin as "origin"
+    And a characteristic "destination" of address value "<destination>"
+    And the geocoder will encode the destination as "destination"
     And mapquest determines the distance in miles to be "<mapquest_distance>"
+    When the "origin_location" committee is calculated
+    And the "destination_location" committee is calculated
     When the "distance" committee is calculated
     Then the committee should have used quorum "from origin and destination locations"
     And the conclusion of the committee should be "<distance>"
     Examples:
-      | origin      | destination | mapquest_distance | distance |
-      | 44.0,-73.15 | 44.0,-73.15 | 0.0               | 0.0      |
-      | 44.0,-73.15 | 44.1,-73.15 | 8.142             | 13.10328 |
+    | origin       | destination  | mapquest_distance | distance  |
+    | 44.0,-73.15  | 44.0,-73.15  | 0.0               | 0.0       |
+    | 44.0,-73.15  | 44.1,-73.15  | 8.142             | 13.10328  |
 
   Scenario: Distance commitee from undriveable origin and destination locations
     And a characteristic "origin" of "Lansing, MI"
-    And a characteristic "destination" of "Canterbury, Kent, UK"
+    And a characteristic "destination" of "London, UK"
+    And mapquest determines the route to be undriveable
     When the "country" committee is calculated
     And the "origin_location" committee is calculated
     And the "destination_location" committee is calculated

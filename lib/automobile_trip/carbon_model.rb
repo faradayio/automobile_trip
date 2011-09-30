@@ -254,13 +254,9 @@ module BrighterPlanet
               :needs => [:origin_location, :destination_location],
               # **Complies:** GHG Protocol Scope 3, ISO 14064-1
               :complies => [:ghg_protocol_scope_3, :iso] do |characteristics|
-                # Uses the [Mapquest directions API](http://developer.mapquest.com/web/products/dev-services/directions-ws) to calculate distance by road between the origin and destination locations.
-                mapquest = ::MapQuestDirections.new characteristics[:origin_location], characteristics[:destination_location]
-                begin
-                  Nokogiri::XML(mapquest.xml).css("distance").first.text.to_f.miles.to :kilometres
-                rescue
-                  nil
-                end
+                # Uses the [Mapquest directions API](http://developer.mapquest.com/web/products/dev-services/directions-ws) to calculate distance by road between the `origin location` and `destination location` in *km*.
+                mapquest = ::MapQuestDirections.new characteristics[:origin_location].ll, characteristics[:destination_location].ll
+                mapquest.status.to_i == 0 ? Nokogiri::XML(mapquest.xml).css("distance").first.text.to_f.miles.to(:kilometres) : nil
             end
             
             #### Distance from duration and speed
@@ -291,8 +287,8 @@ module BrighterPlanet
               # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
               :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
                 # Uses the [Geokit](http://geokit.rubyforge.org/) geocoder to determine the destination location (*lat / lng*).
-                code = ::Geokit::Geocoders::MultiGeocoder.geocode characteristics[:destination].to_s
-                code.ll == ',' ? nil : code.ll
+                location = ::Geokit::Geocoders::MultiGeocoder.geocode characteristics[:destination].to_s
+                location.success ? location : nil
             end
           end
           
@@ -305,8 +301,8 @@ module BrighterPlanet
               # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
               :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
                 # Uses the [Geokit](http://geokit.rubyforge.org/) geocoder to determine the origin location (*lat / lng*).
-                code = ::Geokit::Geocoders::MultiGeocoder.geocode characteristics[:origin].to_s
-                code.ll == ',' ? nil : code.ll
+                location = ::Geokit::Geocoders::MultiGeocoder.geocode characteristics[:origin].to_s
+                location.success ? location : nil
             end
           end
           
