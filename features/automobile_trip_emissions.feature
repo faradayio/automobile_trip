@@ -48,7 +48,7 @@ Feature: Automobile Trip Emissions Calculations
     Examples:
       | hybridity | emission |
       | true      | 3.37     |
-      | false     | 4.71     |
+      | false     | 4.76     |
 
   Scenario: Calculations from make and urbanity
     Given it has "urbanity" of "0.5"
@@ -65,7 +65,7 @@ Feature: Automobile Trip Emissions Calculations
     Examples:
       | hybridity | emission |
       | true      | 2.77     |
-      | false     | 3.88     |
+      | false     | 3.91     |
 
   Scenario: Calculations from make year and urbanity
     Given it has "urbanity" of "0.5"
@@ -82,7 +82,7 @@ Feature: Automobile Trip Emissions Calculations
     Examples:
       | hybridity | emission |
       | true      | 1.85     |
-      | false     | 2.58     |
+      | false     | 2.61     |
 
   Scenario: Calculations from size class and urbanity
     Given it has "urbanity" of "0.5"
@@ -99,7 +99,7 @@ Feature: Automobile Trip Emissions Calculations
     Examples:
       | hybridity | emission |
       | true      | 1.70     |
-      | false     | 2.91     |
+      | false     | 3.40     |
 
   Scenario: Calculations from make model and urbanity
     Given it has "urbanity" of "0.5"
