@@ -5,7 +5,7 @@ require "automobile_trip/version"
 Gem::Specification.new do |s|
   s.name = %q{automobile_trip}
   s.version = BrighterPlanet::AutomobileTrip::VERSION
-
+  
   s.authors = ["Andy Rossmeissl", "Seamus Abshere", "Ian Hough", "Matt Kling", "Derek Kastner"]
   s.date = "2011-06-02"
   s.summary = %q{A carbon model}
@@ -23,9 +23,9 @@ Gem::Specification.new do |s|
   ]
   s.require_paths = ["lib"]
   s.rdoc_options = ["--charset=UTF-8"]
-
-  s.add_runtime_dependency 'emitter' unless ENV['LOCAL_EMITTER']
-  s.add_development_dependency 'sniff' unless ENV['LOCAL_SNIFF']
+  
+  s.add_runtime_dependency 'emitter'
   s.add_runtime_dependency 'mapquest_directions'
   s.add_runtime_dependency 'geokit'
+  s.add_development_dependency 'sniff', '~>0.10.0'
 end

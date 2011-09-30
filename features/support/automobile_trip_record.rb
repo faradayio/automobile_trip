@@ -4,6 +4,6 @@ require 'automobile_trip'
 require 'sniff'
 
 class AutomobileTripRecord < ActiveRecord::Base
-  include Sniff::Emitter
+  include BrighterPlanet::Emitter
   include BrighterPlanet::AutomobileTrip
 end
