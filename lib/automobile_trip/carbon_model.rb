@@ -443,10 +443,10 @@ module BrighterPlanet
               # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
               :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
                 # Looks up the appropriate city and highway hybridity multipliers for the automobile [size class](http://data.brighterplanet.com/automobile_size_classes).
-                drivetrain = characteristics[:hybridity] ? :hybrid : :conventional
+                drivetrain = characteristics[:hybridity].value ? :hybrid : :conventional
                 city_fuel_efficiency_multiplier = characteristics[:size_class].send(:"#{drivetrain}_fuel_efficiency_city_multiplier")
                 highway_fuel_efficiency_multiplier = characteristics[:size_class].send(:"#{drivetrain}_fuel_efficiency_highway_multiplier")
-
+                
                 if city_fuel_efficiency_multiplier or highway_fuel_efficiency_multiplier
                   # Calculates the harmonic mean of those multipliers, weighted by `urbanity`.
                   1.0 / ((characteristics[:urbanity] / city_fuel_efficiency_multiplier) + ((1.0 - characteristics[:urbanity]) / highway_fuel_efficiency_multiplier))
@@ -459,10 +459,10 @@ module BrighterPlanet
               # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
               :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
                 # Looks up the appropriate default city and highway hybridity multipliers.
-                drivetrain = characteristics[:hybridity] ? :hybrid : :conventional
+                drivetrain = characteristics[:hybridity].value ? :hybrid : :conventional
                 city_fuel_efficiency_multiplier = AutomobileSizeClass.fallback.send(:"#{drivetrain}_fuel_efficiency_city_multiplier")
                 highway_fuel_efficiency_multiplier = AutomobileSizeClass.fallback.send(:"#{drivetrain}_fuel_efficiency_highway_multiplier")
-
+                
                 # Calculates the harmonic mean of those multipliers, weighted by `urbanity`.
                 1.0 / ((characteristics[:urbanity] / city_fuel_efficiency_multiplier) + ((1.0 - characteristics[:urbanity]) / highway_fuel_efficiency_multiplier))
             end
