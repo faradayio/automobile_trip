@@ -468,7 +468,7 @@ module BrighterPlanet
               # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
               :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do
                 # Uses a default `hybridity multiplier` of 1.
-                base.fallback.hybridity_multiplier
+                1.0
             end
           end
           

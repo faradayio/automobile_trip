@@ -13,7 +13,6 @@ module BrighterPlanet
           string  'size_class_name'
           boolean 'hybridity'
           float   'urbanity'
-          float   'hybridity_multiplier'
           float   'fuel_efficiency'
           float   'speed'
           float   'city_speed'

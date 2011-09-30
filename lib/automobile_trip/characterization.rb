@@ -13,7 +13,6 @@ module BrighterPlanet
           has :size_class
           has :hybridity
           has :urbanity
-          has :hybridity_multiplier
           has :fuel_efficiency, :measures => Measurement::BigLengthPerVolume
           has :speed, :measures => Measurement::BigSpeed
           has :city_speed, :measures => Measurement::BigSpeed
