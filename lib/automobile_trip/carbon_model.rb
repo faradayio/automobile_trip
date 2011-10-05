@@ -535,7 +535,7 @@ module BrighterPlanet
             #### Date from timeframe
             quorum 'from timeframe',
               # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO-14064-1, Climate Registry Protocol
-              :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso, :tcr] do |characteristics, timeframe|
+              :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics, timeframe|
                 # Assumes the trip occurred on the first day of the `timeframe`.
                 timeframe.from
             end
