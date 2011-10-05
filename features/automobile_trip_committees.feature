@@ -247,8 +247,10 @@ Feature: Automobile Trip Committee Calculations
     | 44.0,-73.15  | 44.1,-73.15  | 8.142             | 13.10328  |
 
   Scenario: Distance commitee from undriveable origin and destination locations
-    And a characteristic "origin" of "Lansing, MI"
+    And a characteristic "origin" of "San Francisco, CA"
+    And the geocoder will encode the origin as "origin"
     And a characteristic "destination" of "London, UK"
+    And the geocoder will encode the destination as "destination"
     And mapquest determines the route to be undriveable
     When the "country" committee is calculated
     And the "origin_location" committee is calculated
