@@ -27,5 +27,5 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'emitter'
   s.add_runtime_dependency 'mapquest_directions'
   s.add_runtime_dependency 'geokit'
-  s.add_development_dependency 'sniff', '~>0.10.1'
+  s.add_development_dependency 'sniff', '~>0.10.1' unless ENV['LOCAL_SNIFF']
 end
