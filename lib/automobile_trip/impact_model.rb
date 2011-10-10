@@ -2,8 +2,8 @@
 # See LICENSE for details.
 # Contact Brighter Planet for dual-license arrangements.
 
-## Automobile trip carbon model
-# This model is used by [Brighter Planet](http://brighterplanet.com)'s carbon emission [web service](http://carbon.brighterplanet.com) to estimate the **greenhouse gas emissions of an automobile trip**.
+## Automobile trip impact model
+# This model is used by [Brighter Planet](http://brighterplanet.com)'s [CM1 web service](http://carbon.brighterplanet.com) to estimate the **greenhouse gas emissions of an automobile trip**.
 #
 ##### Timeframe and activity period
 # The model estimates the emissions that occur during a particular `timeframe`. To do this it needs to know the `date` on which the trip occurred. For example, if the `timeframe` is January 2010, a trip that occurred on January 5, 2010 will have emissions but a trip that occurred on February 1, 2010 will not.
@@ -21,12 +21,12 @@
 # Contributions to this carbon model are actively encouraged and warmly welcomed. This library includes a comprehensive test suite to ensure that your changes do not cause regressions. All changes should include test coverage for new functionality. Please see [sniff](https://github.com/brighterplanet/sniff#readme), our emitter testing framework, for more information.
 module BrighterPlanet
   module AutomobileTrip
-    module CarbonModel
+    module ImpactModel
       def self.included(base)
-        base.decide :emission, :with => :characteristics do
+        base.decide :impact, :with => :characteristics do
           ### Emission calculation
           # Returns the `emission` estimate (*kg CO<sub>2</sub>e*).
-          committee :emission do
+          committee :carbon do
             #### Emission from CO<sub>2</sub> emission, CH<sub>4</sub> emission, N<sub>2</sub>O emission, and HFC emission
             quorum 'from co2 emission, ch4 emission, n2o emission, and hfc emission',
               :needs => [:co2_emission, :ch4_emission, :n2o_emission, :hfc_emission],
