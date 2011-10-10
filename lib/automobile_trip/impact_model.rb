@@ -24,10 +24,10 @@ module BrighterPlanet
     module ImpactModel
       def self.included(base)
         base.decide :impact, :with => :characteristics do
-          ### Emission calculation
-          # Returns the `emission` estimate (*kg CO<sub>2</sub>e*).
+          ### Greenhouse gas emission calculation
+          # Returns the `greenhouse gas emission` estimate (*kg CO<sub>2</sub>e*).
           committee :carbon do
-            #### Emission from CO<sub>2</sub> emission, CH<sub>4</sub> emission, N<sub>2</sub>O emission, and HFC emission
+            #### Greenhouse gas emission from CO<sub>2</sub> emission, CH<sub>4</sub> emission, N<sub>2</sub>O emission, and HFC emission
             quorum 'from co2 emission, ch4 emission, n2o emission, and hfc emission',
               :needs => [:co2_emission, :ch4_emission, :n2o_emission, :hfc_emission],
               # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
