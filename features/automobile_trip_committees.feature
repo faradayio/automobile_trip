@@ -4,6 +4,9 @@ Feature: Automobile Trip Committee Calculations
   Background:
     Given an automobile_trip
   
+  Background:
+    Given a AutomobileTrip
+
   Scenario: Date committee from timeframe
     Given a characteristic "timeframe" of "2009-06-06/2010-01-01"
     When the "date" committee reports

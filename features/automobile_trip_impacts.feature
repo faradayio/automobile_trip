@@ -4,6 +4,9 @@ Feature: Automobile Trip Emissions Calculations
   Background:
     Given an automobile_trip
 
+  Background:
+    Given a AutomobileTrip
+
   Scenario: Calculations from nothing
     When impacts are calculated
     Then the amount of "carbon" should be within "0.01" kgs of "4.72"
