@@ -2,21 +2,34 @@
 # See LICENSE for details.
 # Contact Brighter Planet for dual-license arrangements.
 
-## Automobile trip impact model
-# This model is used by [Brighter Planet](http://brighterplanet.com)'s [CM1 web service](http://carbon.brighterplanet.com) to estimate the **greenhouse gas emissions of an automobile trip**.
+### Automobile impact model
+# This model is used by [Brighter Planet](http://brighterplanet.com)'s [CM1 web service](http://carbon.brighterplanet.com) to calculate the impacts of an automobile trip, such as energy use and greenhouse gas emissions.
+
+##### Timeframe
+# The model calculates impacts that occured during a particular time period (`timeframe`).
+# For example if the `timeframe` is February 2010, an automobile put into use (`acquisition`) in December 2009 and taken out of use (`retirement`) in March 2010 will have impacts because it was in use during January 2010.
+# An automobile put into use in March 2010 or taken out of use in January 2010 will have zero impacts, because it was not in use during February 2010.
 #
-##### Timeframe and activity period
-# The model estimates the emissions that occur during a particular `timeframe`. To do this it needs to know the `date` on which the trip occurred. For example, if the `timeframe` is January 2010, a trip that occurred on January 5, 2010 will have emissions but a trip that occurred on February 1, 2010 will not.
-#
+# The default `timeframe` is the current calendar year.
+
 ##### Calculations
-# The final estimate is the result of the **calculations** detailed below. These calculations are performed in reverse order, starting with the last calculation listed and finishing with the `emission` calculation. Each calculation is named according to the value it returns.
+# The final impacts are the result of the calculations below. These are performed in reverse order, starting with the last calculation listed and finishing with the greenhouse gas emissions calculation.
 #
-##### Methods
-# To accomodate varying client input, each calculation may have one or more **methods**. These are listed under each calculation in order from most to least preferred. Each method is named according to the values it requires. If any of these values is not available the method will be ignored. If all the methods for a calculation are ignored, the calculation will not return a value. "Default" methods do not require any values, and so a calculation with a default method will always return a value.
+# Each calculation listing shows:
 #
+# * **value returned** (***units of measurement***)
+# * a description of the value
+# * calculation methods, listed from most to least preferred
+#
+# Some methods need `values` returned by prior calculations. If any of these `values` are unknown the method is skipped.
+# If all of the methods for a calculation are skipped, the value the calculation would return is unknown.
+
 ##### Standard compliance
-# Each method lists any established calculation standards with which it **complies**. When compliance with a standard is requested, all methods that do not comply with that standard are ignored. This means that any values a particular method requires will have been calculated using a compliant method, because those are the only methods available. If any value did not have a compliant method in its calculation then it would be undefined, and the current method would have been ignored.
-#
+# When compliance with a particular standard is requested, all methods that do not comply with that standard are ignored.
+# Thus any `values` a method needs will have been calculated using a compliant method or will be unknown.
+# To see which standards a method complies with, look at the `:complies =>` section of the code in the right column.
+# Client input complies with all standards.
+
 ##### Collaboration
 # Contributions to this carbon model are actively encouraged and warmly welcomed. This library includes a comprehensive test suite to ensure that your changes do not cause regressions. All changes should include test coverage for new functionality. Please see [sniff](https://github.com/brighterplanet/sniff#readme), our emitter testing framework, for more information.
 module BrighterPlanet
@@ -24,15 +37,15 @@ module BrighterPlanet
     module ImpactModel
       def self.included(base)
         base.decide :impact, :with => :characteristics do
-          ### Greenhouse gas emission calculation
-          # Returns the `greenhouse gas emission` estimate (*kg CO<sub>2</sub>e*).
+          # * * *
+          
+          #### Carbon (*kg CO<sub>2</sub>e*)
+          # The trip's total greenhouse gas emissions from anthropogenic sources during `timeframe`.
           committee :carbon do
             #### Greenhouse gas emission from CO<sub>2</sub> emission, CH<sub>4</sub> emission, N<sub>2</sub>O emission, and HFC emission
-            quorum 'from co2 emission, ch4 emission, n2o emission, and hfc emission',
-              :needs => [:co2_emission, :ch4_emission, :n2o_emission, :hfc_emission],
-              # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
+            quorum 'from co2 emission, ch4 emission, n2o emission, and hfc emission', :needs => [:co2_emission, :ch4_emission, :n2o_emission, :hfc_emission],
               :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
-                # Sums the non-biogenic emissions to give *kg CO<sub>2</sub>e*.
+                # Sum `co2 emission` (*kg*), `ch4 emission` (*kg CO<sub>2</sub>e*), `n2o emission` (*kg CO<sub>2</sub>e*), and `hfc emission` (*kg CO<sub>2</sub>e*), to give *kg CO<sub>2</sub>e*.
                 characteristics[:co2_emission] + characteristics[:ch4_emission] + characteristics[:n2o_emission] + characteristics[:hfc_emission]
             end
           end
@@ -87,273 +100,226 @@ module BrighterPlanet
             end
           end
           
-          ### Automobile fuel calculation
-          # Returns the type of `automobile fuel` used.
+          #### Automobile fuel
+          # The automobile's [fuel type](http://data.brighterplanet.com/automobile_fuels).
           committee :automobile_fuel do
-            #### Automobile fuel from client input
-            # **Complies:** All
-            #
-            # Uses the client-input [automobile fuel](http://data.brighterplanet.com/automobile_fuels).
+            # Use client input, if available.
             
-            #### Default automobile fuel
+            # Otherwise look up the average [automobile fuel](http://data.brighterplanet.com/automobile_fuels).
             quorum 'default',
-              # **Complies:** GHG Protocol Scope 3, ISO 14064-1
               :complies => [:ghg_protocol_scope_3, :iso] do
-                # Looks up the default [automobile fuel](http://data.brighterplanet.com/automobile_fuels).
                 AutomobileFuel.fallback
             end
           end
           
-          ### Fuel use (*l*)
-          # Returns the trip's fuel use during `timeframe`.
+          #### Fuel use (*l*)
+          # The trip's fuel use during `timeframe`.
           committee :fuel_use do
-            #### Fuel use from fuel efficiency and distance
+            # Use client input, if available.
+            
+            # Otherwise if `date` falls within `timeframe`, divide `distance` (*km*) by `fuel efficiency` (*km / l*) to give *l*.
+            # Otherwise fuel use is zero.
             quorum 'from fuel efficiency, distance, date, and timeframe', :needs => [:fuel_efficiency, :distance, :date],
-              # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
               :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics, timeframe|
-                # If `date` falls within `timeframe`, divide `distance` (*km*) by `fuel efficiency` (*km / l*) to give *l*.
-                # Otherwise fuel use is zero.
                 date = characteristics[:date].is_a?(Date) ? characteristics[:date] : Date.parse(characteristics[:date].to_s)
                 timeframe.include?(date) ? characteristics[:distance] / characteristics[:fuel_efficiency] : 0
             end
           end
           
-          ### Distance calculation
-          # Returns the trip `distance` (*km*).
+          #### Distance (*km*)
+          # The trip's distance.
           committee :distance do
-            #### Distance from client input
-            # **Complies:** All
-            #
-            # Uses the client-input `distance` (*km*).
+            # Use client input, if available.
             
-            #### Distance from origin and destination locations
-            quorum 'from origin and destination locations',
-              :needs => [:origin_location, :destination_location],
-              # **Complies:** GHG Protocol Scope 3, ISO 14064-1
+            # Otherwise use the [Mapquest directions API](http://developer.mapquest.com/web/products/dev-services/directions-ws) to calculate the distance by road between `origin_location` and `destination_location` in *km*.
+            quorum 'from origin and destination locations', :needs => [:origin_location, :destination_location],
               :complies => [:ghg_protocol_scope_3, :iso] do |characteristics|
-                # Uses the [Mapquest directions API](http://developer.mapquest.com/web/products/dev-services/directions-ws) to calculate distance by road between the `origin location` and `destination location` in *km*.
                 mapquest = ::MapQuestDirections.new characteristics[:origin_location].ll, characteristics[:destination_location].ll
                 mapquest.status.to_i == 0 ? Nokogiri::XML(mapquest.xml).css("distance").first.text.to_f.miles.to(:kilometres) : nil
             end
             
-            #### Distance from duration and speed
-            quorum 'from duration and speed',
-              :needs => [:duration, :speed],
-              # **Complies:** GHG Protocol Scope 3, ISO 14064-1
+            # Otherwise divide `duration` (*seconds*) by 3600 to give *hours* and multiply by `speed` (*km / hour*) to give *km*.
+            quorum 'from duration and speed', :needs => [:duration, :speed],
               :complies => [:ghg_protocol_scope_3, :iso] do |characteristics|
-                # Divides the `duration` (*seconds*) by 3600 and multiplies by the `speed` (*km / hour*) to give *km*.
                 (characteristics[:duration] / 60.0 / 60.0) * characteristics[:speed]
             end
             
-            #### Distance from country
-            quorum 'from country',
-              :needs => :country,
-              # **Complies:** GHG Protocol Scope 3, ISO 14064-1
+            # Otherwise look up the `country`'s average automobile trip distance (*km*).
+            quorum 'from country', :needs => :country,
               :complies => [:ghg_protocol_scope_3, :iso] do |characteristics|
-                # Looks up the [country](http://data.brighterplanet.com/countries) `automobile trip distance`.
                 characteristics[:country].automobile_trip_distance
             end
           end
           
-          ### Destination location calculation
-          # Returns the `destination location` (*lat / lng*).
+          #### Destination location (*lat, lng*)
+          # The latitude and longitude of the trip's destination.
           committee :destination_location do
-            #### Destination location from destination
-            quorum 'from destination',
-              :needs => :destination,
-              # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
+            # Use the [Geokit](http://geokit.rubyforge.org/) geocoder to determine the `destination`'s location (*lat, lng*).
+            quorum 'from destination', :needs => :destination,
               :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
-                # Uses the [Geokit](http://geokit.rubyforge.org/) geocoder to determine the destination location (*lat / lng*).
                 location = ::Geokit::Geocoders::MultiGeocoder.geocode characteristics[:destination].to_s
                 location.success ? location : nil
             end
           end
           
-          ### Origin location committee
-          # Returns the `origin location` (*lat / lng*).
+          #### Origin location (*lat, lng*)
+          # The latitude and longitude of the trip's origin.
           committee :origin_location do
             #### Destination location from destination
-            quorum 'from origin',
-              :needs => :origin,
-              # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
+            quorum 'from origin', :needs => :origin,
+              # Use the [Geokit](http://geokit.rubyforge.org/) geocoder to determine the `origin`'s location (*lat, lng*).
               :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
-                # Uses the [Geokit](http://geokit.rubyforge.org/) geocoder to determine the origin location (*lat / lng*).
                 location = ::Geokit::Geocoders::MultiGeocoder.geocode characteristics[:origin].to_s
                 location.success ? location : nil
             end
           end
           
-          ### Destination calculation
-          # Returns the client-input `destination`.
+          #### Destination
+          # The trip's destination.
+          #
+          # Use client input if available.
           
-          ### Origin calculation
-          # Returns the client-input `origin`.
+          #### Origin
+          # The trip's origin.
+          #
+          # Use client input if available.
           
-          ### Duration calculation
-          # Returns the client-input `duration` (*seconds*).
+          #### Duration (*seconds*)
+          # The trip's duration.
+          #
+          # Use client input if available
           
-          ### Speed calculation
-          # Returns the average `speed` at which the automobile travels (*km / hour*).
+          #### Speed (*km / hr*)
+          # The trip's average speed.
           committee :speed do
-            #### Speed from client input
-            # **Complies:** All
-            #
-            # Uses the client-input `speed` (*km / hour*).
+            # Use client input, if available.
             
-            #### Speed from urbanity and country
-            quorum 'from urbanity and country',
-              :needs => [:urbanity, :country],
-              # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
+            # Otherwise look up the `country`'s average automobile city speed (*km / hr*) and automobile highway speed (*km / hr*).
+            # Calculate the harmonic mean of those speeds weighted by `urbanity` to give *km / hr*.
+            quorum 'from urbanity and country', :needs => [:urbanity, :country],
               :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
-                # Looks up the [country](http://data.brighterplanet.com/countries) average city and highway driving speeds and calculates the harmonic mean of those speeds weighted by `urbanity`.
                 1 / (characteristics[:urbanity] / characteristics[:country].automobile_city_speed + (1 - characteristics[:urbanity]) / characteristics[:country].automobile_highway_speed)
             end
           end
           
-          ### Fuel efficiency calculation
-          # Returns the `fuel efficiency` (*km / l*).
+          #### Fuel efficiency (*km / l*)
+          # The automobile's fuel efficiency.
           committee :fuel_efficiency do
-            #### Fuel efficiency from client input
-            # **Complies:** All
-            #
-            # Uses the client-input `fuel efficiency` (*km / l*).
+            # Use client input, if available.
             
-            #### Fuel efficiency from make model year and urbanity
-            quorum 'from make model year and urbanity',
-              :needs => [:make_model_year, :urbanity],
-              # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
+            # Otherwise look up the `make model year`'s fuel efficiency city (*km / l*) and fuel efficiency highway (*km / l*).
+            # Calculate the harmonic mean of those fuel efficiencies, weighted by `urbanity`, to give *km / l*.
+            quorum 'from make model year and urbanity', :needs => [:make_model_year, :urbanity],
               :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
-                # Looks up the city and highway fuel efficiencies of the automobile [make model year](http://data.brighterplanet.com/automobile_make_model_years) (*km / l*).
                 fuel_efficiency_city = characteristics[:make_model_year].fuel_efficiency_city
                 fuel_efficiency_highway = characteristics[:make_model_year].fuel_efficiency_highway
                 urbanity = characteristics[:urbanity]
                 if fuel_efficiency_city.present? and fuel_efficiency_highway.present?
-                  # Calculates the harmonic mean of those fuel efficiencies, weighted by `urbanity`.
                   1.0 / ((urbanity / fuel_efficiency_city) + ((1.0 - urbanity) / fuel_efficiency_highway))
                 end
             end
             
-            #### Fuel efficiency from make model and urbanity
-            quorum 'from make model and urbanity',
-              :needs => [:make_model, :urbanity],
-              # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
+            # Otherwise look up the `make model`'s fuel efficiency city (*km / l*) and fuel efficiency highway (*km / l*).
+            # Calculate the harmonic mean of those fuel efficiencies, weighted by `urbanity`, to give *km / l*.
+            quorum 'from make model and urbanity', :needs => [:make_model, :urbanity],
               :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
-                # Looks up the city and highway fuel efficiencies of the automobile [make model](http://data.brighterplanet.com/automobile_make_models) (*km / l*).
                 fuel_efficiency_city = characteristics[:make_model].fuel_efficiency_city
                 fuel_efficiency_highway = characteristics[:make_model].fuel_efficiency_highway
                 urbanity = characteristics[:urbanity]
                 if fuel_efficiency_city.present? and fuel_efficiency_highway.present?
-                  # Calculates the harmonic mean of those fuel efficiencies, weighted by `urbanity`.
                   1.0 / ((urbanity / fuel_efficiency_city) + ((1.0 - urbanity) / fuel_efficiency_highway))
                 end
             end
             
-            #### Fuel efficiency from size class, hybridity multiplier, and urbanity
-            quorum 'from size class, hybridity multiplier, and urbanity',
-              :needs => [:size_class, :hybridity_multiplier, :urbanity],
-              # **Complies:** GHG Protocol Scope 3, ISO 14064-1
+            # Otherwise look up the `size class`' `fuel efficiency city`(*km / l*) and `fuel efficiency highway` (*km / l*).
+            # Calculate the harmonic mean of those fuel efficiencies, weighted by `urbanity`, to give *km / l*.
+            # Multiply by `hybridity multiplier` to give *km / l*.
+            quorum 'from size class, hybridity multiplier, and urbanity', :needs => [:size_class, :hybridity_multiplier, :urbanity],
               :complies => [:ghg_protocol_scope_3, :iso] do |characteristics|
-                # Looks up the automobile [size class](http://data.brighterplanet.com/automobile_makes) city and highway fuel efficiency (*km / l*).
                 fuel_efficiency_city = characteristics[:size_class].fuel_efficiency_city
                 fuel_efficiency_highway = characteristics[:size_class].fuel_efficiency_highway
                 urbanity = characteristics[:urbanity]
                 if fuel_efficiency_city.present? and fuel_efficiency_highway.present?
-                  # Calculates the harmonic mean of those fuel efficiencies, weighted by `urbanity`, and multiplies the result by the `hybridity multiplier`.
                   (1.0 / ((urbanity / fuel_efficiency_city) + ((1.0 - urbanity) / fuel_efficiency_highway))) * characteristics[:hybridity_multiplier]
                 end
             end
             
-            #### Fuel efficiency from make year and hybridity multiplier
-            quorum 'from make year and hybridity multiplier',
-              :needs => [:make_year, :hybridity_multiplier],
-              # **Complies:** GHG Protocol Scope 3, ISO 14064-1
+            # Otherwise look up the `make year`'s `fuel efficiency` (*km / l*).
+            # Multiply by `hybridity multiplier` to give *km / l*.
+            quorum 'from make year and hybridity multiplier', :needs => [:make_year, :hybridity_multiplier],
               :complies => [:ghg_protocol_scope_3, :iso] do |characteristics|
-                # Looks up the automobile [make year](http://data.brighterplanet.com/automobile_make_years) combined fuel efficiency (*km / l*) and multiplies it by the `hybridity multiplier`.
                 characteristics[:make_year].fuel_efficiency.try :*, characteristics[:hybridity_multiplier]
             end
             
-            #### Fuel efficiency from make and hybridity multiplier
-            quorum 'from make and hybridity multiplier',
-              :needs => [:make, :hybridity_multiplier],
-              # **Complies:** GHG Protocol Scope 3, ISO 14064-1
+            # Otherwise look up the `make`'s `fuel efficiency` (*km / l*).
+            # Multiply by `hybridity multiplier` to give *km / l*.
+            quorum 'from make and hybridity multiplier', :needs => [:make, :hybridity_multiplier],
               :complies => [:ghg_protocol_scope_3, :iso] do |characteristics|
-                # Looks up the automobile [make](http://data.brighterplanet.com/automobile_makes) combined fuel efficiency (*km / l*) and multiplies it by the `hybridity multiplier`.
                 characteristics[:make].fuel_efficiency.try :*, characteristics[:hybridity_multiplier]
             end
             
-            #### Fuel efficiency from hybridity multiplier and country
-            quorum 'from hybridity multiplier and country',
-              :needs => [:hybridity_multiplier, :country],
-              # **Complies:** GHG Protocol Scope 3, ISO 14064-1
+            # Otherwise look up the `country`'s average `automobile fuel efficiency` (*km / l*).
+            # Multiply by `hybridity multiplier` to give *km / l*.
+            quorum 'from hybridity multiplier and country', :needs => [:hybridity_multiplier, :country],
               :complies => [:ghg_protocol_scope_3, :iso] do |characteristics|
-                # Looks up the [country](http://data.brighterplanet.com/countries) `automobile fuel efficiency` and multiplies it by the `hybridity multiplier`.
                 characteristics[:country].automobile_fuel_efficiency.try :*, characteristics[:hybridity_multiplier]
             end
           end
           
-          ### Hybridity multiplier calculation
-          # Returns the `hybridity multiplier`.
-          # This value may be used to adjust the fuel efficiency based on whether the automobile is a hybrid or conventional vehicle.
+          #### Hybridity multiplier (*dimensionless*)
+          # A multiplier used to adjust fuel efficiency if we know the automobile is a hybrid or conventional vehicle.
           committee :hybridity_multiplier do
-            #### Hybridity multiplier from size class, hybridity, and urbanity
-            quorum 'from size class, hybridity, and urbanity', 
-              :needs => [:size_class, :hybridity, :urbanity],
-              # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
+            # Check whether the `size class` has `hybridity` multipliers for city and highway fuel efficiency.
+            # If it does, calculate the harmonic mean of those multipliers, weighted by `urbanity`.
+            quorum 'from size class, hybridity, and urbanity', :needs => [:size_class, :hybridity, :urbanity],
               :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
-                # Looks up the appropriate city and highway hybridity multipliers for the automobile [size class](http://data.brighterplanet.com/automobile_size_classes).
                 drivetrain = characteristics[:hybridity].value ? :hybrid : :conventional
                 city_fuel_efficiency_multiplier = characteristics[:size_class].send(:"#{drivetrain}_fuel_efficiency_city_multiplier")
                 highway_fuel_efficiency_multiplier = characteristics[:size_class].send(:"#{drivetrain}_fuel_efficiency_highway_multiplier")
                 
                 if city_fuel_efficiency_multiplier or highway_fuel_efficiency_multiplier
-                  # Calculates the harmonic mean of those multipliers, weighted by `urbanity`.
                   1.0 / ((characteristics[:urbanity] / city_fuel_efficiency_multiplier) + ((1.0 - characteristics[:urbanity]) / highway_fuel_efficiency_multiplier))
                 end
             end
             
-            #### Hybridity multiplier from hybridity and urbanity
-            quorum 'from hybridity and urbanity',
-              :needs => [:hybridity, :urbanity],
-              # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
+            # Otherwise look up the `hybridity`'s average city and highway fuel efficiency multipliers.
+            # Calculate the harmonic mean of those multipliers, weighted by `urbanity`.
+            quorum 'from hybridity and urbanity', :needs => [:hybridity, :urbanity],
               :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
-                # Looks up the appropriate default city and highway hybridity multipliers.
                 drivetrain = characteristics[:hybridity].value ? :hybrid : :conventional
                 city_fuel_efficiency_multiplier = AutomobileSizeClass.fallback.send(:"#{drivetrain}_fuel_efficiency_city_multiplier")
                 highway_fuel_efficiency_multiplier = AutomobileSizeClass.fallback.send(:"#{drivetrain}_fuel_efficiency_highway_multiplier")
                 
-                # Calculates the harmonic mean of those multipliers, weighted by `urbanity`.
                 1.0 / ((characteristics[:urbanity] / city_fuel_efficiency_multiplier) + ((1.0 - characteristics[:urbanity]) / highway_fuel_efficiency_multiplier))
             end
             
-            #### Default hybridity multiplier
+            # Otherwise use a multiplier of 1.0.
             quorum 'default',
-              # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
               :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do
-                # Uses a default `hybridity multiplier` of 1.
                 1.0
             end
           end
           
-          ### Urbanity calculation
-          # Returns the `urbanity`.
-          # This is the fraction of the total distance driven that occurs on towns and city streets as opposed to highways (defined using a 45 miles per hour "speed cutpoint").
+          #### Hybridity (*boolean*)
+          # True if the automobile is a hybrid vehicle. False if the automobile is a conventional vehicle.
+          #
+          # Use client input, if available.
+          
+          #### Size class
+          # The automobile's [size class](http://data.brighterplanet.com/automobile_size_classes).
+          #
+          # Use client input, if available.
+          
+          #### Urbanity (*%*)
+          # The fraction of the total distance driven that is in towns and cities rather than highways.
+          # Highways are defined as all driving at speeds of 45 miles per hour or greater.
           committee :urbanity do
-            #### Urbanity from country
-            quorum 'from country',
-              :needs => :country,
-              # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
+            # Look up the `country`'s average automobile urbanity (*%*).
+            quorum 'from country', :needs => :country,
               :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
-                # Looks up the [country](http://data.brighterplanet.com/countries) `automobile urbanity`.
                 characteristics[:country].automobile_urbanity
             end
           end
-                    
-          ### Hybridity calculation
-          # Returns the client-input `hybridity`. This indicates whether the automobile is a hybrid electric vehicle or a conventional vehicle.
-          
-          ### Size class calculation
-          # Returns the client-input automobile [size class](http://data.brighterplanet.com/automobile_size_classes).
-          
           ### Make model year calculation
           # Returns the client-input automobile [make model year](http://data.brighterplanet.com/automobile_make_model_years).
           
@@ -366,53 +332,29 @@ module BrighterPlanet
           ### Make calculation
           # Returns the client-input automobile [make](http://data.brighterplanet.com/automobile_makes).
           
-          ### Country calculation
-          # Returns the `country` in which the trip occurred.
+          #### Country
+          # The [country](http://data.brighterplanet.com/countries) in which the trip occurred.
           committee :country do
-            #### Country from client input
-            # **Complies:** All
-            #
-            # Uses the client-input `country`.
+            # Use client input, if available.
             
-            #### Default country
+            # Otherwise use an artificial country that contains global averages.
             quorum 'default',
-              # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
               :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do
-                # Uses an artificial country that contains global averages.
                 Country.fallback
             end
           end
           
-          ### Date calculation
-          # Returns the `date` on which the trip occurred.
+          #### Date (*date*)
+          # The day the trip occurred.
           committee :date do
-            #### Date from client input
-            # **Complies:** All
-            #
-            # Uses the client-input `date`.
+            # Use client input, if available.
             
-            #### Date from timeframe
+            # Otherwise use the first day of `timeframe`.
             quorum 'from timeframe',
-              # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO-14064-1, Climate Registry Protocol
               :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics, timeframe|
-                # Assumes the trip occurred on the first day of the `timeframe`.
                 timeframe.from
             end
           end
-          
-          ### Timeframe calculation
-          # Returns the `timeframe`.
-          # This is the period during which to calculate emissions.
-            
-            #### Timeframe from client input
-            # **Complies:** All
-            #
-            # Uses the client-input `timeframe`.
-            
-            #### Default timeframe
-            # **Complies:** All
-            #
-            # Uses the current calendar year.
         end
       end
     end
