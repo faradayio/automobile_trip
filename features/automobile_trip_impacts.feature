@@ -153,7 +153,20 @@ Feature: Automobile Trip Emissions Calculations
     And it has "automobile_fuel.name" of "<fuel>"
     When impacts are calculated
     Then the amount of "carbon" should be within "0.01" of "<carbon>"
-    And the calculation should comply with standards "ghg_protocol_scope_3, iso"
+    And the calculation should comply with standards "ghg_protocol_scope_1, ghg_protocol_scope_3, iso"
+    Examples:
+      | fuel             | carbon |
+      | regular gasoline | 24.11  |
+      | diesel           | 28.27  |
+      | B20              | 23.27  |
+
+  Scenario Outline: Calculations from fuel efficiency, distance, and fuel
+    Given it has "fuel_efficiency" of "10.0"
+    And it has "distance" of "100.0"
+    And it has "automobile_fuel.name" of "<fuel>"
+    When impacts are calculated
+    Then the amount of "carbon" should be within "0.01" of "<carbon>"
+    And the calculation should comply with standards "ghg_protocol_scope_1, ghg_protocol_scope_3, iso"
     Examples:
       | fuel             | carbon |
       | regular gasoline | 24.11  |
