@@ -1,2 +1,3 @@
-name,fuel_efficiency,fuel_efficiency_units
-Toyota,10.0,kilometres_per_litre
+name,fuel_efficiency
+Toyota,12.5
+Ford,10

@@ -320,17 +320,6 @@ module BrighterPlanet
                 characteristics[:country].automobile_urbanity
             end
           end
-          ### Make model year calculation
-          # Returns the client-input automobile [make model year](http://data.brighterplanet.com/automobile_make_model_years).
-          
-          ### Make model calculation
-          # Returns the client-input automobile [make model](http://data.brighterplanet.com/automobile_make_models).
-          
-          ### Make year calculation
-          # Returns the client-input automobile [make year](http://data.brighterplanet.com/automobile_make_years).
-          
-          ### Make calculation
-          # Returns the client-input automobile [make](http://data.brighterplanet.com/automobile_makes).
           
           #### Country
           # The [country](http://data.brighterplanet.com/countries) in which the trip occurred.
@@ -343,6 +332,54 @@ module BrighterPlanet
                 Country.fallback
             end
           end
+          
+          #### Make model year
+          # The automobile's [make, model, and year](http://data.brighterplanet.com/automobile_make_model_years).
+          committee :make_model_year do
+            # Check whether the `make`, `model`, and `year` combination matches any automobiles in our database.
+            # If it doesn't then we don't know `make model year`.
+            quorum 'from make, model, and year', :needs => [:make, :model, :year],
+              :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
+                AutomobileMakeModelYear.find_by_make_name_and_model_name_and_year(characteristics[:make].name, characteristics[:model].name, characteristics[:year].year)
+            end
+          end
+          
+          #### Make year
+          # The automobile's [make and year](http://data.brighterplanet.com/automobile_make_years).
+          committee :make_year do
+            # Check whether the `make` and `year` combination matches any automobiles in our database.
+            # If it doesn't then we don't know `make year`.
+            quorum 'from make and year', :needs => [:make, :year],
+              :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
+                AutomobileMakeYear.find_by_make_name_and_year(characteristics[:make].name, characteristics[:year].year)
+            end
+          end
+          
+          #### Make model
+          # The automobile's [make and model](http://data.brighterplanet.com/automobile_make_models).
+          committee :make_model do
+            # Check whether the `make` and `model` combination matches any automobiles in our database.
+            # If it doesn't then we don't know `make model`.
+            quorum 'from make and model', :needs => [:make, :model],
+              :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
+                AutomobileMakeModel.find_by_make_name_and_model_name(characteristics[:make].name, characteristics[:model].name)
+            end
+          end
+          
+          #### Year
+          # The automobile's [year of manufacture](http://data.brighterplanet.com/automobile_years).
+          #
+          # Use client input, if available.
+          
+          #### Model
+          # The automobile's [model](http://data.brighterplanet.com/automobile_models).
+          #
+          # Use client input, if available.
+          
+          #### Make
+          # The automobile's [make](http://data.brighterplanet.com/automobile_makes).
+          #
+          # Use client input, if available.
           
           #### Date (*date*)
           # The day the trip occurred.

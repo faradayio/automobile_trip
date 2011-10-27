@@ -11,6 +11,58 @@ Feature: Automobile Trip Committee Calculations
     And the conclusion of the committee should be "2009-06-06"
     And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
 
+  Scenario Outline: Make model committee from valid make model combination
+    Given a characteristic "make.name" of "<make>"
+    And a characteristic "model.name" of "<model>"
+    When the "make_model" committee reports
+    Then the committee should have used quorum "from make and model"
+    And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
+    And the conclusion of the committee should have "name" of "<make_model>"
+    Examples:
+      | make   | model | make_model   |
+      | Toyota | Prius | Toyota Prius |
+      | Ford   | Focus | Ford Focus   |
+
+  Scenario Outline: Make model committee from invalid make model combination
+    Given a characteristic "make.name" of "<make>"
+    And a characteristic "model.name" of "<model>"
+    When the "make_model" committee reports
+    Then the conclusion of the committee should be nil
+    Examples:
+      | make   | model |
+      | Toyota | Focus |
+      | Ford   | Prius |
+
+  Scenario: Make year committee from valid make year combination
+    Given a characteristic "make.name" of "Toyota"
+    And a characteristic "year.year" of "2003"
+    When the "make_year" committee reports
+    Then the committee should have used quorum "from make and year"
+    And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
+    And the conclusion of the committee should have "name" of "Toyota 2003"
+
+  Scenario: Make year committee from invalid make year combination
+    Given a characteristic "make.name" of "Toyota"
+    And a characteristic "year.year" of "2010"
+    When the "make_year" committee reports
+    Then the conclusion of the committee should be nil
+
+  Scenario: Make model year committee from valid make model year combination
+    Given a characteristic "make.name" of "Toyota"
+    And a characteristic "model.name" of "Prius"
+    And a characteristic "year.year" of "2003"
+    When the "make_model_year" committee reports
+    Then the committee should have used quorum "from make, model, and year"
+    And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
+    And the conclusion of the committee should have "name" of "Toyota Prius 2003"
+
+  Scenario: Make model year committee from invalid make model year combination
+    Given a characteristic "make.name" of "Toyota"
+    And a characteristic "model.name" of "Focus"
+    And a characteristic "year.year" of "2003"
+    When the "make_model_year" committee reports
+    Then the conclusion of the committee should be nil
+
   Scenario: Country committee from default
     When the "country" committee reports
     Then the committee should have used quorum "default"
@@ -21,14 +73,14 @@ Feature: Automobile Trip Committee Calculations
     When the "country" committee reports
     And the "urbanity" committee reports
     Then the committee should have used quorum "from country"
-    And the conclusion of the committee should be "0.43"
+    And the conclusion of the committee should be "0.4"
     And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
 
   Scenario: Urbanity committee from country
     Given a characteristic "country.iso_3166_code" of "US"
     When the "urbanity" committee reports
     Then the committee should have used quorum "from country"
-    And the conclusion of the committee should be "0.43"
+    And the conclusion of the committee should be "0.4"
     And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
 
   Scenario: Hybridity multiplier committee from default
@@ -47,8 +99,8 @@ Feature: Automobile Trip Committee Calculations
     And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
     Examples:
       | hybridity | multiplier |
-      | true      | 1.36919    |
-      | false     | 0.99211    |
+      | true      | 1.35700    |
+      | false     | 0.99238    |
 
   Scenario Outline: Hybridity multiplier committee from size class missing hybridity multipliers
     Given a characteristic "hybridity" of "<hybridity>"
@@ -61,8 +113,8 @@ Feature: Automobile Trip Committee Calculations
     And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
     Examples:
       | hybridity | size_class    | multiplier |
-      | true      | Midsize Wagon | 1.36919    |
-      | false     | Midsize Wagon | 0.99211    |
+      | true      | Midsize Wagon | 1.35700    |
+      | false     | Midsize Wagon | 0.99238    |
 
   Scenario Outline: Hybridity multiplier committee from size class with hybridity multipliers
     Given a characteristic "hybridity" of "<hybridity>"
@@ -75,47 +127,41 @@ Feature: Automobile Trip Committee Calculations
     And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
     Examples:
       | hybridity | size_class  | multiplier |
-      | true      | Midsize Car | 1.68067    |
-      | false     | Midsize Car | 0.87464    |
+      | true      | Midsize Car | 1.47059    |
+      | false     | Midsize Car | 0.88235    |
 
-  Scenario Outline: Fuel efficiency committee from hybridity multiplier and default country
-    Given a characteristic "hybridity_multiplier" of "<multiplier>"
+  Scenario: Fuel efficiency committee from defaults
     When the "country" committee reports
+    And the "hybridity_multiplier" committee reports
     And the "fuel_efficiency" committee reports
     Then the committee should have used quorum "from hybridity multiplier and country"
-    And the conclusion of the committee should be "<fe>"
+    And the conclusion of the committee should be "8.22653"
     And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
-    Examples:
-      | multiplier | fe       |
-      | 1.0        |  8.22653 |
-      | 10         | 82.26531 |
 
-  Scenario Outline: Fuel efficiency committee from hybridity multiplier and country
-    Given a characteristic "hybridity_multiplier" of "<multiplier>"
-    And a characteristic "country.iso_3166_code" of "US"
+  Scenario: Fuel efficiency committee country and hybridity multiplier
+    Given a characteristic "country.iso_3166_code" of "US"
+    And a characteristic "hybridity_multiplier" of "2.0"
     When the "fuel_efficiency" committee reports
     Then the committee should have used quorum "from hybridity multiplier and country"
-    And the conclusion of the committee should be "<fe>"
+    And the conclusion of the committee should be "20.0"
     And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
-    Examples:
-      | multiplier | fe   |
-      | 1.0        |  9.0 |
-      | 10         | 90.0 |
 
   Scenario: Fuel efficiency committee from make and hybridity multiplier
     Given a characteristic "make.name" of "Toyota"
     And a characteristic "hybridity_multiplier" of "2.0"
     When the "fuel_efficiency" committee reports
     Then the committee should have used quorum "from make and hybridity multiplier"
-    And the conclusion of the committee should be "20.0"
+    And the conclusion of the committee should be "25.0"
     And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
 
   Scenario: Fuel efficiency committee from make year and hybridity multiplier
-    Given a characteristic "make_year.name" of "Toyota 2003"
+    Given a characteristic "make.name" of "Toyota"
+    And a characteristic "year.year" of "2003"
     And a characteristic "hybridity_multiplier" of "2.0"
-    When the "fuel_efficiency" committee reports
+    When the "make_year" committee reports
+    And the "fuel_efficiency" committee reports
     Then the committee should have used quorum "from make year and hybridity multiplier"
-    And the conclusion of the committee should be "30.0"
+    And the conclusion of the committee should be "24.0"
     And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
 
   Scenario: Fuel efficiency committee from size class, hybridity multiplier, and urbanity
@@ -124,31 +170,36 @@ Feature: Automobile Trip Committee Calculations
     And a characteristic "urbanity" of "0.5"
     When the "fuel_efficiency" committee reports
     Then the committee should have used quorum "from size class, hybridity multiplier, and urbanity"
-    And the conclusion of the committee should be "26.66667"
+    And the conclusion of the committee should be "19.2"
     And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
 
   Scenario: Fuel efficiency committee from make model and urbanity
-    Given a characteristic "make_model.name" of "Toyota Prius"
+    Given a characteristic "make.name" of "Toyota"
+    And a characteristic "model.name" of "Prius"
     And a characteristic "urbanity" of "0.5"
-    When the "fuel_efficiency" committee reports
+    When the "make_model" committee reports
+    And the "fuel_efficiency" committee reports
     Then the committee should have used quorum "from make model and urbanity"
-    And the conclusion of the committee should be "24.0"
+    And the conclusion of the committee should be "20.0"
     And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
 
   Scenario: Fuel efficiency committee from make model year and urbanity
-    Given a characteristic "make_model_year.name" of "Toyota Prius 2003"
+    Given a characteristic "make.name" of "Toyota"
+    And a characteristic "model.name" of "Prius"
+    And a characteristic "year.year" of "2003"
     And a characteristic "urbanity" of "0.5"
-    When the "fuel_efficiency" committee reports
+    When the "make_model_year" committee reports
+    And the "fuel_efficiency" committee reports
     Then the committee should have used quorum "from make model year and urbanity"
-    And the conclusion of the committee should be "34.28571"
+    And the conclusion of the committee should be "18.0"
     And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
 
-  Scenario: Speed committee from default urbanity and country
+  Scenario: Speed committee from default urbanity and default country
     When the "country" committee reports
     And the "urbanity" committee reports
     And the "speed" committee reports
     Then the committee should have used quorum "from urbanity and country"
-    And the conclusion of the committee should be "50.93426"
+    And the conclusion of the committee should be "50.0"
     And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
 
   Scenario: Speed committee from urbanity and country
@@ -156,7 +207,7 @@ Feature: Automobile Trip Committee Calculations
     When the "urbanity" committee reports
     And the "speed" committee reports
     Then the committee should have used quorum "from urbanity and country"
-    And the conclusion of the committee should be "50.93426"
+    And the conclusion of the committee should be "50.0"
     And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
 
   Scenario Outline: Origin location from geocodeable origin
@@ -271,6 +322,20 @@ Feature: Automobile Trip Committee Calculations
     Then the committee should have used quorum "default"
     And the conclusion of the committee should have "name" of "fallback"
     And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
+    And the conclusion of the committee should have "energy_content" of "35.09967"
+    And the conclusion of the committee should have "co2_emission_factor" of "2.30997"
+    And the conclusion of the committee should have "co2_biogenic_emission_factor" of "0.0"
+    And the conclusion of the committee should have "ch4_emission_factor" of "0.00206"
+    And the conclusion of the committee should have "n2o_emission_factor" of "0.00782"
+    And the conclusion of the committee should have "hfc_emission_factor" of "0.10910"
+
+  Scenario Outline: HFC emission from fuel use and default automobile fuel
+    Given a characteristic "fuel_use" of "10.0"
+    When the "automobile_fuel" committee reports
+    And the "hfc_emission" committee reports
+    Then the committee should have used quorum "from fuel use and automobile fuel"
+    And the conclusion of the committee should be "1.09104"
+    And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
 
   Scenario Outline: HFC emission from fuel use and automobile fuel
     Given a characteristic "fuel_use" of "10.0"
@@ -281,10 +346,17 @@ Feature: Automobile Trip Committee Calculations
     And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
     Examples:
       | fuel             | emission |
-      | fallback         | 1.06268  |
       | regular gasoline | 1.0      |
-      | diesel           | 1.2      |
-      | B20              | 1.2      |
+      | diesel           | 1.25     |
+      | B20              | 1.25    |
+
+  Scenario Outline: N2O emission from fuel use and default automobile fuel
+    Given a characteristic "fuel_use" of "10.0"
+    When the "automobile_fuel" committee reports
+    And the "n2o_emission" committee reports
+    Then the committee should have used quorum "from fuel use and automobile fuel"
+    And the conclusion of the committee should be "0.07821"
+    And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
 
   Scenario Outline: N2O emission from fuel use and automobile fuel
     Given a characteristic "fuel_use" of "10.0"
@@ -295,10 +367,17 @@ Feature: Automobile Trip Committee Calculations
     And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
     Examples:
       | fuel             | emission |
-      | fallback         | 0.07047  |
       | regular gasoline | 0.08     |
       | diesel           | 0.02     |
       | B20              | 0.02     |
+
+  Scenario Outline: CH4 emission from fuel use and default automobile fuel
+    Given a characteristic "fuel_use" of "10.0"
+    When the "automobile_fuel" committee reports
+    And the "ch4_emission" committee reports
+    Then the committee should have used quorum "from fuel use and automobile fuel"
+    And the conclusion of the committee should be "0.02064"
+    And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
 
   Scenario Outline: CH4 emission from fuel use and automobile fuel
     Given a characteristic "fuel_use" of "10.0"
@@ -309,10 +388,17 @@ Feature: Automobile Trip Committee Calculations
     And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
     Examples:
       | fuel             | emission |
-      | fallback         | 0.02259  |
-      | regular gasoline | 0.02     |
+      | regular gasoline | 0.025    |
       | diesel           | 0.001    |
       | B20              | 0.001    |
+
+  Scenario Outline: CO2 biogenic emission from fuel use and default automobile fuel
+    Given a characteristic "fuel_use" of "10.0"
+    When the "automobile_fuel" committee reports
+    And the "co2_biogenic_emission" committee reports
+    Then the committee should have used quorum "from fuel use and automobile fuel"
+    And the conclusion of the committee should be "0.0"
+    And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
 
   Scenario Outline: CO2 biogenic emission from fuel use and automobile fuel
     Given a characteristic "fuel_use" of "10.0"
@@ -323,10 +409,17 @@ Feature: Automobile Trip Committee Calculations
     And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
     Examples:
       | fuel             | emission |
-      | fallback         | 0.0      |
       | regular gasoline | 0.0      |
       | diesel           | 0.0      |
       | B20              | 5.0      |
+
+  Scenario Outline: CO2 emission from fuel use and default automobile fuel
+    Given a characteristic "fuel_use" of "10.0"
+    When the "automobile_fuel" committee reports
+    And the "co2_emission" committee reports
+    Then the committee should have used quorum "from fuel use and automobile fuel"
+    And the conclusion of the committee should be "23.09967"
+    And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
 
   Scenario Outline: CO2 emission from fuel use and automobile fuel
     Given a characteristic "fuel_use" of "10.0"
@@ -337,7 +430,6 @@ Feature: Automobile Trip Committee Calculations
     And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
     Examples:
       | fuel             | emission |
-      | fallback         | 23.09575 |
       | regular gasoline | 23.0     |
       | diesel           | 27.0     |
       | B20              | 22.0     |

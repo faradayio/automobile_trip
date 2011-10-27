@@ -3,18 +3,15 @@ module BrighterPlanet
     module Characterization
       def self.included(base)
         base.characterize do
-          has :country
           has :make
-          has :make_year
-          has :make_model
-          has :make_model_year
+          has :model
+          has :year
           has :size_class
-          has :automobile_fuel  # can't call this 'fuel' or else sniff thinks it refers to Fuel not AutomobileFuel
+          has :automobile_fuel # can't call this 'fuel' or else sniff thinks it refers to Fuel not AutomobileFuel
+          has :country
           has :date
           has :hybridity
           has :urbanity
-          has :city_speed,      :measures => Measurement::BigSpeed
-          has :highway_speed,   :measures => Measurement::BigSpeed
           has :speed,           :measures => Measurement::BigSpeed
           has :duration,        :measures => :time
           has :origin
