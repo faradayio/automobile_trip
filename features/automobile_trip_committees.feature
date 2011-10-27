@@ -143,14 +143,6 @@ Feature: Automobile Trip Committee Calculations
     And the conclusion of the committee should be "34.28571"
     And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
 
-  Scenario: Fuel efficiency committee from make model year variant and urbanity
-    Given a characteristic "make_model_year_variant.row_hash" of "xxx1"
-    And a characteristic "urbanity" of "0.5"
-    When the "fuel_efficiency" committee reports
-    Then the committee should have used quorum "from make model year variant and urbanity"
-    And the conclusion of the committee should be "44.44444"
-    And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
-
   Scenario: Speed committee from default urbanity and country
     When the "country" committee reports
     And the "urbanity" committee reports
@@ -278,13 +270,6 @@ Feature: Automobile Trip Committee Calculations
     When the "automobile_fuel" committee reports
     Then the committee should have used quorum "default"
     And the conclusion of the committee should have "name" of "fallback"
-    And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
-
-  Scenario: Automobile fuel committee from make model year variant
-    Given a characteristic "make_model_year_variant.row_hash" of "xxx1"
-    When the "automobile_fuel" committee reports
-    Then the committee should have used quorum "from make model year variant"
-    And the conclusion of the committee should have "name" of "diesel"
     And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
 
   Scenario Outline: HFC emission from fuel use and automobile fuel

@@ -127,13 +127,6 @@ Feature: Automobile Trip Emissions Calculations
     Then the amount of "carbon" should be within "0.01" of "1.13"
     And the calculation should comply with standards "ghg_protocol_scope_3, iso"
 
-  Scenario: Calculations from make model year variant and urbanity
-    Given it has "urbanity" of "0.5"
-    And it has "make_model_year_variant.row_hash" of "xxx1"
-    When impacts are calculated
-    Then the amount of "carbon" should be within "0.01" of "1.02"
-    And the calculation should comply with standards "ghg_protocol_scope_3, iso"
-
   Scenario: Calculations from speed and duration
     Given it has "speed" of "5.0"
     And it has "duration" of "7200.0"

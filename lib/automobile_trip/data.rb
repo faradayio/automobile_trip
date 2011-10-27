@@ -7,7 +7,6 @@ module BrighterPlanet
         base.col :make_year_name
         base.col :make_model_name
         base.col :make_model_year_name
-        base.col :make_model_year_variant_row_hash
         base.col :size_class_name
         base.col :automobile_fuel_name
         base.col :date,            :type => :date

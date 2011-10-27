@@ -95,15 +95,6 @@ module BrighterPlanet
             #
             # Uses the client-input [automobile fuel](http://data.brighterplanet.com/automobile_fuels).
             
-            #### Automobile fuel from make model year variant
-            quorum 'from make model year variant',
-              :needs => :make_model_year_variant,
-              # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
-              :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
-                # Looks up the [variant](http://data.brighterplanet.com/automobile_make_model_year_variants) `automobile fuel`.
-                characteristics[:make_model_year_variant].fuel
-            end
-            
             #### Default automobile fuel
             quorum 'default',
               # **Complies:** GHG Protocol Scope 3, ISO 14064-1
@@ -226,21 +217,6 @@ module BrighterPlanet
             # **Complies:** All
             #
             # Uses the client-input `fuel efficiency` (*km / l*).
-            
-            #### Fuel efficiency from make model year variant and urbanity
-            quorum 'from make model year variant and urbanity',
-              :needs => [:make_model_year_variant, :urbanity],
-              # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
-              :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
-                # Looks up the city and highway fuel efficiencies of the automobile [make model year variant](http://data.brighterplanet.com/automobile_make_model_year_variants) (*km / l*).
-                fuel_efficiency_city = characteristics[:make_model_year_variant].fuel_efficiency_city
-                fuel_efficiency_highway = characteristics[:make_model_year_variant].fuel_efficiency_highway
-                urbanity = characteristics[:urbanity]
-                if fuel_efficiency_city.present? and fuel_efficiency_highway.present?
-                  # Calculates the harmonic mean of those fuel efficiencies, weighted by `urbanity`.
-                  1.0 / ((urbanity / fuel_efficiency_city) + ((1.0 - urbanity) / fuel_efficiency_highway))
-                end
-            end
             
             #### Fuel efficiency from make model year and urbanity
             quorum 'from make model year and urbanity',
@@ -377,9 +353,6 @@ module BrighterPlanet
           
           ### Size class calculation
           # Returns the client-input automobile [size class](http://data.brighterplanet.com/automobile_size_classes).
-          
-          ### Make model year variant calculation
-          # Returns the client-input automobile [make model year variant](http://data.brighterplanet.com/automobile_make_model_year_variants).
           
           ### Make model year calculation
           # Returns the client-input automobile [make model year](http://data.brighterplanet.com/automobile_make_model_years).

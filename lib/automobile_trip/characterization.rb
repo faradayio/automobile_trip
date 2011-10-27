@@ -8,7 +8,6 @@ module BrighterPlanet
           has :make_year
           has :make_model
           has :make_model_year
-          has :make_model_year_variant
           has :size_class
           has :automobile_fuel  # can't call this 'fuel' or else sniff thinks it refers to Fuel not AutomobileFuel
           has :date
