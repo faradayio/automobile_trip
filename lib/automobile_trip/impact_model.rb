@@ -105,6 +105,12 @@ module BrighterPlanet
           committee :automobile_fuel do
             # Use client input, if available.
             
+            # Otherwise look up the `make model year`'s automobile fuel
+            quorum 'from make model year', :needs => :make_model_year,
+              :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
+                characteristics[:make_model_year].automobile_fuel
+            end
+            
             # Otherwise look up the average [automobile fuel](http://data.brighterplanet.com/automobile_fuels).
             quorum 'default',
               :complies => [:ghg_protocol_scope_3, :iso] do
@@ -211,24 +217,20 @@ module BrighterPlanet
             # Calculate the harmonic mean of those fuel efficiencies, weighted by `urbanity`, to give *km / l*.
             quorum 'from make model year and urbanity', :needs => [:make_model_year, :urbanity],
               :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
-                fuel_efficiency_city = characteristics[:make_model_year].fuel_efficiency_city
-                fuel_efficiency_highway = characteristics[:make_model_year].fuel_efficiency_highway
-                urbanity = characteristics[:urbanity]
-                if fuel_efficiency_city.present? and fuel_efficiency_highway.present?
-                  1.0 / ((urbanity / fuel_efficiency_city) + ((1.0 - urbanity) / fuel_efficiency_highway))
-                end
+                1.0 / (
+                  (characteristics[:urbanity]         / characteristics[:make_model_year].fuel_efficiency_city) +
+                  ((1.0 - characteristics[:urbanity]) / characteristics[:make_model_year].fuel_efficiency_highway)
+                )
             end
             
             # Otherwise look up the `make model`'s fuel efficiency city (*km / l*) and fuel efficiency highway (*km / l*).
             # Calculate the harmonic mean of those fuel efficiencies, weighted by `urbanity`, to give *km / l*.
             quorum 'from make model and urbanity', :needs => [:make_model, :urbanity],
               :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
-                fuel_efficiency_city = characteristics[:make_model].fuel_efficiency_city
-                fuel_efficiency_highway = characteristics[:make_model].fuel_efficiency_highway
-                urbanity = characteristics[:urbanity]
-                if fuel_efficiency_city.present? and fuel_efficiency_highway.present?
-                  1.0 / ((urbanity / fuel_efficiency_city) + ((1.0 - urbanity) / fuel_efficiency_highway))
-                end
+                1.0 / (
+                  (characteristics[:urbanity]         / characteristics[:make_model].fuel_efficiency_city) +
+                  ((1.0 - characteristics[:urbanity]) / characteristics[:make_model].fuel_efficiency_highway)
+                )
             end
             
             # Otherwise look up the `size class`' `fuel efficiency city`(*km / l*) and `fuel efficiency highway` (*km / l*).
@@ -236,33 +238,31 @@ module BrighterPlanet
             # Multiply by `hybridity multiplier` to give *km / l*.
             quorum 'from size class, hybridity multiplier, and urbanity', :needs => [:size_class, :hybridity_multiplier, :urbanity],
               :complies => [:ghg_protocol_scope_3, :iso] do |characteristics|
-                fuel_efficiency_city = characteristics[:size_class].fuel_efficiency_city
-                fuel_efficiency_highway = characteristics[:size_class].fuel_efficiency_highway
-                urbanity = characteristics[:urbanity]
-                if fuel_efficiency_city.present? and fuel_efficiency_highway.present?
-                  (1.0 / ((urbanity / fuel_efficiency_city) + ((1.0 - urbanity) / fuel_efficiency_highway))) * characteristics[:hybridity_multiplier]
-                end
+                (1.0 / (
+                  (characteristics[:urbanity]         / characteristics[:size_class].fuel_efficiency_city) +
+                  ((1.0 - characteristics[:urbanity]) / characteristics[:size_class].fuel_efficiency_highway)
+                )) * characteristics[:hybridity_multiplier]
             end
             
             # Otherwise look up the `make year`'s `fuel efficiency` (*km / l*).
             # Multiply by `hybridity multiplier` to give *km / l*.
             quorum 'from make year and hybridity multiplier', :needs => [:make_year, :hybridity_multiplier],
               :complies => [:ghg_protocol_scope_3, :iso] do |characteristics|
-                characteristics[:make_year].fuel_efficiency.try :*, characteristics[:hybridity_multiplier]
+                characteristics[:make_year].fuel_efficiency * characteristics[:hybridity_multiplier]
             end
             
             # Otherwise look up the `make`'s `fuel efficiency` (*km / l*).
             # Multiply by `hybridity multiplier` to give *km / l*.
             quorum 'from make and hybridity multiplier', :needs => [:make, :hybridity_multiplier],
               :complies => [:ghg_protocol_scope_3, :iso] do |characteristics|
-                characteristics[:make].fuel_efficiency.try :*, characteristics[:hybridity_multiplier]
+                characteristics[:make].fuel_efficiency * characteristics[:hybridity_multiplier]
             end
             
             # Otherwise look up the `country`'s average `automobile fuel efficiency` (*km / l*).
             # Multiply by `hybridity multiplier` to give *km / l*.
             quorum 'from hybridity multiplier and country', :needs => [:hybridity_multiplier, :country],
               :complies => [:ghg_protocol_scope_3, :iso] do |characteristics|
-                characteristics[:country].automobile_fuel_efficiency.try :*, characteristics[:hybridity_multiplier]
+                characteristics[:country].automobile_fuel_efficiency * characteristics[:hybridity_multiplier]
             end
           end
           
@@ -274,11 +274,11 @@ module BrighterPlanet
             quorum 'from size class, hybridity, and urbanity', :needs => [:size_class, :hybridity, :urbanity],
               :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
                 drivetrain = characteristics[:hybridity].value ? :hybrid : :conventional
-                city_fuel_efficiency_multiplier = characteristics[:size_class].send(:"#{drivetrain}_fuel_efficiency_city_multiplier")
-                highway_fuel_efficiency_multiplier = characteristics[:size_class].send(:"#{drivetrain}_fuel_efficiency_highway_multiplier")
+                city_multiplier    = characteristics[:size_class].send(:"#{drivetrain}_fuel_efficiency_city_multiplier")
+                highway_multiplier = characteristics[:size_class].send(:"#{drivetrain}_fuel_efficiency_highway_multiplier")
                 
-                if city_fuel_efficiency_multiplier or highway_fuel_efficiency_multiplier
-                  1.0 / ((characteristics[:urbanity] / city_fuel_efficiency_multiplier) + ((1.0 - characteristics[:urbanity]) / highway_fuel_efficiency_multiplier))
+                if city_multiplier and highway_multiplier
+                  1.0 / ((characteristics[:urbanity] / city_multiplier) + ((1.0 - characteristics[:urbanity]) / highway_multiplier))
                 end
             end
             
@@ -287,10 +287,10 @@ module BrighterPlanet
             quorum 'from hybridity and urbanity', :needs => [:hybridity, :urbanity],
               :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
                 drivetrain = characteristics[:hybridity].value ? :hybrid : :conventional
-                city_fuel_efficiency_multiplier = AutomobileSizeClass.fallback.send(:"#{drivetrain}_fuel_efficiency_city_multiplier")
-                highway_fuel_efficiency_multiplier = AutomobileSizeClass.fallback.send(:"#{drivetrain}_fuel_efficiency_highway_multiplier")
+                city_multiplier = AutomobileSizeClass.fallback.send(:"#{drivetrain}_fuel_efficiency_city_multiplier")
+                highway_multiplier = AutomobileSizeClass.fallback.send(:"#{drivetrain}_fuel_efficiency_highway_multiplier")
                 
-                1.0 / ((characteristics[:urbanity] / city_fuel_efficiency_multiplier) + ((1.0 - characteristics[:urbanity]) / highway_fuel_efficiency_multiplier))
+                1.0 / ((characteristics[:urbanity] / city_multiplier) + ((1.0 - characteristics[:urbanity]) / highway_multiplier))
             end
             
             # Otherwise use a multiplier of 1.0.
