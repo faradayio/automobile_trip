@@ -6,14 +6,14 @@ Feature: Automobile Trip Emissions Calculations
 
   Scenario: Calculations from nothing
     When impacts are calculated
-    Then the amount of "carbon" should be within "0.01" kgs of "4.72"
+    Then the amount of "carbon" should be within "0.01" of "4.72"
     And the calculation should comply with standards "ghg_protocol_scope_3, iso"
 
   Scenario Outline: Calculations from date
     Given it has "date" of "<date>"
     And it is the year "2010"
     When impacts are calculated
-    Then the amount of "carbon" should be within "0.01" kgs of "<impact>"
+    Then the amount of "carbon" should be within "0.01" of "<impact>"
     And the calculation should comply with standards "ghg_protocol_scope_3, iso"
     Examples:
       | date       | impact |
@@ -25,7 +25,7 @@ Feature: Automobile Trip Emissions Calculations
     Given it has "date" of "<date>"
     And it has "timeframe" of "<timeframe>"
     When impacts are calculated
-    Then the amount of "carbon" should be within "0.01" kgs of "<impact>"
+    Then the amount of "carbon" should be within "0.01" of "<impact>"
     And the calculation should comply with standards "ghg_protocol_scope_3, iso"
     Examples:
       | date       | timeframe             | impact |
@@ -36,20 +36,20 @@ Feature: Automobile Trip Emissions Calculations
   Scenario: Calculations from country
     Given it has "country.iso_3166_code" of "US"
     When impacts are calculated
-    Then the amount of "carbon" should be within "0.01" kgs of "4.31"
+    Then the amount of "carbon" should be within "0.01" of "4.31"
     And the calculation should comply with standards "ghg_protocol_scope_3, iso"
 
   Scenario: Calculations from urbanity
     Given it has "urbanity" of "0.5"
     When impacts are calculated
-    Then the amount of "carbon" should be within "0.01" kgs of "4.72"
+    Then the amount of "carbon" should be within "0.01" of "4.72"
     And the calculation should comply with standards "ghg_protocol_scope_3, iso"
 
   Scenario Outline: Calculations from hybridity and urbanity
     Given it has "hybridity" of "<hybridity>"
     And it has "urbanity" of "0.5"
     When impacts are calculated
-    Then the amount of "carbon" should be within "0.01" kgs of "<impact>"
+    Then the amount of "carbon" should be within "0.01" of "<impact>"
     And the calculation should comply with standards "ghg_protocol_scope_3, iso"
     Examples:
       | hybridity | impact |
@@ -60,7 +60,7 @@ Feature: Automobile Trip Emissions Calculations
     Given it has "urbanity" of "0.5"
     And it has "make.name" of "Toyota"
     When impacts are calculated
-    Then the amount of "carbon" should be within "0.01" kgs of "3.88"
+    Then the amount of "carbon" should be within "0.01" of "3.88"
     And the calculation should comply with standards "ghg_protocol_scope_3, iso"
 
   Scenario Outline: Calculations from make, hybridity and urbanity
@@ -68,7 +68,7 @@ Feature: Automobile Trip Emissions Calculations
     And it has "urbanity" of "0.5"
     And it has "make.name" of "Toyota"
     When impacts are calculated
-    Then the amount of "carbon" should be within "0.01" kgs of "<impact>"
+    Then the amount of "carbon" should be within "0.01" of "<impact>"
     And the calculation should comply with standards "ghg_protocol_scope_3, iso"
     Examples:
       | hybridity | impact |
@@ -79,7 +79,7 @@ Feature: Automobile Trip Emissions Calculations
     Given it has "urbanity" of "0.5"
     And it has "make_year.name" of "Toyota 2003"
     When impacts are calculated
-    Then the amount of "carbon" should be within "0.01" kgs of "2.59"
+    Then the amount of "carbon" should be within "0.01" of "2.59"
     And the calculation should comply with standards "ghg_protocol_scope_3, iso"
 
   Scenario Outline: Calculations from make year, hybridity and urbanity
@@ -87,7 +87,7 @@ Feature: Automobile Trip Emissions Calculations
     And it has "urbanity" of "0.5"
     And it has "make_year.name" of "Toyota 2003"
     When impacts are calculated
-    Then the amount of "carbon" should be within "0.01" kgs of "<impact>"
+    Then the amount of "carbon" should be within "0.01" of "<impact>"
     And the calculation should comply with standards "ghg_protocol_scope_3, iso"
     Examples:
       | hybridity | impact |
@@ -98,7 +98,7 @@ Feature: Automobile Trip Emissions Calculations
     Given it has "urbanity" of "0.5"
     And it has "size_class.name" of "Midsize Car"
     When impacts are calculated
-    Then the amount of "carbon" should be within "0.01" kgs of "2.91"
+    Then the amount of "carbon" should be within "0.01" of "2.91"
     And the calculation should comply with standards "ghg_protocol_scope_3, iso"
 
   Scenario Outline: Calculations from size class, hybridity, and urbanity
@@ -106,7 +106,7 @@ Feature: Automobile Trip Emissions Calculations
     And it has "urbanity" of "0.5"
     And it has "size_class.name" of "Midsize Car"
     When impacts are calculated
-    Then the amount of "carbon" should be within "0.01" kgs of "<impact>"
+    Then the amount of "carbon" should be within "0.01" of "<impact>"
     And the calculation should comply with standards "ghg_protocol_scope_3, iso"
     Examples:
       | hybridity | impact |
@@ -117,28 +117,28 @@ Feature: Automobile Trip Emissions Calculations
     Given it has "urbanity" of "0.5"
     And it has "make_model.name" of "Toyota Prius"
     When impacts are calculated
-    Then the amount of "carbon" should be within "0.01" kgs of "1.62"
+    Then the amount of "carbon" should be within "0.01" of "1.62"
     And the calculation should comply with standards "ghg_protocol_scope_3, iso"
 
   Scenario: Calculations from make model year and urbanity
     Given it has "urbanity" of "0.5"
     And it has "make_model_year.name" of "Toyota Prius 2003"
     When impacts are calculated
-    Then the amount of "carbon" should be within "0.01" kgs of "1.13"
+    Then the amount of "carbon" should be within "0.01" of "1.13"
     And the calculation should comply with standards "ghg_protocol_scope_3, iso"
 
   Scenario: Calculations from make model year variant and urbanity
     Given it has "urbanity" of "0.5"
     And it has "make_model_year_variant.row_hash" of "xxx1"
     When impacts are calculated
-    Then the amount of "carbon" should be within "0.01" kgs of "1.02"
+    Then the amount of "carbon" should be within "0.01" of "1.02"
     And the calculation should comply with standards "ghg_protocol_scope_3, iso"
 
   Scenario: Calculations from speed and duration
     Given it has "speed" of "5.0"
     And it has "duration" of "7200.0"
     When impacts are calculated
-    Then the amount of "carbon" should be within "0.01" kgs of "2.95"
+    Then the amount of "carbon" should be within "0.01" of "2.95"
     And the calculation should comply with standards "ghg_protocol_scope_3, iso"
 
   Scenario: Calculations from driveable locations
@@ -148,7 +148,7 @@ Feature: Automobile Trip Emissions Calculations
     And the geocoder will encode the destination as "44.1,-73.15"
     And mapquest determines the distance in miles to be "8.142"
     When impacts are calculated
-    Then the amount of "carbon" should be within "0.01" kgs of "3.86"
+    Then the amount of "carbon" should be within "0.01" of "3.86"
     And the calculation should comply with standards "ghg_protocol_scope_3, iso"
 
   Scenario: Calculations from non-driveable locations
@@ -157,21 +157,21 @@ Feature: Automobile Trip Emissions Calculations
     And it has "destination" of "London, UK"
     And the geocoder will encode the destination as "51.5001524,-0.1262362"
     When impacts are calculated
-    Then the amount of "carbon" should be within "0.01" kgs of "4.72"
+    Then the amount of "carbon" should be within "0.01" of "4.72"
     And the calculation should comply with standards "ghg_protocol_scope_3, iso"
 
   Scenario: Calculations from fuel efficiency and distance
     Given it has "fuel_efficiency" of "10.0"
     And it has "distance" of "100.0"
     When impacts are calculated
-    Then the amount of "carbon" should be within "0.01" kgs of "24.25"
+    Then the amount of "carbon" should be within "0.01" of "24.25"
     And the calculation should comply with standards "ghg_protocol_scope_3, iso"
 
   Scenario Outline: Calculations from fuel use and fuel
     Given it has "fuel_use" of "20.0"
     And it has "automobile_fuel.name" of "<fuel>"
     When impacts are calculated
-    Then the amount of "carbon" should be within "0.01" kgs of "<impact>"
+    Then the amount of "carbon" should be within "0.01" of "<impact>"
     And the calculation should comply with standards "ghg_protocol_scope_3, iso"
     Examples:
       | fuel             | impact |
