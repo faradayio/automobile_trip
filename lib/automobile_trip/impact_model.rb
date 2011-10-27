@@ -37,168 +37,53 @@ module BrighterPlanet
             end
           end
           
-          ### CO<sub>2</sub> emission calculation
-          # Returns the `co2 emission` (*kg*).
+          #### CO<sub>2</sub> emission (*kg*)
+          # The trip's CO<sub>2</sub> emissions from anthropogenic sources during `timeframe`.
           committee :co2_emission do
-            #### CO<sub>2</sub> emission from fuel use, CO<sub>2</sub> emission factor, date, and timeframe
-            quorum 'from fuel use, co2 emission factor, date, and timeframe',
-              :needs => [:fuel_use, :co2_emission_factor, :date],
-              # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
-              :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics, timeframe|
-                # Checks whether the trip `date` falls within the `timeframe`.
-                date = characteristics[:date].is_a?(Date) ? characteristics[:date] : Date.parse(characteristics[:date].to_s)
-                if timeframe.include? date
-                  # Multiplies `fuel use` (*l*) by the `co2 emission factor` (*kg / l*) to give *kg*.
-                  characteristics[:fuel_use] * characteristics[:co2_emission_factor]
-                else
-                  # If the `date` does not fall within the `timeframe`, `co2 emission` is zero.
-                  0
-                end
+            # Multiply `fuel use` (*l*) by the `automobile fuel`'s co2 emission factor (*kg / l*) to give *kg*.
+            quorum 'from fuel use and automobile fuel', :needs => [:fuel_use, :automobile_fuel],
+              :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
+                characteristics[:fuel_use] * characteristics[:automobile_fuel].co2_emission_factor
             end
           end
           
-          ### CO<sub>2</sub> biogenic emission calculation
-          # Returns the `co2 biogenic emission` (*kg*).
+          #### CO<sub>2</sub> biogenic emission (*kg*)
+          # The trip's CO<sub>2</sub> emissions from biogenic sources during `timeframe`.
           committee :co2_biogenic_emission do
-            #### CO<sub>2</sub> biogenic emission from fuel use, CO<sub>2</sub> biogenic emission factor, date, and timeframe
-            quorum 'from fuel use, co2 biogenic emission factor, date, and timeframe',
-              :needs => [:fuel_use, :co2_biogenic_emission_factor, :date],
-              # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
-              :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics, timeframe|
-                # Checks whether the trip `date` falls within the `timeframe`.
-                date = characteristics[:date].is_a?(Date) ? characteristics[:date] : Date.parse(characteristics[:date].to_s)
-                if timeframe.include? date
-                  # Multiplies `fuel use` (*l*) by the `co2 biogenic emission factor` (*kg / l*) to give *kg*.
-                  characteristics[:fuel_use] * characteristics[:co2_biogenic_emission_factor]
-                else
-                  # If the `date` does not fall within the `timeframe`, `co2 biogenic emission` is zero.
-                  0
-                end
+            # Multiply `fuel use` (*l*) by the `automobile fuel`'s co2 biogenic emission factor (*kg / l*) to give *kg*.
+            quorum 'from fuel use and automobile fuel', :needs => [:fuel_use, :automobile_fuel],
+              :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
+                characteristics[:fuel_use] * characteristics[:automobile_fuel].co2_biogenic_emission_factor
             end
           end
           
-          ### CH<sub>4</sub> emission calculation
-          # Returns the `ch4 emission` (*kg CO<sub>2</sub>e*).
+          #### CH<sub>4</sub> emission (*kg CO<sub>2</sub>e*)
+          # The trip's CH<sub>4</sub> emissions during `timeframe`.
           committee :ch4_emission do
-            #### CH<sub>4</sub> emission from fuel use, CH<sub>4</sub> emission factor, date, and timeframe
-            quorum 'from fuel use, ch4 emission factor, date, and timeframe',
-              :needs => [:fuel_use, :ch4_emission_factor, :date],
-              # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
-              :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics, timeframe|
-                # Checks whether the trip `date` falls within the `timeframe`.
-                date = characteristics[:date].is_a?(Date) ? characteristics[:date] : Date.parse(characteristics[:date].to_s)
-                if timeframe.include? date
-                  # Multiplies `fuel use` (*l*) by the `ch4 emission factor` (*kg CO<sub>2</sub>e / l*) to give *kg CO<sub>2</sub>e*.
-                  characteristics[:fuel_use] * characteristics[:ch4_emission_factor]
-                else
-                  # If the `date` does not fall within the `timeframe`, `ch4 emission` is zero.
-                  0
-                end
+            # Multiply `fuel use` (*l*) by the `automobile fuel`'s ch4 emission factor (*kg CO<sub>2</sub>e / l*) to give *kg CO<sub>2</sub>e*.
+            quorum 'from fuel use and automobile fuel', :needs => [:fuel_use, :automobile_fuel],
+              :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
+                characteristics[:fuel_use] * characteristics[:automobile_fuel].ch4_emission_factor
             end
           end
           
-          ### N<sub>2</sub>O emission calculation
-          # Returns the `n2o emission` (*kg CO<sub>2</sub>e*)
+          #### N<sub>4</sub>O emission (*kg CO<sub>2</sub>e*)
+          # The trip's N<sub>2</sub>O emissions during `timeframe`.
           committee :n2o_emission do
-            #### N<sub>2</sub>O emission from fuel use, N<sub>2</sub>O emission factor, date, and timeframe
-            quorum 'from fuel use, n2o emission factor, date, and timeframe',
-              :needs => [:fuel_use, :n2o_emission_factor, :date],
-              # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
-              :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics, timeframe|
-                # Checks whether the trip `date` falls within the `timeframe`.
-                date = characteristics[:date].is_a?(Date) ? characteristics[:date] : Date.parse(characteristics[:date].to_s)
-                if timeframe.include? date
-                  # Multiplies `fuel use` (*l*) by the `n2o emission factor` (*kg CO<sub>2</sub>e / l*) to give *kg CO<sub>2</sub>e*.
-                  characteristics[:fuel_use] * characteristics[:n2o_emission_factor]
-                else
-                  # If the `date` does not fall within the `timeframe`, `n2o emission` is zero.
-                  0
-                end
+            # Multiply `fuel use` (*l*) by the `automobile fuel`'s n2o emission factor (*kg CO<sub>2</sub>e / l*) to give *kg CO<sub>2</sub>e*.
+            quorum 'from fuel use and automobile fuel', :needs => [:fuel_use, :automobile_fuel],
+              :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
+                characteristics[:fuel_use] * characteristics[:automobile_fuel].n2o_emission_factor
             end
           end
           
-          ### HFC emission calculation
-          # Returns the `hfc emission` (*kg CO<sub>2</sub>e*).
+          #### HFC emission (*kg CO<sub>2</sub>e*)
+          # The trip's HFC emissions during `timeframe`.
           committee :hfc_emission do
-            #### HFC emission from fuel use, HFC emission factor, date, and timeframe
-            quorum 'from fuel use, hfc emission factor, date, and timeframe',
-              :needs => [:fuel_use, :hfc_emission_factor, :date],
-              # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
-              :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics, timeframe|
-                # Checks whether the trip `date` falls within the `timeframe`.
-                date = characteristics[:date].is_a?(Date) ? characteristics[:date] : Date.parse(characteristics[:date].to_s)
-                if timeframe.include? date
-                  # Multiplies `fuel use` (*l*) by the `hfc emission factor` (*kg CO<sub>2</sub>e / l*) to give *kg CO<sub>2</sub>e*.
-                  characteristics[:fuel_use] * characteristics[:hfc_emission_factor]
-                else
-                  # If the `date` does not fall within the `timeframe`, `hfc emission` is zero.
-                  0
-                end
-            end
-          end
-          
-          ### CO<sub>2</sub> emission factor calculation
-          # Returns the `co2 emission factor` (*kg / l*).
-          committee :co2_emission_factor do
-            #### CO<sub>2</sub> emission factor from automobile fuel
-            quorum 'from automobile fuel',
-              :needs => :automobile_fuel,
-              # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
+            # Multiply `fuel use` (*l*) by the `automobile fuel`'s hfc emission factor (*kg CO<sub>2</sub>e / l*) to give *kg CO<sub>2</sub>e*.
+            quorum 'from fuel use and automobile fuel', :needs => [:fuel_use, :automobile_fuel],
               :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
-                # Looks up the [fuel](http://data.brighterplanet.com/fuels) `co2 emission factor` (*kg / l*).
-                characteristics[:automobile_fuel].co2_emission_factor
-            end
-          end
-          
-          ### CO<sub>2</sub> biogenic emission factor calculation
-          # Returns the `co2 biogenic emission factor` (*kg / l*).
-          committee :co2_biogenic_emission_factor do
-            #### CO<sub>2</sub> biogenic emission factor from automobile fuel
-            quorum 'from automobile fuel',
-              :needs => :automobile_fuel,
-              # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
-              :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
-                # Looks up the [fuel](http://data.brighterplanet.com/fuels) `co2 biogenic emission factor` (*kg / l*).
-                characteristics[:automobile_fuel].co2_biogenic_emission_factor
-            end
-          end
-          
-          ### CH<sub>4</sub> emission factor calculation
-          # Returns the `ch4 emission factor` (*kg CO<sub>2</sub>e / l*).
-          committee :ch4_emission_factor do
-            #### CH<sub>4</sub> emission factor from automobile fuel
-            quorum 'from automobile fuel',
-              :needs => :automobile_fuel,
-              # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
-              :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
-                # Looks up the [fuel](http://data.brighterplanet.com/fuels) `ch4 emission factor` (*kg CO</sub>2</sub>e / l*).
-                characteristics[:automobile_fuel].ch4_emission_factor
-            end
-          end
-          
-          ### N<sub>2</sub>O emission factor calculation
-          # Returns the `n2o emission factor` (*kg CO<sub>2</sub>e / l*).
-          committee :n2o_emission_factor do
-            #### N<sub>2</sub>O emission factor from automobile fuel
-            quorum 'from automobile fuel',
-              :needs => :automobile_fuel,
-              # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
-              :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
-                # Looks up the [fuel](http://data.brighterplanet.com/fuels) `n2o emission factor` (*kg CO</sub>2</sub>e / l*).
-                characteristics[:automobile_fuel].n2o_emission_factor
-            end
-          end
-          
-          ### HFC emission factor calculation
-          # Returns the `hfc emission factor` (*kg CO<sub>2</sub>e / l*).
-          committee :hfc_emission_factor do
-            #### HFC emission factor from automobile fuel
-            quorum 'from automobile fuel',
-              :needs => :automobile_fuel,
-              # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
-              :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
-                # Looks up the [fuel](http://data.brighterplanet.com/fuels) `hfc emission factor` (*kg CO</sub>2</sub>e / l*).
-                characteristics[:automobile_fuel].hfc_emission_factor
+                characteristics[:fuel_use] * characteristics[:automobile_fuel].hfc_emission_factor
             end
           end
           
@@ -228,16 +113,17 @@ module BrighterPlanet
             end
           end
           
-          ### Fuel use calculation
-          # Returns the trip `fuel use` (*l*).
+          ### Fuel use (*l*)
+          # Returns the trip's fuel use during `timeframe`.
           committee :fuel_use do
             #### Fuel use from fuel efficiency and distance
-            quorum 'from fuel efficiency and distance',
-              :needs => [:fuel_efficiency, :distance],
+            quorum 'from fuel efficiency, distance, date, and timeframe', :needs => [:fuel_efficiency, :distance, :date],
               # **Complies:** GHG Protocol Scope 1, GHG Protocol Scope 3, ISO 14064-1
-              :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
-                # Divides the `distance` (*km*) by the `fuel efficiency` (*km / l*) to give *l*.
-                characteristics[:distance] / characteristics[:fuel_efficiency]
+              :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics, timeframe|
+                # If `date` falls within `timeframe`, divide `distance` (*km*) by `fuel efficiency` (*km / l*) to give *l*.
+                # Otherwise fuel use is zero.
+                date = characteristics[:date].is_a?(Date) ? characteristics[:date] : Date.parse(characteristics[:date].to_s)
+                timeframe.include?(date) ? characteristics[:distance] / characteristics[:fuel_efficiency] : 0
             end
           end
           

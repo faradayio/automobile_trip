@@ -260,13 +260,19 @@ Feature: Automobile Trip Committee Calculations
     And the conclusion of the committee should be "16.0"
     And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
 
-  Scenario: Fuel use committee from fuel efficiency and distance
+  Scenario Outline: Fuel use committee from fuel efficiency, distance, date, and timeframe
     Given a characteristic "fuel_efficiency" of "10.0"
     And a characteristic "distance" of "100.0"
+    And a characteristic "date" of "<date>"
+    And a characteristic "timeframe" of "<timeframe>"
     When the "fuel_use" committee reports
-    Then the committee should have used quorum "from fuel efficiency and distance"
-    And the conclusion of the committee should be "10.0"
+    Then the committee should have used quorum "from fuel efficiency, distance, date, and timeframe"
+    And the conclusion of the committee should be "<fuel_use>"
     And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
+    Examples:
+      | date       | timeframe             | fuel_use |
+      | 2010-06-01 | 2010-01-01/2011-01-01 | 10.0     |
+      | 2009-06-01 | 2010-01-01/2011-01-01 | 0.0      |
 
   Scenario: Automobile fuel committee from default
     When the "automobile_fuel" committee reports
@@ -281,167 +287,84 @@ Feature: Automobile Trip Committee Calculations
     And the conclusion of the committee should have "name" of "diesel"
     And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
 
-  Scenario: HFC emission factor committee from default automobile fuel
-    When the "automobile_fuel" committee reports
-    And the "hfc_emission_factor" committee reports
-    Then the committee should have used quorum "from automobile fuel"
-    And the conclusion of the committee should be "0.10627"
-    And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
-
-  Scenario Outline: HFC emission factor committee from automobile fuel
-    Given a characteristic "automobile_fuel.name" of "<fuel>"
-    When the "hfc_emission_factor" committee reports
-    Then the committee should have used quorum "from automobile fuel"
-    And the conclusion of the committee should be "<ef>"
-    And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
-    Examples:
-      | fuel             | ef   |
-      | regular gasoline | 0.1  |
-      | diesel           | 0.12 |
-      | B20              | 0.12 |
-
-  Scenario: N2O emission factor committee from default automobile fuel
-    When the "automobile_fuel" committee reports
-    And the "n2o_emission_factor" committee reports
-    Then the committee should have used quorum "from automobile fuel"
-    And the conclusion of the committee should be "0.00705"
-    And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
-
-  Scenario Outline: N2O emission factor committee from automobile fuel
-    Given a characteristic "automobile_fuel.name" of "<fuel>"
-    When the "n2o_emission_factor" committee reports
-    Then the committee should have used quorum "from automobile fuel"
-    And the conclusion of the committee should be "<ef>"
-    And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
-    Examples:
-      | fuel             | ef    |
-      | regular gasoline | 0.008 |
-      | diesel           | 0.002 |
-      | B20              | 0.002 |
-
-  Scenario: CH4 emission factor committee from default automobile fuel
-    When the "automobile_fuel" committee reports
-    And the "ch4_emission_factor" committee reports
-    Then the committee should have used quorum "from automobile fuel"
-    And the conclusion of the committee should be "0.00226"
-    And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
-
-  Scenario Outline: CH4 emission factor committee from automobile fuel
-    Given a characteristic "automobile_fuel.name" of "<fuel>"
-    When the "ch4_emission_factor" committee reports
-    Then the committee should have used quorum "from automobile fuel"
-    And the conclusion of the committee should be "<ef>"
-    And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
-    Examples:
-      | fuel             | ef     |
-      | regular gasoline | 0.002  |
-      | diesel           | 0.0001 |
-      | B20              | 0.0001 |
-
-  Scenario: CO2 biogenic emission factor committee from default automobile fuel
-    When the "automobile_fuel" committee reports
-    And the "co2_biogenic_emission_factor" committee reports
-    Then the committee should have used quorum "from automobile fuel"
-    And the conclusion of the committee should be "0.0"
-    And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
-
-  Scenario Outline: CO2 biogenic emission factor committee from automobile fuel
-    Given a characteristic "automobile_fuel.name" of "<fuel>"
-    When the "co2_biogenic_emission_factor" committee reports
-    Then the committee should have used quorum "from automobile fuel"
-    And the conclusion of the committee should be "<ef>"
-    And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
-    Examples:
-      | fuel             | ef  |
-      | regular gasoline | 0.0 |
-      | diesel           | 0.0 |
-      | B20              | 0.5 |
-
-  Scenario: CO2 emission factor committee from default automobile fuel
-    When the "automobile_fuel" committee reports
-    And the "co2_emission_factor" committee reports
-    Then the committee should have used quorum "from automobile fuel"
-    And the conclusion of the committee should be "2.30958"
-    And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
-
-  Scenario Outline: CO2 emission factor committee from automobile fuel
-    Given a characteristic "automobile_fuel.name" of "<fuel>"
-    When the "co2_emission_factor" committee reports
-    Then the committee should have used quorum "from automobile fuel"
-    And the conclusion of the committee should be "<ef>"
-    And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
-    Examples:
-      | fuel             | ef  |
-      | regular gasoline | 2.3 |
-      | diesel           | 2.7 |
-      | B20              | 2.2 |
-
-  Scenario Outline: HFC emission from fuel use, hfc emission factor, date, and timeframe
-    Given a characteristic "fuel_use" of "<fuel_use>"
-    And a characteristic "hfc_emission_factor" of "<ef>"
-    And a characteristic "date" of "<date>"
-    And a characteristic "timeframe" of "<timeframe>"
+  Scenario Outline: HFC emission from fuel use and automobile fuel
+    Given a characteristic "fuel_use" of "10.0"
+    And a characteristic "automobile_fuel.name" of "<fuel>"
     When the "hfc_emission" committee reports
-    Then the committee should have used quorum "from fuel use, hfc emission factor, date, and timeframe"
+    Then the committee should have used quorum "from fuel use and automobile fuel"
     And the conclusion of the committee should be "<emission>"
     And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
     Examples:
-      | fuel_use | ef  | date       | timeframe             | emission |
-      | 10.0     | 2.0 | 2010-06-01 | 2010-01-01/2011-01-01 | 20.0     |
-      | 10.0     | 2.0 | 2009-06-01 | 2010-01-01/2011-01-01 | 0.0      |
+      | fuel             | emission |
+      | fallback         | 1.06268  |
+      | regular gasoline | 1.0      |
+      | diesel           | 1.2      |
+      | B20              | 1.2      |
 
-  Scenario Outline: N2O emission from fuel use, n2o emission factor, date, and timeframe
-    Given a characteristic "fuel_use" of "<fuel_use>"
-    And a characteristic "n2o_emission_factor" of "<ef>"
-    And a characteristic "date" of "<date>"
-    And a characteristic "timeframe" of "<timeframe>"
+  Scenario Outline: N2O emission from fuel use and automobile fuel
+    Given a characteristic "fuel_use" of "10.0"
+    And a characteristic "automobile_fuel.name" of "<fuel>"
     When the "n2o_emission" committee reports
-    Then the committee should have used quorum "from fuel use, n2o emission factor, date, and timeframe"
+    Then the committee should have used quorum "from fuel use and automobile fuel"
     And the conclusion of the committee should be "<emission>"
     And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
     Examples:
-      | fuel_use | ef  | date       | timeframe             | emission |
-      | 10.0     | 2.0 | 2010-06-01 | 2010-01-01/2011-01-01 | 20.0     |
-      | 10.0     | 2.0 | 2009-06-01 | 2010-01-01/2011-01-01 | 0.0      |
+      | fuel             | emission |
+      | fallback         | 0.07047  |
+      | regular gasoline | 0.08     |
+      | diesel           | 0.02     |
+      | B20              | 0.02     |
 
-  Scenario Outline: CH4 emission from fuel use, ch4 emission factor, date, and timeframe
-    Given a characteristic "fuel_use" of "<fuel_use>"
-    And a characteristic "ch4_emission_factor" of "<ef>"
-    And a characteristic "date" of "<date>"
-    And a characteristic "timeframe" of "<timeframe>"
+  Scenario Outline: CH4 emission from fuel use and automobile fuel
+    Given a characteristic "fuel_use" of "10.0"
+    And a characteristic "automobile_fuel.name" of "<fuel>"
     When the "ch4_emission" committee reports
-    Then the committee should have used quorum "from fuel use, ch4 emission factor, date, and timeframe"
+    Then the committee should have used quorum "from fuel use and automobile fuel"
     And the conclusion of the committee should be "<emission>"
     And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
     Examples:
-      | fuel_use | ef  | date       | timeframe             | emission |
-      | 10.0     | 2.0 | 2010-06-01 | 2010-01-01/2011-01-01 | 20.0     |
-      | 10.0     | 2.0 | 2009-06-01 | 2010-01-01/2011-01-01 | 0.0      |
+      | fuel             | emission |
+      | fallback         | 0.02259  |
+      | regular gasoline | 0.02     |
+      | diesel           | 0.001    |
+      | B20              | 0.001    |
 
-  Scenario Outline: CO2 biogenic emission from fuel use, co2 biogenic emission factor, date, and timeframe
-    Given a characteristic "fuel_use" of "<fuel_use>"
-    And a characteristic "co2_biogenic_emission_factor" of "<ef>"
-    And a characteristic "date" of "<date>"
-    And a characteristic "timeframe" of "<timeframe>"
+  Scenario Outline: CO2 biogenic emission from fuel use and automobile fuel
+    Given a characteristic "fuel_use" of "10.0"
+    And a characteristic "automobile_fuel.name" of "<fuel>"
     When the "co2_biogenic_emission" committee reports
-    Then the committee should have used quorum "from fuel use, co2 biogenic emission factor, date, and timeframe"
+    Then the committee should have used quorum "from fuel use and automobile fuel"
     And the conclusion of the committee should be "<emission>"
     And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
     Examples:
-      | fuel_use | ef  | date       | timeframe             | emission |
-      | 10.0     | 2.0 | 2010-06-01 | 2010-01-01/2011-01-01 | 20.0     |
-      | 10.0     | 2.0 | 2009-06-01 | 2010-01-01/2011-01-01 | 0.0      |
+      | fuel             | emission |
+      | fallback         | 0.0      |
+      | regular gasoline | 0.0      |
+      | diesel           | 0.0      |
+      | B20              | 5.0      |
 
-  Scenario Outline: CO2 emission from fuel use, co2 emission factor, date, and timeframe
-    Given a characteristic "fuel_use" of "<fuel_use>"
-    And a characteristic "co2_emission_factor" of "<ef>"
-    And a characteristic "date" of "<date>"
-    And a characteristic "timeframe" of "<timeframe>"
+  Scenario Outline: CO2 emission from fuel use and automobile fuel
+    Given a characteristic "fuel_use" of "10.0"
+    And a characteristic "automobile_fuel.name" of "<fuel>"
     When the "co2_emission" committee reports
-    Then the committee should have used quorum "from fuel use, co2 emission factor, date, and timeframe"
+    Then the committee should have used quorum "from fuel use and automobile fuel"
     And the conclusion of the committee should be "<emission>"
     And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
     Examples:
-      | fuel_use | ef  | date       | timeframe             | emission |
-      | 10.0     | 2.0 | 2010-06-01 | 2010-01-01/2011-01-01 | 20.0     |
-      | 10.0     | 2.0 | 2009-06-01 | 2010-01-01/2011-01-01 | 0.0      |
+      | fuel             | emission |
+      | fallback         | 23.09575 |
+      | regular gasoline | 23.0     |
+      | diesel           | 27.0     |
+      | B20              | 22.0     |
+
+  Scenario: Carbon from co2 emission, ch4 emission, n2o emission, and hfc emission
+    Given a characteristic "co2_emission" of "10.0"
+    And a characteristic "ch4_emission" of "0.1"
+    And a characteristic "n2o_emission" of "0.1"
+    And a characteristic "hfc_emission" of "1.0"
+    And a characteristic "date" of "2010-06-01"
+    And a characteristic "timeframe" of "2010-01-01/2011-01-01"
+    When the "carbon" committee reports
+    Then the committee should have used quorum "from co2 emission, ch4 emission, n2o emission, and hfc emission"
+    And the conclusion of the committee should be "11.2"
+    And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
