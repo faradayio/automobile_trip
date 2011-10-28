@@ -329,7 +329,7 @@ Feature: Automobile Trip Committee Calculations
     And the conclusion of the committee should have "hfc_emission_factor" of "0.10910"
     And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
 
-  Scenario Outline: HFC emission from fuel use and default automobile fuel
+  Scenario: HFC emission from fuel use and default automobile fuel
     Given a characteristic "fuel_use" of "10.0"
     When the "automobile_fuel" committee reports
     And the "hfc_emission" committee reports
@@ -350,7 +350,7 @@ Feature: Automobile Trip Committee Calculations
       | diesel           | 1.25     |
       | B20              | 1.25    |
 
-  Scenario Outline: N2O emission from fuel use and default automobile fuel
+  Scenario: N2O emission from fuel use and default automobile fuel
     Given a characteristic "fuel_use" of "10.0"
     When the "automobile_fuel" committee reports
     And the "n2o_emission" committee reports
@@ -371,7 +371,7 @@ Feature: Automobile Trip Committee Calculations
       | diesel           | 0.02     |
       | B20              | 0.02     |
 
-  Scenario Outline: CH4 emission from fuel use and default automobile fuel
+  Scenario: CH4 emission from fuel use and default automobile fuel
     Given a characteristic "fuel_use" of "10.0"
     When the "automobile_fuel" committee reports
     And the "ch4_emission" committee reports
@@ -392,7 +392,7 @@ Feature: Automobile Trip Committee Calculations
       | diesel           | 0.001    |
       | B20              | 0.001    |
 
-  Scenario Outline: CO2 biogenic emission from fuel use and default automobile fuel
+  Scenario: CO2 biogenic emission from fuel use and default automobile fuel
     Given a characteristic "fuel_use" of "10.0"
     When the "automobile_fuel" committee reports
     And the "co2_biogenic_emission" committee reports
@@ -413,7 +413,7 @@ Feature: Automobile Trip Committee Calculations
       | diesel           | 0.0      |
       | B20              | 5.0      |
 
-  Scenario Outline: CO2 emission from fuel use and default automobile fuel
+  Scenario: CO2 emission from fuel use and default automobile fuel
     Given a characteristic "fuel_use" of "10.0"
     When the "automobile_fuel" committee reports
     And the "co2_emission" committee reports
