@@ -344,6 +344,27 @@ Feature: Automobile Trip Committee Calculations
       | Ford       | Focus | 2010 | diesel           |
       | Volkswagen | Jetta | 2011 | B20              |
 
+  Scenario: Energy use committee from fuel use and default automobile fuel
+    Given a characteristic "fuel_use" of "1"
+    When the "automobile_fuel" committee reports
+    And the "energy" committee reports
+    Then the committee should have used quorum "from fuel use and automobile fuel"
+    And the conclusion should comply with standards ""
+    And the conclusion of the committee should be "35.09967"
+
+  Scenario Outline: Energy use committee from default fuel use and automobile fuel
+    Given a characteristic "fuel_use" of "1"
+    And a characteristic "automobile_fuel.name" of "<fuel>"
+    When the "energy" committee reports
+    Then the committee should have used quorum "from fuel use and automobile fuel"
+    And the conclusion should comply with standards ""
+    And the conclusion of the committee should be "<energy>"
+    Examples:
+      | fuel             | energy |
+      | regular gasoline | 35.0   |
+      | diesel           | 39.0   |
+      | B20              | 35.8   |
+
   Scenario: HFC emission from fuel use and default automobile fuel
     Given a characteristic "fuel_use" of "10.0"
     When the "automobile_fuel" committee reports
