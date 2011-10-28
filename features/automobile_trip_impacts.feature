@@ -110,10 +110,11 @@ Feature: Automobile Trip Emissions Calculations
     Then the amount of "carbon" should be within "0.01" of "<carbon>"
     And the calculation should comply with standards "ghg_protocol_scope_3, iso"
     Examples:
-      | make   | model | year | carbon |
-      | Toyota | Prius | 2003 | 2.16   |
-      | Toyota | Prius | 2010 | 1.94   |
-      | Ford   | Focus | 2003 | 3.24   |
+      | make       | model | year | carbon |
+      | Toyota     | Prius | 2003 | 2.14   |
+      | Toyota     | Prius | 2010 | 1.94   |
+      | Ford       | Focus | 2010 | 3.88   |
+      | Volkswagen | Jetta | 2011 | 3.10   |
 
   Scenario: Calculations from speed and duration
     Given it has "speed" of "5.0"

@@ -329,6 +329,21 @@ Feature: Automobile Trip Committee Calculations
     And the conclusion of the committee should have "hfc_emission_factor" of "0.10910"
     And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
 
+  Scenario Outline: Automobile fuel committee from make model year
+    Given a characteristic "make.name" of "<make>"
+    And a characteristic "model.name" of "<model>"
+    And a characteristic "year.year" of "<year>"
+    When the "make_model_year" committee reports
+    And the "automobile_fuel" committee reports
+    Then the committee should have used quorum "from make model year"
+    And the conclusion should comply with standards "ghg_protocol_scope_1, ghg_protocol_scope_3, iso"
+    And the conclusion of the committee should have "name" of "<fuel>"
+    Examples:
+      | make       | model | year | fuel             |
+      | Toyota     | Prius | 2003 | regular gasoline |
+      | Ford       | Focus | 2010 | diesel           |
+      | Volkswagen | Jetta | 2011 | B20              |
+
   Scenario: HFC emission from fuel use and default automobile fuel
     Given a characteristic "fuel_use" of "10.0"
     When the "automobile_fuel" committee reports
