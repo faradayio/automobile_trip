@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>impact_model.rb</title>
+  <link rel="stylesheet" href="http://jashkenas.github.com/docco/resources/docco.css">
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-1667526-20']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+  <style type="text/css">
+    td.docs h1 {
+      margin-top: 0;
+    }
+    @media print {
+      .code pre {
+        white-space: pre-wrap;
+      }
+      .code {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+      }
+      .code .highlight {
+        margin-left: 15px;
+        margin-right: 15px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+<div id='container'>
+  <div id="background"></div>
+  <table cellspacing=0 cellpadding=0>
+  <thead>
+    <tr>
+      <th class=docs><h1>impact_model.rb</h1></th>
+      <th class=code></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr id='section-1'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-1">&#182;</a>
+        </div>
+        <p>Copyright © 2010 Brighter Planet.
+See LICENSE for details.
+Contact Brighter Planet for dual-license arrangements.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-Automobile_impact_model'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Automobile_impact_model">&#182;</a>
+        </div>
+        <h2>Automobile impact model</h2>
+
+<p>This model is used by <a href="http://brighterplanet.com">Brighter Planet</a>&rsquo;s <a href="http://carbon.brighterplanet.com">CM1 web service</a> to calculate the impacts of an automobile trip, such as energy use and greenhouse gas emissions.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-Timeframe'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Timeframe">&#182;</a>
+        </div>
+        <h4>Timeframe</h4>
+
+<p>The model calculates impacts that occured during a particular time period (<code>timeframe</code>).
+For example if the <code>timeframe</code> is February 2010, an automobile put into use (<code>acquisition</code>) in December 2009 and taken out of use (<code>retirement</code>) in March 2010 will have impacts because it was in use during January 2010.
+An automobile put into use in March 2010 or taken out of use in January 2010 will have zero impacts, because it was not in use during February 2010.</p>
+
+<p>The default <code>timeframe</code> is the current calendar year.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-Calculations'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Calculations">&#182;</a>
+        </div>
+        <h4>Calculations</h4>
+
+<p>The final impacts are the result of the calculations below. These are performed in reverse order, starting with the last calculation listed and finishing with the greenhouse gas emissions calculation.</p>
+
+<p>Each calculation listing shows:</p>
+
+<ul>
+<li><strong>value returned</strong> (<strong><em>units of measurement</em></strong>)</li>
+<li>a description of the value</li>
+<li>calculation methods, listed from most to least preferred</li>
+</ul>
+
+
+<p>Some methods need <code>values</code> returned by prior calculations. If any of these <code>values</code> are unknown the method is skipped.
+If all of the methods for a calculation are skipped, the value the calculation would return is unknown.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-Standard_compliance'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Standard_compliance">&#182;</a>
+        </div>
+        <h4>Standard compliance</h4>
+
+<p>When compliance with a particular standard is requested, all methods that do not comply with that standard are ignored.
+Thus any <code>values</code> a method needs will have been calculated using a compliant method or will be unknown.
+To see which standards a method complies with, look at the <code>:complies =&gt;</code> section of the code in the right column.
+Client input complies with all standards.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-Collaboration'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Collaboration">&#182;</a>
+        </div>
+        <h4>Collaboration</h4>
+
+<p>Contributions to this carbon model are actively encouraged and warmly welcomed. This library includes a comprehensive test suite to ensure that your changes do not cause regressions. All changes should include test coverage for new functionality. Please see <a href="https://github.com/brighterplanet/sniff#readme">sniff</a>, our emitter testing framework, for more information.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre><span class="k">module</span> <span class="nn">BrighterPlanet</span>
+  <span class="k">module</span> <span class="nn">AutomobileTrip</span>
+    <span class="k">module</span> <span class="nn">ImpactModel</span>
+      <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">included</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
+        <span class="n">base</span><span class="o">.</span><span class="n">decide</span> <span class="ss">:impact</span><span class="p">,</span> <span class="ss">:with</span> <span class="o">=&gt;</span> <span class="ss">:characteristics</span> <span class="k">do</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-7'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-7">&#182;</a>
+        </div>
+        <hr />
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>          </pre></div>
+      </td>
+    </tr>
+    <tr id='section-Carbon_(&lt;em&gt;kg_CO&lt;sub&gt;2&lt;/sub&gt;e&lt;/em&gt;)'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Carbon_(&lt;em&gt;kg_CO&lt;sub&gt;2&lt;/sub&gt;e&lt;/em&gt;)">&#182;</a>
+        </div>
+        <h3>Carbon (<em>kg CO<sub>2</sub>e</em>)</h3>
+
+<p>The trip&rsquo;s total greenhouse gas emissions from anthropogenic sources during <code>timeframe</code>.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:carbon</span> <span class="k">do</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-Greenhouse_gas_emission_from_CO&lt;sub&gt;2&lt;/sub&gt;_emission,_CH&lt;sub&gt;4&lt;/sub&gt;_emission,_N&lt;sub&gt;2&lt;/sub&gt;O_emission,_and_HFC_emission'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Greenhouse_gas_emission_from_CO&lt;sub&gt;2&lt;/sub&gt;_emission,_CH&lt;sub&gt;4&lt;/sub&gt;_emission,_N&lt;sub&gt;2&lt;/sub&gt;O_emission,_and_HFC_emission">&#182;</a>
+        </div>
+        <h3>Greenhouse gas emission from CO<sub>2</sub> emission, CH<sub>4</sub> emission, N<sub>2</sub>O emission, and HFC emission</h3>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from co2 emission, ch4 emission, n2o emission, and hfc emission&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:co2_emission</span><span class="p">,</span> <span class="ss">:ch4_emission</span><span class="p">,</span> <span class="ss">:n2o_emission</span><span class="p">,</span> <span class="ss">:hfc_emission</span><span class="o">]</span><span class="p">,</span>
+              <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_1</span><span class="p">,</span> <span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-10'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-10">&#182;</a>
+        </div>
+        <p>Sum <code>co2 emission</code> (<em>kg</em>), <code>ch4 emission</code> (<em>kg CO<sub>2</sub>e</em>), <code>n2o emission</code> (<em>kg CO<sub>2</sub>e</em>), and <code>hfc emission</code> (<em>kg CO<sub>2</sub>e</em>), to give <em>kg CO<sub>2</sub>e</em>.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>                <span class="n">characteristics</span><span class="o">[</span><span class="ss">:co2_emission</span><span class="o">]</span> <span class="o">+</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:ch4_emission</span><span class="o">]</span> <span class="o">+</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:n2o_emission</span><span class="o">]</span> <span class="o">+</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:hfc_emission</span><span class="o">]</span>
+            <span class="k">end</span>
+          <span class="k">end</span>
+          </pre></div>
+      </td>
+    </tr>
+    <tr id='section-CO&lt;sub&gt;2&lt;/sub&gt;_emission_(&lt;em&gt;kg&lt;/em&gt;)'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-CO&lt;sub&gt;2&lt;/sub&gt;_emission_(&lt;em&gt;kg&lt;/em&gt;)">&#182;</a>
+        </div>
+        <h3>CO<sub>2</sub> emission (<em>kg</em>)</h3>
+
+<p>The trip&rsquo;s CO<sub>2</sub> emissions from anthropogenic sources during <code>timeframe</code>.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:co2_emission</span> <span class="k">do</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-12'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-12">&#182;</a>
+        </div>
+        <p>Multiply <code>fuel use</code> (<em>l</em>) by the <code>automobile fuel</code>&rsquo;s co2 emission factor (<em>kg / l</em>) to give <em>kg</em>.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from fuel use and automobile fuel&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:fuel_use</span><span class="p">,</span> <span class="ss">:automobile_fuel</span><span class="o">]</span><span class="p">,</span>
+              <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_1</span><span class="p">,</span> <span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
+                <span class="n">characteristics</span><span class="o">[</span><span class="ss">:fuel_use</span><span class="o">]</span> <span class="o">*</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:automobile_fuel</span><span class="o">].</span><span class="n">co2_emission_factor</span>
+            <span class="k">end</span>
+          <span class="k">end</span>
+          </pre></div>
+      </td>
+    </tr>
+    <tr id='section-CO&lt;sub&gt;2&lt;/sub&gt;_biogenic_emission_(&lt;em&gt;kg&lt;/em&gt;)'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-CO&lt;sub&gt;2&lt;/sub&gt;_biogenic_emission_(&lt;em&gt;kg&lt;/em&gt;)">&#182;</a>
+        </div>
+        <h3>CO<sub>2</sub> biogenic emission (<em>kg</em>)</h3>
+
+<p>The trip&rsquo;s CO<sub>2</sub> emissions from biogenic sources during <code>timeframe</code>.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:co2_biogenic_emission</span> <span class="k">do</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-14'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-14">&#182;</a>
+        </div>
+        <p>Multiply <code>fuel use</code> (<em>l</em>) by the <code>automobile fuel</code>&rsquo;s co2 biogenic emission factor (<em>kg / l</em>) to give <em>kg</em>.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from fuel use and automobile fuel&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:fuel_use</span><span class="p">,</span> <span class="ss">:automobile_fuel</span><span class="o">]</span><span class="p">,</span>
+              <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_1</span><span class="p">,</span> <span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
+                <span class="n">characteristics</span><span class="o">[</span><span class="ss">:fuel_use</span><span class="o">]</span> <span class="o">*</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:automobile_fuel</span><span class="o">].</span><span class="n">co2_biogenic_emission_factor</span>
+            <span class="k">end</span>
+          <span class="k">end</span>
+          </pre></div>
+      </td>
+    </tr>
+    <tr id='section-CH&lt;sub&gt;4&lt;/sub&gt;_emission_(&lt;em&gt;kg_CO&lt;sub&gt;2&lt;/sub&gt;e&lt;/em&gt;)'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-CH&lt;sub&gt;4&lt;/sub&gt;_emission_(&lt;em&gt;kg_CO&lt;sub&gt;2&lt;/sub&gt;e&lt;/em&gt;)">&#182;</a>
+        </div>
+        <h3>CH<sub>4</sub> emission (<em>kg CO<sub>2</sub>e</em>)</h3>
+
+<p>The trip&rsquo;s CH<sub>4</sub> emissions during <code>timeframe</code>.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:ch4_emission</span> <span class="k">do</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-16'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-16">&#182;</a>
+        </div>
+        <p>Multiply <code>fuel use</code> (<em>l</em>) by the <code>automobile fuel</code>&rsquo;s ch4 emission factor (<em>kg CO<sub>2</sub>e / l</em>) to give <em>kg CO<sub>2</sub>e</em>.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from fuel use and automobile fuel&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:fuel_use</span><span class="p">,</span> <span class="ss">:automobile_fuel</span><span class="o">]</span><span class="p">,</span>
+              <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_1</span><span class="p">,</span> <span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
+                <span class="n">characteristics</span><span class="o">[</span><span class="ss">:fuel_use</span><span class="o">]</span> <span class="o">*</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:automobile_fuel</span><span class="o">].</span><span class="n">ch4_emission_factor</span>
+            <span class="k">end</span>
+          <span class="k">end</span>
+          </pre></div>
+      </td>
+    </tr>
+    <tr id='section-N&lt;sub&gt;4&lt;/sub&gt;O_emission_(&lt;em&gt;kg_CO&lt;sub&gt;2&lt;/sub&gt;e&lt;/em&gt;)'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-N&lt;sub&gt;4&lt;/sub&gt;O_emission_(&lt;em&gt;kg_CO&lt;sub&gt;2&lt;/sub&gt;e&lt;/em&gt;)">&#182;</a>
+        </div>
+        <h3>N<sub>4</sub>O emission (<em>kg CO<sub>2</sub>e</em>)</h3>
+
+<p>The trip&rsquo;s N<sub>2</sub>O emissions during <code>timeframe</code>.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:n2o_emission</span> <span class="k">do</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-18'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-18">&#182;</a>
+        </div>
+        <p>Multiply <code>fuel use</code> (<em>l</em>) by the <code>automobile fuel</code>&rsquo;s n2o emission factor (<em>kg CO<sub>2</sub>e / l</em>) to give <em>kg CO<sub>2</sub>e</em>.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from fuel use and automobile fuel&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:fuel_use</span><span class="p">,</span> <span class="ss">:automobile_fuel</span><span class="o">]</span><span class="p">,</span>
+              <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_1</span><span class="p">,</span> <span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
+                <span class="n">characteristics</span><span class="o">[</span><span class="ss">:fuel_use</span><span class="o">]</span> <span class="o">*</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:automobile_fuel</span><span class="o">].</span><span class="n">n2o_emission_factor</span>
+            <span class="k">end</span>
+          <span class="k">end</span>
+          </pre></div>
+      </td>
+    </tr>
+    <tr id='section-HFC_emission_(&lt;em&gt;kg_CO&lt;sub&gt;2&lt;/sub&gt;e&lt;/em&gt;)'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-HFC_emission_(&lt;em&gt;kg_CO&lt;sub&gt;2&lt;/sub&gt;e&lt;/em&gt;)">&#182;</a>
+        </div>
+        <h3>HFC emission (<em>kg CO<sub>2</sub>e</em>)</h3>
+
+<p>The trip&rsquo;s HFC emissions during <code>timeframe</code>.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:hfc_emission</span> <span class="k">do</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-20'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-20">&#182;</a>
+        </div>
+        <p>Multiply <code>fuel use</code> (<em>l</em>) by the <code>automobile fuel</code>&rsquo;s hfc emission factor (<em>kg CO<sub>2</sub>e / l</em>) to give <em>kg CO<sub>2</sub>e</em>.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from fuel use and automobile fuel&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:fuel_use</span><span class="p">,</span> <span class="ss">:automobile_fuel</span><span class="o">]</span><span class="p">,</span>
+              <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_1</span><span class="p">,</span> <span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
+                <span class="n">characteristics</span><span class="o">[</span><span class="ss">:fuel_use</span><span class="o">]</span> <span class="o">*</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:automobile_fuel</span><span class="o">].</span><span class="n">hfc_emission_factor</span>
+            <span class="k">end</span>
+          <span class="k">end</span>
+          </pre></div>
+      </td>
+    </tr>
+    <tr id='section-Energy_(&lt;em&gt;MJ&lt;/em&gt;)'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Energy_(&lt;em&gt;MJ&lt;/em&gt;)">&#182;</a>
+        </div>
+        <h3>Energy (<em>MJ</em>)</h3>
+
+<p>The trip&rsquo;s energy use during <code>timeframe</code>.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:energy</span> <span class="k">do</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-22'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-22">&#182;</a>
+        </div>
+        <p>Multiply <code>fuel use</code> (<em>l</em>) by the <code>automobile fuel</code>&rsquo;s energy content (<em>MJ / l</em>) to give <em>MJ</em>.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from fuel use and automobile fuel&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:fuel_use</span><span class="p">,</span> <span class="ss">:automobile_fuel</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
+              <span class="n">characteristics</span><span class="o">[</span><span class="ss">:fuel_use</span><span class="o">]</span> <span class="o">*</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:automobile_fuel</span><span class="o">].</span><span class="n">energy_content</span>
+            <span class="k">end</span>
+          <span class="k">end</span>
+          </pre></div>
+      </td>
+    </tr>
+    <tr id='section-Automobile_fuel'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Automobile_fuel">&#182;</a>
+        </div>
+        <h3>Automobile fuel</h3>
+
+<p>The automobile&rsquo;s <a href="http://data.brighterplanet.com/automobile_fuels">fuel type</a>.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:automobile_fuel</span> <span class="k">do</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-24'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-24">&#182;</a>
+        </div>
+        <p>Use client input, if available.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>            </pre></div>
+      </td>
+    </tr>
+    <tr id='section-25'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-25">&#182;</a>
+        </div>
+        <p>Otherwise look up the <code>make model year</code>&rsquo;s automobile fuel</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from make model year&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="ss">:make_model_year</span><span class="p">,</span>
+              <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_1</span><span class="p">,</span> <span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
+                <span class="n">characteristics</span><span class="o">[</span><span class="ss">:make_model_year</span><span class="o">].</span><span class="n">automobile_fuel</span>
+            <span class="k">end</span>
+            </pre></div>
+      </td>
+    </tr>
+    <tr id='section-26'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-26">&#182;</a>
+        </div>
+        <p>Otherwise look up the average <a href="http://data.brighterplanet.com/automobile_fuels">automobile fuel</a>.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;default&#39;</span><span class="p">,</span>
+              <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="o">]</span> <span class="k">do</span>
+                <span class="no">AutomobileFuel</span><span class="o">.</span><span class="n">fallback</span>
+            <span class="k">end</span>
+          <span class="k">end</span>
+          </pre></div>
+      </td>
+    </tr>
+    <tr id='section-Fuel_use_(&lt;em&gt;l&lt;/em&gt;)'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Fuel_use_(&lt;em&gt;l&lt;/em&gt;)">&#182;</a>
+        </div>
+        <h3>Fuel use (<em>l</em>)</h3>
+
+<p>The trip&rsquo;s fuel use during <code>timeframe</code>.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:fuel_use</span> <span class="k">do</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-28'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-28">&#182;</a>
+        </div>
+        <p>Use client input, if available.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>            </pre></div>
+      </td>
+    </tr>
+    <tr id='section-29'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-29">&#182;</a>
+        </div>
+        <p>Otherwise if <code>date</code> falls within <code>timeframe</code>, divide <code>distance</code> (<em>km</em>) by <code>fuel efficiency</code> (<em>km / l</em>) to give <em>l</em>.
+Otherwise fuel use is zero.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from fuel efficiency, distance, date, and timeframe&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:fuel_efficiency</span><span class="p">,</span> <span class="ss">:distance</span><span class="p">,</span> <span class="ss">:date</span><span class="o">]</span><span class="p">,</span>
+              <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_1</span><span class="p">,</span> <span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="p">,</span> <span class="n">timeframe</span><span class="o">|</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-30'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-30">&#182;</a>
+        </div>
+        <p>FIXME TODO user-input date should already be coerced</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>                <span class="n">date</span> <span class="o">=</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:date</span><span class="o">].</span><span class="n">is_a?</span><span class="p">(</span><span class="no">Date</span><span class="p">)</span> <span class="p">?</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:date</span><span class="o">]</span> <span class="p">:</span> <span class="no">Date</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">characteristics</span><span class="o">[</span><span class="ss">:date</span><span class="o">].</span><span class="n">to_s</span><span class="p">)</span>
+                <span class="n">timeframe</span><span class="o">.</span><span class="n">include?</span><span class="p">(</span><span class="n">date</span><span class="p">)</span> <span class="p">?</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:distance</span><span class="o">]</span> <span class="o">/</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:fuel_efficiency</span><span class="o">]</span> <span class="p">:</span> <span class="mi">0</span>
+            <span class="k">end</span>
+          <span class="k">end</span>
+          </pre></div>
+      </td>
+    </tr>
+    <tr id='section-Distance_(&lt;em&gt;km&lt;/em&gt;)'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Distance_(&lt;em&gt;km&lt;/em&gt;)">&#182;</a>
+        </div>
+        <h3>Distance (<em>km</em>)</h3>
+
+<p>The trip&rsquo;s distance.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:distance</span> <span class="k">do</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-32'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-32">&#182;</a>
+        </div>
+        <p>Use client input, if available.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>            </pre></div>
+      </td>
+    </tr>
+    <tr id='section-33'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-33">&#182;</a>
+        </div>
+        <p>Otherwise use the <a href="http://developer.mapquest.com/web/products/dev-services/directions-ws">Mapquest directions API</a> to calculate the distance by road between <code>origin_location</code> and <code>destination_location</code> in <em>km</em>.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from origin and destination locations&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:origin_location</span><span class="p">,</span> <span class="ss">:destination_location</span><span class="o">]</span><span class="p">,</span>
+              <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
+                <span class="n">mapquest</span> <span class="o">=</span> <span class="o">::</span><span class="no">MapQuestDirections</span><span class="o">.</span><span class="n">new</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:origin_location</span><span class="o">].</span><span class="n">ll</span><span class="p">,</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:destination_location</span><span class="o">].</span><span class="n">ll</span>
+                <span class="n">mapquest</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">to_i</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">?</span> <span class="no">Nokogiri</span><span class="o">::</span><span class="no">XML</span><span class="p">(</span><span class="n">mapquest</span><span class="o">.</span><span class="n">xml</span><span class="p">)</span><span class="o">.</span><span class="n">css</span><span class="p">(</span><span class="s2">&quot;distance&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">to_f</span><span class="o">.</span><span class="n">miles</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="ss">:kilometres</span><span class="p">)</span> <span class="p">:</span> <span class="kp">nil</span>
+            <span class="k">end</span>
+            </pre></div>
+      </td>
+    </tr>
+    <tr id='section-34'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-34">&#182;</a>
+        </div>
+        <p>Otherwise divide <code>duration</code> (<em>seconds</em>) by 3600 to give <em>hours</em> and multiply by <code>speed</code> (<em>km / hour</em>) to give <em>km</em>.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from duration and speed&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:duration</span><span class="p">,</span> <span class="ss">:speed</span><span class="o">]</span><span class="p">,</span>
+              <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
+                <span class="p">(</span><span class="n">characteristics</span><span class="o">[</span><span class="ss">:duration</span><span class="o">]</span> <span class="o">/</span> <span class="mi">60</span><span class="o">.</span><span class="mi">0</span> <span class="o">/</span> <span class="mi">60</span><span class="o">.</span><span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:speed</span><span class="o">]</span>
+            <span class="k">end</span>
+            </pre></div>
+      </td>
+    </tr>
+    <tr id='section-35'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-35">&#182;</a>
+        </div>
+        <p>Otherwise look up the <code>country</code>&rsquo;s average automobile trip distance (<em>km</em>).</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from country&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="ss">:country</span><span class="p">,</span>
+              <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
+                <span class="n">characteristics</span><span class="o">[</span><span class="ss">:country</span><span class="o">].</span><span class="n">automobile_trip_distance</span>
+            <span class="k">end</span>
+          <span class="k">end</span>
+          </pre></div>
+      </td>
+    </tr>
+    <tr id='section-Destination_location_(&lt;em&gt;lat,_lng&lt;/em&gt;)'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Destination_location_(&lt;em&gt;lat,_lng&lt;/em&gt;)">&#182;</a>
+        </div>
+        <h3>Destination location (<em>lat, lng</em>)</h3>
+
+<p>The latitude and longitude of the trip&rsquo;s destination.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:destination_location</span> <span class="k">do</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-37'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-37">&#182;</a>
+        </div>
+        <p>Use the <a href="http://geokit.rubyforge.org/">Geokit</a> geocoder to determine the <code>destination</code>&rsquo;s location (<em>lat, lng</em>).</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from destination&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="ss">:destination</span><span class="p">,</span>
+              <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_1</span><span class="p">,</span> <span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
+                <span class="n">location</span> <span class="o">=</span> <span class="o">::</span><span class="no">Geokit</span><span class="o">::</span><span class="no">Geocoders</span><span class="o">::</span><span class="no">MultiGeocoder</span><span class="o">.</span><span class="n">geocode</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:destination</span><span class="o">].</span><span class="n">to_s</span>
+                <span class="n">location</span><span class="o">.</span><span class="n">success</span> <span class="p">?</span> <span class="n">location</span> <span class="p">:</span> <span class="kp">nil</span>
+            <span class="k">end</span>
+          <span class="k">end</span>
+          </pre></div>
+      </td>
+    </tr>
+    <tr id='section-Origin_location_(&lt;em&gt;lat,_lng&lt;/em&gt;)'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Origin_location_(&lt;em&gt;lat,_lng&lt;/em&gt;)">&#182;</a>
+        </div>
+        <h3>Origin location (<em>lat, lng</em>)</h3>
+
+<p>The latitude and longitude of the trip&rsquo;s origin.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:origin_location</span> <span class="k">do</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-Destination_location_from_destination'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Destination_location_from_destination">&#182;</a>
+        </div>
+        <h3>Destination location from destination</h3>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from origin&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="ss">:origin</span><span class="p">,</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-40'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-40">&#182;</a>
+        </div>
+        <p>Use the <a href="http://geokit.rubyforge.org/">Geokit</a> geocoder to determine the <code>origin</code>&rsquo;s location (<em>lat, lng</em>).</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>              <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_1</span><span class="p">,</span> <span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
+                <span class="n">location</span> <span class="o">=</span> <span class="o">::</span><span class="no">Geokit</span><span class="o">::</span><span class="no">Geocoders</span><span class="o">::</span><span class="no">MultiGeocoder</span><span class="o">.</span><span class="n">geocode</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:origin</span><span class="o">].</span><span class="n">to_s</span>
+                <span class="n">location</span><span class="o">.</span><span class="n">success</span> <span class="p">?</span> <span class="n">location</span> <span class="p">:</span> <span class="kp">nil</span>
+            <span class="k">end</span>
+          <span class="k">end</span>
+          </pre></div>
+      </td>
+    </tr>
+    <tr id='section-Destination'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Destination">&#182;</a>
+        </div>
+        <h3>Destination</h3>
+
+<p>The trip&rsquo;s destination.</p>
+
+<p>Use client input if available.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>          </pre></div>
+      </td>
+    </tr>
+    <tr id='section-Origin'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Origin">&#182;</a>
+        </div>
+        <h3>Origin</h3>
+
+<p>The trip&rsquo;s origin.</p>
+
+<p>Use client input if available.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>          </pre></div>
+      </td>
+    </tr>
+    <tr id='section-Duration_(&lt;em&gt;seconds&lt;/em&gt;)'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Duration_(&lt;em&gt;seconds&lt;/em&gt;)">&#182;</a>
+        </div>
+        <h3>Duration (<em>seconds</em>)</h3>
+
+<p>The trip&rsquo;s duration.</p>
+
+<p>Use client input if available</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>          </pre></div>
+      </td>
+    </tr>
+    <tr id='section-Speed_(&lt;em&gt;km_/_hr&lt;/em&gt;)'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Speed_(&lt;em&gt;km_/_hr&lt;/em&gt;)">&#182;</a>
+        </div>
+        <h3>Speed (<em>km / hr</em>)</h3>
+
+<p>The trip&rsquo;s average speed.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:speed</span> <span class="k">do</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-45'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-45">&#182;</a>
+        </div>
+        <p>Use client input, if available.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>            </pre></div>
+      </td>
+    </tr>
+    <tr id='section-46'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-46">&#182;</a>
+        </div>
+        <p>Otherwise look up the <code>country</code>&rsquo;s average automobile city speed (<em>km / hr</em>) and automobile highway speed (<em>km / hr</em>).
+Calculate the harmonic mean of those speeds weighted by <code>urbanity</code> to give <em>km / hr</em>.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from urbanity and country&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:urbanity</span><span class="p">,</span> <span class="ss">:country</span><span class="o">]</span><span class="p">,</span>
+              <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_1</span><span class="p">,</span> <span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
+                <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">characteristics</span><span class="o">[</span><span class="ss">:urbanity</span><span class="o">]</span> <span class="o">/</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:country</span><span class="o">].</span><span class="n">automobile_city_speed</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:urbanity</span><span class="o">]</span><span class="p">)</span> <span class="o">/</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:country</span><span class="o">].</span><span class="n">automobile_highway_speed</span><span class="p">)</span>
+            <span class="k">end</span>
+          <span class="k">end</span>
+          </pre></div>
+      </td>
+    </tr>
+    <tr id='section-Fuel_efficiency_(&lt;em&gt;km_/_l&lt;/em&gt;)'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Fuel_efficiency_(&lt;em&gt;km_/_l&lt;/em&gt;)">&#182;</a>
+        </div>
+        <h3>Fuel efficiency (<em>km / l</em>)</h3>
+
+<p>The automobile&rsquo;s fuel efficiency.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:fuel_efficiency</span> <span class="k">do</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-48'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-48">&#182;</a>
+        </div>
+        <p>Use client input, if available.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>            </pre></div>
+      </td>
+    </tr>
+    <tr id='section-49'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-49">&#182;</a>
+        </div>
+        <p>Otherwise look up the <code>make model year</code>&rsquo;s fuel efficiency city (<em>km / l</em>) and fuel efficiency highway (<em>km / l</em>).
+Calculate the harmonic mean of those fuel efficiencies, weighted by <code>urbanity</code>, to give <em>km / l</em>.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from make model year and urbanity&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:make_model_year</span><span class="p">,</span> <span class="ss">:urbanity</span><span class="o">]</span><span class="p">,</span>
+              <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_1</span><span class="p">,</span> <span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
+                <span class="mi">1</span><span class="o">.</span><span class="mi">0</span> <span class="o">/</span> <span class="p">(</span>
+                  <span class="p">(</span><span class="n">characteristics</span><span class="o">[</span><span class="ss">:urbanity</span><span class="o">]</span>         <span class="o">/</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:make_model_year</span><span class="o">].</span><span class="n">fuel_efficiency_city</span><span class="p">)</span> <span class="o">+</span>
+                  <span class="p">((</span><span class="mi">1</span><span class="o">.</span><span class="mi">0</span> <span class="o">-</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:urbanity</span><span class="o">]</span><span class="p">)</span> <span class="o">/</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:make_model_year</span><span class="o">].</span><span class="n">fuel_efficiency_highway</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="k">end</span>
+            </pre></div>
+      </td>
+    </tr>
+    <tr id='section-50'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-50">&#182;</a>
+        </div>
+        <p>Otherwise look up the <code>make model</code>&rsquo;s fuel efficiency city (<em>km / l</em>) and fuel efficiency highway (<em>km / l</em>).
+Calculate the harmonic mean of those fuel efficiencies, weighted by <code>urbanity</code>, to give <em>km / l</em>.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from make model and urbanity&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:make_model</span><span class="p">,</span> <span class="ss">:urbanity</span><span class="o">]</span><span class="p">,</span>
+              <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_1</span><span class="p">,</span> <span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
+                <span class="mi">1</span><span class="o">.</span><span class="mi">0</span> <span class="o">/</span> <span class="p">(</span>
+                  <span class="p">(</span><span class="n">characteristics</span><span class="o">[</span><span class="ss">:urbanity</span><span class="o">]</span>         <span class="o">/</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:make_model</span><span class="o">].</span><span class="n">fuel_efficiency_city</span><span class="p">)</span> <span class="o">+</span>
+                  <span class="p">((</span><span class="mi">1</span><span class="o">.</span><span class="mi">0</span> <span class="o">-</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:urbanity</span><span class="o">]</span><span class="p">)</span> <span class="o">/</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:make_model</span><span class="o">].</span><span class="n">fuel_efficiency_highway</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="k">end</span>
+            </pre></div>
+      </td>
+    </tr>
+    <tr id='section-51'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-51">&#182;</a>
+        </div>
+        <p>Otherwise look up the <code>size class</code>&lsquo; <code>fuel efficiency city</code>(<em>km / l</em>) and <code>fuel efficiency highway</code> (<em>km / l</em>).
+Calculate the harmonic mean of those fuel efficiencies, weighted by <code>urbanity</code>, to give <em>km / l</em>.
+Multiply by <code>hybridity multiplier</code> to give <em>km / l</em>.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from size class, hybridity multiplier, and urbanity&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:size_class</span><span class="p">,</span> <span class="ss">:hybridity_multiplier</span><span class="p">,</span> <span class="ss">:urbanity</span><span class="o">]</span><span class="p">,</span>
+              <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
+                <span class="p">(</span><span class="mi">1</span><span class="o">.</span><span class="mi">0</span> <span class="o">/</span> <span class="p">(</span>
+                  <span class="p">(</span><span class="n">characteristics</span><span class="o">[</span><span class="ss">:urbanity</span><span class="o">]</span>         <span class="o">/</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:size_class</span><span class="o">].</span><span class="n">fuel_efficiency_city</span><span class="p">)</span> <span class="o">+</span>
+                  <span class="p">((</span><span class="mi">1</span><span class="o">.</span><span class="mi">0</span> <span class="o">-</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:urbanity</span><span class="o">]</span><span class="p">)</span> <span class="o">/</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:size_class</span><span class="o">].</span><span class="n">fuel_efficiency_highway</span><span class="p">)</span>
+                <span class="p">))</span> <span class="o">*</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:hybridity_multiplier</span><span class="o">]</span>
+            <span class="k">end</span>
+            </pre></div>
+      </td>
+    </tr>
+    <tr id='section-52'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-52">&#182;</a>
+        </div>
+        <p>Otherwise look up the <code>make year</code>&rsquo;s <code>fuel efficiency</code> (<em>km / l</em>).
+Multiply by <code>hybridity multiplier</code> to give <em>km / l</em>.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from make year and hybridity multiplier&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:make_year</span><span class="p">,</span> <span class="ss">:hybridity_multiplier</span><span class="o">]</span><span class="p">,</span>
+              <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
+                <span class="n">characteristics</span><span class="o">[</span><span class="ss">:make_year</span><span class="o">].</span><span class="n">fuel_efficiency</span> <span class="o">*</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:hybridity_multiplier</span><span class="o">]</span>
+            <span class="k">end</span>
+            </pre></div>
+      </td>
+    </tr>
+    <tr id='section-53'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-53">&#182;</a>
+        </div>
+        <p>Otherwise look up the <code>make</code>&rsquo;s <code>fuel efficiency</code> (<em>km / l</em>).
+Multiply by <code>hybridity multiplier</code> to give <em>km / l</em>.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from make and hybridity multiplier&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:make</span><span class="p">,</span> <span class="ss">:hybridity_multiplier</span><span class="o">]</span><span class="p">,</span>
+              <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
+                <span class="n">characteristics</span><span class="o">[</span><span class="ss">:make</span><span class="o">].</span><span class="n">fuel_efficiency</span> <span class="o">*</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:hybridity_multiplier</span><span class="o">]</span>
+            <span class="k">end</span>
+            </pre></div>
+      </td>
+    </tr>
+    <tr id='section-54'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-54">&#182;</a>
+        </div>
+        <p>Otherwise look up the <code>country</code>&rsquo;s average <code>automobile fuel efficiency</code> (<em>km / l</em>).
+Multiply by <code>hybridity multiplier</code> to give <em>km / l</em>.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from hybridity multiplier and country&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:hybridity_multiplier</span><span class="p">,</span> <span class="ss">:country</span><span class="o">]</span><span class="p">,</span>
+              <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
+                <span class="n">characteristics</span><span class="o">[</span><span class="ss">:country</span><span class="o">].</span><span class="n">automobile_fuel_efficiency</span> <span class="o">*</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:hybridity_multiplier</span><span class="o">]</span>
+            <span class="k">end</span>
+          <span class="k">end</span>
+          </pre></div>
+      </td>
+    </tr>
+    <tr id='section-Hybridity_multiplier_(&lt;em&gt;dimensionless&lt;/em&gt;)'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Hybridity_multiplier_(&lt;em&gt;dimensionless&lt;/em&gt;)">&#182;</a>
+        </div>
+        <h3>Hybridity multiplier (<em>dimensionless</em>)</h3>
+
+<p>A multiplier used to adjust fuel efficiency if we know the automobile is a hybrid or conventional vehicle.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:hybridity_multiplier</span> <span class="k">do</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-56'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-56">&#182;</a>
+        </div>
+        <p>Check whether the <code>size class</code> has <code>hybridity</code> multipliers for city and highway fuel efficiency.
+If it does, calculate the harmonic mean of those multipliers, weighted by <code>urbanity</code>.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from size class, hybridity, and urbanity&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:size_class</span><span class="p">,</span> <span class="ss">:hybridity</span><span class="p">,</span> <span class="ss">:urbanity</span><span class="o">]</span><span class="p">,</span>
+              <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_1</span><span class="p">,</span> <span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
+                <span class="n">drivetrain</span> <span class="o">=</span> <span class="p">(</span><span class="n">characteristics</span><span class="o">[</span><span class="ss">:hybridity</span><span class="o">]</span> <span class="o">==</span> <span class="kp">true</span><span class="p">)</span> <span class="p">?</span> <span class="ss">:hybrid</span> <span class="p">:</span> <span class="ss">:conventional</span>
+                <span class="n">city_multiplier</span>    <span class="o">=</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:size_class</span><span class="o">].</span><span class="n">send</span><span class="p">(</span><span class="ss">:&quot;</span><span class="si">#{</span><span class="n">drivetrain</span><span class="si">}</span><span class="ss">_fuel_efficiency_city_multiplier&quot;</span><span class="p">)</span>
+                <span class="n">highway_multiplier</span> <span class="o">=</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:size_class</span><span class="o">].</span><span class="n">send</span><span class="p">(</span><span class="ss">:&quot;</span><span class="si">#{</span><span class="n">drivetrain</span><span class="si">}</span><span class="ss">_fuel_efficiency_highway_multiplier&quot;</span><span class="p">)</span>
+                
+                <span class="k">if</span> <span class="n">city_multiplier</span> <span class="ow">and</span> <span class="n">highway_multiplier</span>
+                  <span class="mi">1</span><span class="o">.</span><span class="mi">0</span> <span class="o">/</span> <span class="p">((</span><span class="n">characteristics</span><span class="o">[</span><span class="ss">:urbanity</span><span class="o">]</span> <span class="o">/</span> <span class="n">city_multiplier</span><span class="p">)</span> <span class="o">+</span> <span class="p">((</span><span class="mi">1</span><span class="o">.</span><span class="mi">0</span> <span class="o">-</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:urbanity</span><span class="o">]</span><span class="p">)</span> <span class="o">/</span> <span class="n">highway_multiplier</span><span class="p">))</span>
+                <span class="k">end</span>
+            <span class="k">end</span>
+            </pre></div>
+      </td>
+    </tr>
+    <tr id='section-57'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-57">&#182;</a>
+        </div>
+        <p>Otherwise look up the <code>hybridity</code>&rsquo;s average city and highway fuel efficiency multipliers.
+Calculate the harmonic mean of those multipliers, weighted by <code>urbanity</code>.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from hybridity and urbanity&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:hybridity</span><span class="p">,</span> <span class="ss">:urbanity</span><span class="o">]</span><span class="p">,</span>
+              <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_1</span><span class="p">,</span> <span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
+                <span class="n">drivetrain</span> <span class="o">=</span> <span class="p">(</span><span class="n">characteristics</span><span class="o">[</span><span class="ss">:hybridity</span><span class="o">]</span> <span class="o">==</span> <span class="kp">true</span><span class="p">)</span> <span class="p">?</span> <span class="ss">:hybrid</span> <span class="p">:</span> <span class="ss">:conventional</span>
+                <span class="n">city_multiplier</span> <span class="o">=</span> <span class="no">AutomobileSizeClass</span><span class="o">.</span><span class="n">fallback</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="ss">:&quot;</span><span class="si">#{</span><span class="n">drivetrain</span><span class="si">}</span><span class="ss">_fuel_efficiency_city_multiplier&quot;</span><span class="p">)</span>
+                <span class="n">highway_multiplier</span> <span class="o">=</span> <span class="no">AutomobileSizeClass</span><span class="o">.</span><span class="n">fallback</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="ss">:&quot;</span><span class="si">#{</span><span class="n">drivetrain</span><span class="si">}</span><span class="ss">_fuel_efficiency_highway_multiplier&quot;</span><span class="p">)</span>
+                
+                <span class="mi">1</span><span class="o">.</span><span class="mi">0</span> <span class="o">/</span> <span class="p">((</span><span class="n">characteristics</span><span class="o">[</span><span class="ss">:urbanity</span><span class="o">]</span> <span class="o">/</span> <span class="n">city_multiplier</span><span class="p">)</span> <span class="o">+</span> <span class="p">((</span><span class="mi">1</span><span class="o">.</span><span class="mi">0</span> <span class="o">-</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:urbanity</span><span class="o">]</span><span class="p">)</span> <span class="o">/</span> <span class="n">highway_multiplier</span><span class="p">))</span>
+            <span class="k">end</span>
+            </pre></div>
+      </td>
+    </tr>
+    <tr id='section-58'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-58">&#182;</a>
+        </div>
+        <p>Otherwise use a multiplier of 1.0.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;default&#39;</span><span class="p">,</span>
+              <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_1</span><span class="p">,</span> <span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="o">]</span> <span class="k">do</span>
+                <span class="mi">1</span><span class="o">.</span><span class="mi">0</span>
+            <span class="k">end</span>
+          <span class="k">end</span>
+          </pre></div>
+      </td>
+    </tr>
+    <tr id='section-Hybridity_(&lt;em&gt;boolean&lt;/em&gt;)'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Hybridity_(&lt;em&gt;boolean&lt;/em&gt;)">&#182;</a>
+        </div>
+        <h3>Hybridity (<em>boolean</em>)</h3>
+
+<p>True if the automobile is a hybrid vehicle. False if the automobile is a conventional vehicle.</p>
+
+<p>Use client input, if available.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>          </pre></div>
+      </td>
+    </tr>
+    <tr id='section-Size_class'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Size_class">&#182;</a>
+        </div>
+        <h3>Size class</h3>
+
+<p>The automobile&rsquo;s <a href="http://data.brighterplanet.com/automobile_size_classes">size class</a>.</p>
+
+<p>Use client input, if available.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>          </pre></div>
+      </td>
+    </tr>
+    <tr id='section-Urbanity_(&lt;em&gt;%&lt;/em&gt;)'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Urbanity_(&lt;em&gt;%&lt;/em&gt;)">&#182;</a>
+        </div>
+        <h3>Urbanity (<em>%</em>)</h3>
+
+<p>The fraction of the total distance driven that is in towns and cities rather than highways.
+Highways are defined as all driving at speeds of 45 miles per hour or greater.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:urbanity</span> <span class="k">do</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-62'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-62">&#182;</a>
+        </div>
+        <p>Look up the <code>country</code>&rsquo;s average automobile urbanity (<em>%</em>).</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from country&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="ss">:country</span><span class="p">,</span>
+              <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_1</span><span class="p">,</span> <span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
+                <span class="n">characteristics</span><span class="o">[</span><span class="ss">:country</span><span class="o">].</span><span class="n">automobile_urbanity</span>
+            <span class="k">end</span>
+          <span class="k">end</span>
+          </pre></div>
+      </td>
+    </tr>
+    <tr id='section-Country'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Country">&#182;</a>
+        </div>
+        <h3>Country</h3>
+
+<p>The <a href="http://data.brighterplanet.com/countries">country</a> in which the trip occurred.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:country</span> <span class="k">do</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-64'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-64">&#182;</a>
+        </div>
+        <p>Use client input, if available.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>            </pre></div>
+      </td>
+    </tr>
+    <tr id='section-65'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-65">&#182;</a>
+        </div>
+        <p>Otherwise use an artificial country that contains global averages.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;default&#39;</span><span class="p">,</span>
+              <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_1</span><span class="p">,</span> <span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="o">]</span> <span class="k">do</span>
+                <span class="no">Country</span><span class="o">.</span><span class="n">fallback</span>
+            <span class="k">end</span>
+          <span class="k">end</span>
+          </pre></div>
+      </td>
+    </tr>
+    <tr id='section-Make_model_year'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Make_model_year">&#182;</a>
+        </div>
+        <h3>Make model year</h3>
+
+<p>The automobile&rsquo;s <a href="http://data.brighterplanet.com/automobile_make_model_years">make, model, and year</a>.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:make_model_year</span> <span class="k">do</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-67'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-67">&#182;</a>
+        </div>
+        <p>Check whether the <code>make</code>, <code>model</code>, and <code>year</code> combination matches any automobiles in our database.
+If it doesn&rsquo;t then we don&rsquo;t know <code>make model year</code>.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from make, model, and year&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:make</span><span class="p">,</span> <span class="ss">:model</span><span class="p">,</span> <span class="ss">:year</span><span class="o">]</span><span class="p">,</span>
+              <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_1</span><span class="p">,</span> <span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
+                <span class="no">AutomobileMakeModelYear</span><span class="o">.</span><span class="n">find_by_make_name_and_model_name_and_year</span><span class="p">(</span><span class="n">characteristics</span><span class="o">[</span><span class="ss">:make</span><span class="o">].</span><span class="n">name</span><span class="p">,</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:model</span><span class="o">].</span><span class="n">name</span><span class="p">,</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:year</span><span class="o">].</span><span class="n">year</span><span class="p">)</span>
+            <span class="k">end</span>
+          <span class="k">end</span>
+          </pre></div>
+      </td>
+    </tr>
+    <tr id='section-Make_year'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Make_year">&#182;</a>
+        </div>
+        <h3>Make year</h3>
+
+<p>The automobile&rsquo;s <a href="http://data.brighterplanet.com/automobile_make_years">make and year</a>.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:make_year</span> <span class="k">do</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-69'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-69">&#182;</a>
+        </div>
+        <p>Check whether the <code>make</code> and <code>year</code> combination matches any automobiles in our database.
+If it doesn&rsquo;t then we don&rsquo;t know <code>make year</code>.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from make and year&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:make</span><span class="p">,</span> <span class="ss">:year</span><span class="o">]</span><span class="p">,</span>
+              <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_1</span><span class="p">,</span> <span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
+                <span class="no">AutomobileMakeYear</span><span class="o">.</span><span class="n">find_by_make_name_and_year</span><span class="p">(</span><span class="n">characteristics</span><span class="o">[</span><span class="ss">:make</span><span class="o">].</span><span class="n">name</span><span class="p">,</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:year</span><span class="o">].</span><span class="n">year</span><span class="p">)</span>
+            <span class="k">end</span>
+          <span class="k">end</span>
+          </pre></div>
+      </td>
+    </tr>
+    <tr id='section-Make_model'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Make_model">&#182;</a>
+        </div>
+        <h3>Make model</h3>
+
+<p>The automobile&rsquo;s <a href="http://data.brighterplanet.com/automobile_make_models">make and model</a>.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:make_model</span> <span class="k">do</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-71'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-71">&#182;</a>
+        </div>
+        <p>Check whether the <code>make</code> and <code>model</code> combination matches any automobiles in our database.
+If it doesn&rsquo;t then we don&rsquo;t know <code>make model</code>.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from make and model&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:make</span><span class="p">,</span> <span class="ss">:model</span><span class="o">]</span><span class="p">,</span>
+              <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_1</span><span class="p">,</span> <span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
+                <span class="no">AutomobileMakeModel</span><span class="o">.</span><span class="n">find_by_make_name_and_model_name</span><span class="p">(</span><span class="n">characteristics</span><span class="o">[</span><span class="ss">:make</span><span class="o">].</span><span class="n">name</span><span class="p">,</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:model</span><span class="o">].</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">end</span>
+          <span class="k">end</span>
+          </pre></div>
+      </td>
+    </tr>
+    <tr id='section-Year'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Year">&#182;</a>
+        </div>
+        <h3>Year</h3>
+
+<p>The automobile&rsquo;s <a href="http://data.brighterplanet.com/automobile_years">year of manufacture</a>.</p>
+
+<p>Use client input, if available.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>          </pre></div>
+      </td>
+    </tr>
+    <tr id='section-Model'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Model">&#182;</a>
+        </div>
+        <h3>Model</h3>
+
+<p>The automobile&rsquo;s <a href="http://data.brighterplanet.com/automobile_models">model</a>.</p>
+
+<p>Use client input, if available.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>          </pre></div>
+      </td>
+    </tr>
+    <tr id='section-Make'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Make">&#182;</a>
+        </div>
+        <h3>Make</h3>
+
+<p>The automobile&rsquo;s <a href="http://data.brighterplanet.com/automobile_makes">make</a>.</p>
+
+<p>Use client input, if available.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>          </pre></div>
+      </td>
+    </tr>
+    <tr id='section-Date_(&lt;em&gt;date&lt;/em&gt;)'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Date_(&lt;em&gt;date&lt;/em&gt;)">&#182;</a>
+        </div>
+        <h3>Date (<em>date</em>)</h3>
+
+<p>The day the trip occurred.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:date</span> <span class="k">do</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-76'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-76">&#182;</a>
+        </div>
+        <p>Use client input, if available.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>            </pre></div>
+      </td>
+    </tr>
+    <tr id='section-77'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-77">&#182;</a>
+        </div>
+        <p>Otherwise use the first day of <code>timeframe</code>.</p>
+
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from timeframe&#39;</span><span class="p">,</span>
+              <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_1</span><span class="p">,</span> <span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="p">,</span> <span class="n">timeframe</span><span class="o">|</span>
+                <span class="n">timeframe</span><span class="o">.</span><span class="n">from</span>
+            <span class="k">end</span>
+          <span class="k">end</span>
+        <span class="k">end</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span></pre></div>
+      </td>
+    </tr>
+  </table>
+</div>
+</body>
