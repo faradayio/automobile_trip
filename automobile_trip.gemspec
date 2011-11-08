@@ -24,8 +24,9 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   s.rdoc_options = ["--charset=UTF-8"]
   
-  s.add_runtime_dependency 'emitter', '~>0.11.0' unless ENV['LOCAL_EMITTER']
   s.add_runtime_dependency 'mapquest_directions'
   s.add_runtime_dependency 'geokit'
-  s.add_development_dependency 'sniff', '~>0.11.0' unless ENV['LOCAL_SNIFF']
+  s.add_runtime_dependency 'earth',     '~>0.11.0'
+  s.add_runtime_dependency 'emitter',   '~>0.11.0'
+  s.add_development_dependency 'sniff', '~>0.11.3'
 end
