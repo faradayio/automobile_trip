@@ -131,7 +131,7 @@ Feature: Automobile Trip Committee Calculations
       | false     | Midsize Car | 0.88235    |
 
   Scenario: Fuel efficiency committee from defaults
-    When the "country" committee reports
+    When the "country_fuel_efficiency" committee reports
     And the "hybridity_multiplier" committee reports
     And the "fuel_efficiency" committee reports
     Then the committee should have used quorum "from hybridity multiplier and country"
@@ -141,6 +141,7 @@ Feature: Automobile Trip Committee Calculations
   Scenario: Fuel efficiency committee country and hybridity multiplier
     Given a characteristic "country.iso_3166_code" of "US"
     And a characteristic "hybridity_multiplier" of "2.0"
+    And the "country_fuel_efficiency" committee reports
     When the "fuel_efficiency" committee reports
     Then the committee should have used quorum "from hybridity multiplier and country"
     And the conclusion of the committee should be "20.0"

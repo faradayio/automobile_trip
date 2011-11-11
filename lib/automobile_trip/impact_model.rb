@@ -272,9 +272,20 @@ module BrighterPlanet
             
             # Otherwise look up the `country` average `automobile fuel efficiency` (*km / l*).
             # Multiply by `hybridity multiplier` to give *km / l*.
-            quorum 'from hybridity multiplier and country', :needs => [:hybridity_multiplier, :country],
+            quorum 'from hybridity multiplier and country', :needs => [:hybridity_multiplier, :country_fuel_efficiency],
               :complies => [:ghg_protocol_scope_3, :iso] do |characteristics|
-                characteristics[:country].automobile_fuel_efficiency * characteristics[:hybridity_multiplier]
+                characteristics[:country_fuel_efficiency] * characteristics[:hybridity_multiplier]
+            end
+          end
+
+          # sabshere 11/11/11 because sometimes countries don't have automobile fuel efficiencies
+          committee :country_fuel_efficiency do
+            quorum 'from country', :needs => [:country], :complies => [:ghg_protocol_scope_3, :iso] do |characteristics|
+              characteristics[:country].automobile_fuel_efficiency
+            end
+            
+            quorum 'default', :complies => [:ghg_protocol_scope_3, :iso] do |characteristics|
+              Country.fallback.automobile_fuel_efficiency
             end
           end
           
