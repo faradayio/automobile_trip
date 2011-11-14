@@ -163,9 +163,9 @@ module BrighterPlanet
             end
             
             # Otherwise use the `country` average automobile trip distance (*km*).
-            quorum 'from country', :needs => :country,
+            quorum 'from country', :needs => :safe_country,
               :complies => [:ghg_protocol_scope_3, :iso] do |characteristics|
-                characteristics[:country].automobile_trip_distance
+                characteristics[:safe_country].automobile_trip_distance
             end
           end
           
@@ -214,9 +214,9 @@ module BrighterPlanet
             
             # Otherwise look up the `country` average automobile city speed (*km / hour*) and automobile highway speed (*km / hour*).
             # Calculate the harmonic mean of those speeds weighted by `urbanity` to give *km / hour*.
-            quorum 'from urbanity and country', :needs => [:urbanity, :country],
+            quorum 'from urbanity and country', :needs => [:urbanity, :safe_country],
               :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
-                1 / (characteristics[:urbanity] / characteristics[:country].automobile_city_speed + (1 - characteristics[:urbanity]) / characteristics[:country].automobile_highway_speed)
+                1 / (characteristics[:urbanity] / characteristics[:safe_country].automobile_city_speed + (1 - characteristics[:urbanity]) / characteristics[:safe_country].automobile_highway_speed)
             end
           end
           
@@ -272,23 +272,12 @@ module BrighterPlanet
             
             # Otherwise look up the `country` average `automobile fuel efficiency` (*km / l*).
             # Multiply by `hybridity multiplier` to give *km / l*.
-            quorum 'from hybridity multiplier and country', :needs => [:hybridity_multiplier, :country_fuel_efficiency],
+            quorum 'from hybridity multiplier and country', :needs => [:hybridity_multiplier, :safe_country],
               :complies => [:ghg_protocol_scope_3, :iso] do |characteristics|
-                characteristics[:country_fuel_efficiency] * characteristics[:hybridity_multiplier]
+                characteristics[:safe_country].automobile_fuel_efficiency * characteristics[:hybridity_multiplier]
             end
           end
 
-          # sabshere 11/11/11 because sometimes countries don't have automobile fuel efficiencies
-          committee :country_fuel_efficiency do
-            quorum 'from country', :needs => [:country], :complies => [:ghg_protocol_scope_3, :iso] do |characteristics|
-              characteristics[:country].automobile_fuel_efficiency
-            end
-            
-            quorum 'default', :complies => [:ghg_protocol_scope_3, :iso] do |characteristics|
-              Country.fallback.automobile_fuel_efficiency
-            end
-          end
-          
           #### Hybridity multiplier (*dimensionless*)
           # *A multiplier used to adjust fuel efficiency if we know the automobile is a hybrid or conventional vehicle.*
           committee :hybridity_multiplier do
@@ -338,16 +327,20 @@ module BrighterPlanet
           # Highways are defined as all driving at speeds of 45 miles per hour or greater.
           committee :urbanity do
             # Use the `country` average automobile urbanity (*%*).
-            quorum 'from country', :needs => :country,
+            quorum 'from country', :needs => :safe_country,
               :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
-                characteristics[:country].automobile_urbanity
+                characteristics[:safe_country].automobile_urbanity
             end
           end
           
-          #### Country
-          # *The [country](http://data.brighterplanet.com/countries) in which the trip occurred.*
-          committee :country do
-            # Use client input, if available.
+          committee :safe_country do
+            # If we have all the necessary averages...
+            quorum 'from country', :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso], :needs => [:country] do
+              candidate = characteristics[:country]
+              if [:automobile_trip_distance, :automobile_city_speed, :automobile_highway_speed, :automobile_urbanity, :automobile_fuel_efficiency].all? { |required_attr| candidate.send(required_attr).present? }
+                candidate
+              end
+            end
             
             # Otherwise use an artificial country that contains global averages.
             quorum 'default',
@@ -355,6 +348,11 @@ module BrighterPlanet
                 Country.fallback
             end
           end
+          
+          #### Country
+          # *The [country](http://data.brighterplanet.com/countries) in which the trip occurred.*
+          #
+          # Use client input, if available.
           
           #### Make model year
           # *The automobile's [make, model, and year](http://data.brighterplanet.com/automobile_make_model_years).*
