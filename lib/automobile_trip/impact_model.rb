@@ -335,7 +335,7 @@ module BrighterPlanet
           
           committee :safe_country do
             # If we have all the necessary averages...
-            quorum 'from country', :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso], :needs => [:country] do
+            quorum 'from country', :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso], :needs => [:country] do |characteristics|
               candidate = characteristics[:country]
               if [:automobile_trip_distance, :automobile_city_speed, :automobile_highway_speed, :automobile_urbanity, :automobile_fuel_efficiency].all? { |required_attr| candidate.send(required_attr).present? }
                 candidate
