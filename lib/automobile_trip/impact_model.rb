@@ -328,7 +328,7 @@ module BrighterPlanet
           # *The fraction of the total distance driven that is in towns and cities rather than highways.*
           # Highways are defined as all driving at speeds of 45 miles per hour or greater.
           committee :urbanity do
-            # Use the `country` average automobile urbanity (*%*).
+            # Use the `safe country` average automobile urbanity (*%*).
             quorum 'from safe country', :needs => :safe_country,
               :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
                 characteristics[:safe_country].automobile_urbanity
