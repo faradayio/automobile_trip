@@ -165,7 +165,7 @@ module BrighterPlanet
             # Otherwise use the `safe country` average automobile trip distance (*km*).
             quorum 'from safe country', :needs => :safe_country,
               :complies => [:ghg_protocol_scope_3, :iso] do |characteristics|
-                characteristics[:safe_country].automobile_trip_distance if characteristics[:safe_country].automobile_trip_distance.present?
+                characteristics[:safe_country].automobile_trip_distance
             end
           end
           
@@ -216,9 +216,7 @@ module BrighterPlanet
             # Calculate the harmonic mean of those speeds weighted by `urbanity` to give *km / hour*.
             quorum 'from urbanity and safe country', :needs => [:urbanity, :safe_country],
               :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
-                if (city_speed = characteristics[:safe_country].automobile_city_speed).present? and (highway_speed = characteristics[:safe_country].automobile_highway_speed).present?
-                  1 / (characteristics[:urbanity] / city_speed + (1 - characteristics[:urbanity]) / highway_speed)
-                end
+                1 / (characteristics[:urbanity] / characteristics[:safe_country].automobile_city_speed + (1 - characteristics[:urbanity]) / characteristics[:safe_country].automobile_highway_speed)
             end
           end
           
@@ -276,7 +274,7 @@ module BrighterPlanet
             # Multiply by `hybridity multiplier` to give *km / l*.
             quorum 'from hybridity multiplier and safe country', :needs => [:hybridity_multiplier, :safe_country],
               :complies => [:ghg_protocol_scope_3, :iso] do |characteristics|
-                characteristics[:safe_country].automobile_fuel_efficiency * characteristics[:hybridity_multiplier] if characteristics[:safe_country].automobile_fuel_efficiency.present?
+                characteristics[:safe_country].automobile_fuel_efficiency * characteristics[:hybridity_multiplier]
             end
           end
           
