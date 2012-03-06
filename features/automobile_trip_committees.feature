@@ -63,153 +63,102 @@ Feature: Automobile Trip Committee Calculations
     When the "make_model_year" committee reports
     Then the conclusion of the committee should be nil
 
-  Scenario: Country committee from default
-    When the "country" committee reports
-    Then the committee should have used quorum "default"
-    And the conclusion of the committee should have "name" of "fallback"
-    And the conclusion should comply with standards "ghg_protocol_scope_1, ghg_protocol_scope_3, iso"
-
-  Scenario: Urbanity committee from default country
-    When the "country" committee reports
-    And the "urbanity" committee reports
-    Then the committee should have used quorum "from country"
-    And the conclusion of the committee should be "0.4"
-    And the conclusion should comply with standards "ghg_protocol_scope_1, ghg_protocol_scope_3, iso"
-
-  Scenario: Urbanity committee from country
-    Given a characteristic "country.iso_3166_code" of "US"
-    When the "urbanity" committee reports
-    Then the committee should have used quorum "from country"
-    And the conclusion of the committee should be "0.4"
-    And the conclusion should comply with standards "ghg_protocol_scope_1, ghg_protocol_scope_3, iso"
-
-  Scenario: Hybridity multiplier committee from default
-    When the "hybridity_multiplier" committee reports
-    Then the committee should have used quorum "default"
-    And the conclusion of the committee should be "1.0"
-    And the conclusion should comply with standards "ghg_protocol_scope_1, ghg_protocol_scope_3, iso"
-
-  Scenario Outline: Hybridity multiplier committee from hybridity and urbanity
-    Given a characteristic "hybridity" of "<hybridity>"
-    When the "country" committee reports
-    And the "urbanity" committee reports
-    And the "hybridity_multiplier" committee reports
-    Then the committee should have used quorum "from hybridity and urbanity"
-    And the conclusion of the committee should be "<multiplier>"
+  Scenario Outline: Safe country committee
+    Given a characteristic "country.iso_3166_code" of "<country>"
+    When the "safe_country" committee reports
+    Then the committee should have used quorum "<quorum>"
+    And the conclusion of the committee should have "name" of "<safe_country>"
     And the conclusion should comply with standards "ghg_protocol_scope_1, ghg_protocol_scope_3, iso"
     Examples:
-      | hybridity | multiplier |
-      | true      | 1.35700    |
-      | false     | 0.99238    |
+      | country | quorum       | safe_country  |
+      |         | default      | fallback      |
+      | US      | from country | United States |
+      | GB      | default      | fallback      |
 
-  Scenario Outline: Hybridity multiplier committee from size class missing hybridity multipliers
+  Scenario Outline: Urbanity committee
+    Given a characteristic "country.iso_3166_code" of "<country>"
+    When the "safe_country" committee reports
+    And the "urbanity" committee reports
+    Then the committee should have used quorum "from safe country"
+    And the conclusion of the committee should be "<urbanity>"
+    And the conclusion should comply with standards "ghg_protocol_scope_1, ghg_protocol_scope_3, iso"
+    Examples:
+      | country | urbanity |
+      |         | 0.4      |
+      | US      | 0.4      |
+      | GB      | 0.4      |
+
+  Scenario Outline: Hybridity multiplier committee
     Given a characteristic "hybridity" of "<hybridity>"
     And a characteristic "size_class.name" of "<size_class>"
-    When the "country" committee reports
+    When the "safe_country" committee reports
     And the "urbanity" committee reports
     And the "hybridity_multiplier" committee reports
-    Then the committee should have used quorum "from hybridity and urbanity"
-    And the conclusion of the committee should be "<multiplier>"
+    Then the committee should have used quorum "<quorum>"
+    And the conclusion of the committee should be "<hyb_mult>"
     And the conclusion should comply with standards "ghg_protocol_scope_1, ghg_protocol_scope_3, iso"
     Examples:
-      | hybridity | size_class    | multiplier |
-      | true      | Midsize Wagon | 1.35700    |
-      | false     | Midsize Wagon | 0.99238    |
+      | hybridity | size_class    | quorum                                   | hyb_mult |
+      |           |               | default                                  |  1.0     |
+      | true      |               | from hybridity and urbanity              |  1.35700 |
+      | false     |               | from hybridity and urbanity              |  0.99238 |
+      | true      | Midsize Wagon | from hybridity and urbanity              |  1.35700 |
+      | false     | Midsize Wagon | from hybridity and urbanity              |  0.99238 |
+      | true      | Midsize Car   | from size class, hybridity, and urbanity |  1.47059 |
+      | false     | Midsize Car   | from size class, hybridity, and urbanity |  0.88235 |
 
-  Scenario Outline: Hybridity multiplier committee from size class with hybridity multipliers
-    Given a characteristic "hybridity" of "<hybridity>"
+  Scenario Outline: Fuel efficiency committee
+    Given a characteristic "make.name" of "<make>"
+    And a characteristic "year.year" of "<year>"
     And a characteristic "size_class.name" of "<size_class>"
-    When the "country" committee reports
-    And the "urbanity" committee reports
-    And the "hybridity_multiplier" committee reports
-    Then the committee should have used quorum "from size class, hybridity, and urbanity"
-    And the conclusion of the committee should be "<multiplier>"
-    And the conclusion should comply with standards "ghg_protocol_scope_1, ghg_protocol_scope_3, iso"
-    Examples:
-      | hybridity | size_class  | multiplier |
-      | true      | Midsize Car | 1.47059    |
-      | false     | Midsize Car | 0.88235    |
-
-  Scenario: Fuel efficiency committee from defaults
-    When the "country_fuel_efficiency" committee reports
-    And the "hybridity_multiplier" committee reports
-    And the "fuel_efficiency" committee reports
-    Then the committee should have used quorum "from hybridity multiplier and country"
-    And the conclusion of the committee should be "8.22653"
-    And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
-
-  Scenario: Fuel efficiency committee country and hybridity multiplier
-    Given a characteristic "country.iso_3166_code" of "US"
-    And a characteristic "hybridity_multiplier" of "2.0"
-    And the "country_fuel_efficiency" committee reports
-    When the "fuel_efficiency" committee reports
-    Then the committee should have used quorum "from hybridity multiplier and country"
-    And the conclusion of the committee should be "20.0"
-    And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
-
-  Scenario: Fuel efficiency committee from make and hybridity multiplier
-    Given a characteristic "make.name" of "Toyota"
-    And a characteristic "hybridity_multiplier" of "2.0"
-    When the "fuel_efficiency" committee reports
-    Then the committee should have used quorum "from make and hybridity multiplier"
-    And the conclusion of the committee should be "25.0"
-    And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
-
-  Scenario: Fuel efficiency committee from make year and hybridity multiplier
-    Given a characteristic "make.name" of "Toyota"
-    And a characteristic "year.year" of "2003"
-    And a characteristic "hybridity_multiplier" of "2.0"
+    And a characteristic "urbanity" of "<urb>"
+    And a characteristic "country.iso_3166_code" of "<country>"
+    And a characteristic "hybridity_multiplier" of "<hyb_mult>"
     When the "make_year" committee reports
+    And the "safe_country" committee reports
     And the "fuel_efficiency" committee reports
-    Then the committee should have used quorum "from make year and hybridity multiplier"
-    And the conclusion of the committee should be "24.0"
+    Then the committee should have used quorum "<quorum>"
+    And the conclusion of the committee should be "<fe>"
     And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
+    Examples:
+      | make   | model | year | size_class  | urb | country | hyb_mult | quorum                                              | fe       |
+      |        |       |      |             |     |         | 1.0      | from hybridity multiplier and safe country          |  8.22653 |
+      |        |       |      |             |     | GB      | 1.0      | from hybridity multiplier and safe country          |  8.22653 |
+      |        |       |      |             |     | US      | 2.0      | from hybridity multiplier and safe country          | 20.0     |
+      | Toyota |       |      |             |     |         | 2.0      | from make and hybridity multiplier                  | 25.0     |
+      | Toyota |       | 2003 |             |     |         | 2.0      | from make year and hybridity multiplier             | 24.0     |
+      |        |       |      | Midsize Car | 0.5 |         | 2.0      | from size class, hybridity multiplier, and urbanity | 19.2     |
 
-  Scenario: Fuel efficiency committee from size class, hybridity multiplier, and urbanity
-    Given a characteristic "size_class.name" of "Midsize Car"
-    And a characteristic "hybridity_multiplier" of "2.0"
-    And a characteristic "urbanity" of "0.5"
-    When the "fuel_efficiency" committee reports
-    Then the committee should have used quorum "from size class, hybridity multiplier, and urbanity"
-    And the conclusion of the committee should be "19.2"
-    And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
-
-  Scenario: Fuel efficiency committee from make model and urbanity
-    Given a characteristic "make.name" of "Toyota"
-    And a characteristic "model.name" of "Prius"
-    And a characteristic "urbanity" of "0.5"
-    When the "make_model" committee reports
+  Scenario Outline: Fuel efficiency committee - GHGP scope 1 compliant
+    Given a characteristic "make.name" of "<make>"
+    And a characteristic "model.name" of "<model>"
+    And a characteristic "year.year" of "<year>"
+    And a characteristic "urbanity" of "<urb>"
+    And a characteristic "hybridity_multiplier" of "<hyb_mult>"
+    And the "make_model" committee reports
+    And the "make_model_year" committee reports
     And the "fuel_efficiency" committee reports
-    Then the committee should have used quorum "from make model and urbanity"
-    And the conclusion of the committee should be "20.0"
+    Then the committee should have used quorum "<quorum>"
+    And the conclusion of the committee should be "<fe>"
     And the conclusion should comply with standards "ghg_protocol_scope_1, ghg_protocol_scope_3, iso"
+    Examples:
+      | make   | model | year | urb | hyb_mult | quorum                            | fe   |
+      | Toyota | Prius |      | 0.5 | 2.0      | from make model and urbanity      | 20.0 |
+      | Toyota | Prius | 2003 | 0.5 | 2.0      | from make model year and urbanity | 18.0 |
 
-  Scenario: Fuel efficiency committee from make model year and urbanity
-    Given a characteristic "make.name" of "Toyota"
-    And a characteristic "model.name" of "Prius"
-    And a characteristic "year.year" of "2003"
-    And a characteristic "urbanity" of "0.5"
-    When the "make_model_year" committee reports
-    And the "fuel_efficiency" committee reports
-    Then the committee should have used quorum "from make model year and urbanity"
-    And the conclusion of the committee should be "18.0"
-    And the conclusion should comply with standards "ghg_protocol_scope_1, ghg_protocol_scope_3, iso"
-
-  Scenario: Speed committee from default urbanity and default country
-    When the "country" committee reports
+  Scenario Outline: Speed committee
+    Given a characteristic "country.iso_3166_code" of "<country>"
+    When the "safe_country" committee reports
     And the "urbanity" committee reports
     And the "speed" committee reports
-    Then the committee should have used quorum "from urbanity and country"
-    And the conclusion of the committee should be "50.0"
+    Then the committee should have used quorum "from urbanity and safe country"
+    And the conclusion of the committee should be "<speed>"
     And the conclusion should comply with standards "ghg_protocol_scope_1, ghg_protocol_scope_3, iso"
-
-  Scenario: Speed committee from urbanity and country
-    Given a characteristic "country.iso_3166_code" of "US"
-    When the "urbanity" committee reports
-    And the "speed" committee reports
-    Then the committee should have used quorum "from urbanity and country"
-    And the conclusion of the committee should be "50.0"
-    And the conclusion should comply with standards "ghg_protocol_scope_1, ghg_protocol_scope_3, iso"
+    Examples:
+      | country | speed |
+      |         | 50.0 |
+      | US      | 50.0 |
+      | GB      | 50.0 |
 
   Scenario Outline: Origin location from geocodeable origin
     Given a characteristic "origin" of address value "<origin>"
@@ -251,58 +200,31 @@ Feature: Automobile Trip Committee Calculations
     When the "destination_location" committee reports
     Then the conclusion of the committee should be nil
 
-  Scenario: Distance committee from default country
-    When the "country" committee reports
-    And the "distance" committee reports
-    Then the committee should have used quorum "from country"
-    And the conclusion of the committee should be "16.0"
-    And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
-
-  Scenario: Distance committee from country
-    Given a characteristic "country.iso_3166_code" of "US"
-    When the "distance" committee reports
-    Then the committee should have used quorum "from country"
-    And the conclusion of the committee should be "16.0"
-    And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
-
-  Scenario: Distance committee from duration and speed
-    Given a characteristic "duration" of "7200.0"
-    And a characteristic "speed" of "5.0"
-    When the "distance" committee reports
-    Then the committee should have used quorum "from duration and speed"
-    And the conclusion of the committee should be "10.0"
-    And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
-
-  Scenario Outline: Distance committee from origin and destination locations
+  Scenario Outline: Distance committee
     Given a characteristic "origin" of address value "<origin>"
     And the geocoder will encode the origin as "origin"
     And a characteristic "destination" of address value "<destination>"
     And the geocoder will encode the destination as "destination"
-    And mapquest determines the distance in miles to be "<mapquest_distance>"
-    When the "origin_location" committee reports
-    And the "destination_location" committee reports
-    When the "distance" committee reports
-    Then the committee should have used quorum "from origin and destination locations"
-    And the conclusion of the committee should be "<distance>"
-    And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
-    Examples:
-    | origin       | destination  | mapquest_distance | distance  |
-    | 44.0,-73.15  | 44.0,-73.15  | 0.0               | 0.0       |
-    | 44.0,-73.15  | 44.1,-73.15  | 8.142             | 13.10328  |
-
-  Scenario: Distance commitee from undriveable origin and destination locations
-    Given a characteristic "origin" of "San Francisco, CA"
-    And the geocoder will encode the origin as "origin"
-    And a characteristic "destination" of "London, UK"
-    And the geocoder will encode the destination as "destination"
-    And mapquest determines the route to be undriveable
-    When the "country" committee reports
+    And mapquest determines the distance in miles to be "<mapq_dist>"
+    And a characteristic "duration" of "<duration>"
+    And a characteristic "speed" of "<speed>"
+    And a characteristic "country.iso_3166_code" of "<country>"
+    When the "safe_country" committee reports
     And the "origin_location" committee reports
     And the "destination_location" committee reports
     And the "distance" committee reports
-    Then the committee should have used quorum "from country"
-    And the conclusion of the committee should be "16.0"
+    Then the committee should have used quorum "<quorum>"
+    And the conclusion of the committee should be "<distance>"
     And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
+    Examples:
+      | origin      | destination | mapq_dist | duration | speed | country | quorum                                | distance |
+      |             |             |           |          |       |         | from safe country                     | 16.0     |
+      |             |             |           |          |       | US      | from safe country                     | 16.0     |
+      |             |             |           |          |       | GB      | from safe country                     | 16.0     |
+      |             |             |           | 7200.0   | 5.0   |         | from duration and speed               | 10.0     |
+      | 44.0,-73.15 | 44.0,-73.15 | 0.0       |          |       |         | from origin and destination locations |  0.0     |
+      | 44.0,-73.15 | 44.1,-73.15 | 8.142     |          |       |         | from origin and destination locations | 13.10328 |
+      | SF, CA      | London, UK  |           |          |       |         | from safe country                     | 16.0     |
 
   Scenario Outline: Fuel use committee from fuel efficiency, distance, date, and timeframe
     Given a characteristic "fuel_efficiency" of "10.0"

@@ -1,10 +1,9 @@
 Given /^mapquest determines the distance in miles to be "([^\"]*)"$/ do |distance|
-  mockquest = mock MapQuestDirections, :status => 0, :xml => "<distance>" + distance.to_s + "</distance>"
-  MapQuestDirections.stub!(:new).and_return mockquest
-end
-
-Given /^mapquest determines the route to be undriveable$/ do
-  mockquest = mock MapQuestDirections, :status => 601, :xml => "<distance>0</distance>"
+  if distance.present?
+    mockquest = mock MapQuestDirections, :status => 0, :xml => "<distance>" + distance.to_s + "</distance>"
+  else
+    mockquest = mock MapQuestDirections, :status => 601, :xml => "<distance>0</distance>"
+  end
   MapQuestDirections.stub!(:new).and_return mockquest
 end
 
