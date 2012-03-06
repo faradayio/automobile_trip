@@ -150,6 +150,7 @@ Feature: Automobile Trip Emissions Calculations
     And the geocoder will encode the origin as "34.0522342,-118.2436849"
     And it has "destination" of "London, UK"
     And the geocoder will encode the destination as "51.5001524,-0.1262362"
+    And mapquest determines the distance in miles to be ""
     When impacts are calculated
     Then the amount of "carbon" should be within "0.01" of "4.72"
     And the amount of "energy" should be within "0.01" of "68.27"
