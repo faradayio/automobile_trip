@@ -12,13 +12,15 @@ module BrighterPlanet
           has :date
           has :hybridity
           has :urbanity
-          has :speed,           :measures => Measurement::BigSpeed
-          has :duration,        :measures => :time
+          has :speed, :measures => Measurement::BigSpeed
+          has :duration, :measures => :time
           has :origin
           has :destination
-          has :distance,        :measures => Measurement::BigLength
+          has :distance, :measures => Measurement::BigLength
+          has :fuel_efficiency_city, :measures => Measurement::BigLengthPerVolume
+          has :fuel_efficiency_highway, :measures => Measurement::BigLengthPerVolume
           has :fuel_efficiency, :measures => Measurement::BigLengthPerVolume
-          has :fuel_use,        :measures => Measurement::Volume
+          has :fuel_use, :measures => Measurement::Volume
         end
       end
     end
