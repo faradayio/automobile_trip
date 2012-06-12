@@ -13,5 +13,3 @@ Sniff.init File.join(File.dirname(__FILE__), '..', '..'),
   :earth => [:automobile, :locality],
   :cucumber => true,
   :logger => 'log/test_log.txt'
-
-MAPQUEST_KEY = 'ABC123'
