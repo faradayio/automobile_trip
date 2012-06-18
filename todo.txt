@@ -1,0 +1,1 @@
+"VW Jetta 2012" + "diesel" should find "VW Jetta Diesel 2012"
