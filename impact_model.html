@@ -576,7 +576,7 @@ To see which standards a method complies with, look at the <code>:complies =&gt;
       <td class=code>
         <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from automobile type, automobile fuel, and year&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:automobile_type</span><span class="p">,</span> <span class="ss">:automobile_fuel</span><span class="p">,</span> <span class="ss">:year</span><span class="o">]</span><span class="p">,</span>
               <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_1</span><span class="p">,</span> <span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
-                <span class="no">AutomobileTypeFuelYear</span><span class="o">.</span><span class="n">find_by_type_name_and_fuel_common_name_and_closest_year</span><span class="p">(</span><span class="n">characteristics</span><span class="o">[</span><span class="ss">:automobile_type</span><span class="o">].</span><span class="n">value</span><span class="p">,</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:automobile_fuel</span><span class="o">].</span><span class="n">common_name</span><span class="p">,</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:year</span><span class="o">].</span><span class="n">year</span><span class="p">)</span>
+                <span class="no">AutomobileTypeFuelYear</span><span class="o">.</span><span class="n">find_by_type_name_and_fuel_family_and_closest_year</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:automobile_type</span><span class="o">].</span><span class="n">value</span><span class="p">,</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:automobile_fuel</span><span class="o">].</span><span class="n">family</span><span class="p">,</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:year</span><span class="o">].</span><span class="n">year</span>
             <span class="k">end</span>
           <span class="k">end</span>
           </pre></div>
@@ -605,7 +605,7 @@ To see which standards a method complies with, look at the <code>:complies =&gt;
       <td class=code>
         <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from automobile type and automobile fuel&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:automobile_type</span><span class="p">,</span> <span class="ss">:automobile_fuel</span><span class="o">]</span><span class="p">,</span>
               <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_1</span><span class="p">,</span> <span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
-                <span class="no">AutomobileTypeFuel</span><span class="o">.</span><span class="n">find_by_type_name_and_fuel_common_name</span><span class="p">(</span><span class="n">characteristics</span><span class="o">[</span><span class="ss">:automobile_type</span><span class="o">].</span><span class="n">value</span><span class="p">,</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:automobile_fuel</span><span class="o">].</span><span class="n">common_name</span><span class="p">)</span>
+                <span class="no">AutomobileTypeFuel</span><span class="o">.</span><span class="n">find_by_type_name_and_fuel_family</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:automobile_type</span><span class="o">].</span><span class="n">value</span><span class="p">,</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:automobile_fuel</span><span class="o">].</span><span class="n">family</span>
             <span class="k">end</span>
           <span class="k">end</span>
           </pre></div>
@@ -678,7 +678,7 @@ To see which standards a method complies with, look at the <code>:complies =&gt;
       <td class=code>
         <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from date and automobile type&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:date</span><span class="p">,</span> <span class="ss">:automobile_type</span><span class="o">]</span><span class="p">,</span>
               <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_1</span><span class="p">,</span> <span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
-                <span class="no">AutomobileActivityYearType</span><span class="o">.</span><span class="n">find_by_type_name_and_closest_year</span><span class="p">(</span><span class="n">characteristics</span><span class="o">[</span><span class="ss">:automobile_type</span><span class="o">].</span><span class="n">value</span><span class="p">,</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:date</span><span class="o">].</span><span class="n">year</span><span class="p">)</span>
+                <span class="no">AutomobileActivityYearType</span><span class="o">.</span><span class="n">find_by_type_name_and_closest_year</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:automobile_type</span><span class="o">].</span><span class="n">value</span><span class="p">,</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:date</span><span class="o">].</span><span class="n">year</span>
             <span class="k">end</span>
           <span class="k">end</span>
           </pre></div>
@@ -707,7 +707,7 @@ To see which standards a method complies with, look at the <code>:complies =&gt;
       <td class=code>
         <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from date&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="ss">:date</span><span class="p">,</span>
               <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_1</span><span class="p">,</span> <span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
-                <span class="no">AutomobileActivityYear</span><span class="o">.</span><span class="n">find_by_closest_year</span><span class="p">(</span><span class="n">characteristics</span><span class="o">[</span><span class="ss">:date</span><span class="o">].</span><span class="n">year</span><span class="p">)</span>
+                <span class="no">AutomobileActivityYear</span><span class="o">.</span><span class="n">find_by_closest_year</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:date</span><span class="o">].</span><span class="n">year</span>
             <span class="k">end</span>
           <span class="k">end</span>
           </pre></div>
@@ -1654,25 +1654,11 @@ Highways are defined as roads with a speed limit of 45 miles per hour or more.</
         <h3>Make model year</h3>
 
 <p><em>The automobile&rsquo;s <a href="http://data.brighterplanet.com/automobile_make_model_years">make, model, and year</a>.</em></p>
+
+<p>Match client input to a record in our database.</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:make_model_year</span> <span class="k">do</span></pre></div>
-      </td>
-    </tr>
-    <tr id='section-109'>
-      <td class=docs>
-        <div class="pilwrap">
-          <a class="pilcrow" href="#section-109">&#182;</a>
-        </div>
-        <p>Match <code>make</code>, <code>model</code>, and <code>year</code> to a record in our database.</p>
-      </td>
-      <td class=code>
-        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from make, model, and year&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:make</span><span class="p">,</span> <span class="ss">:model</span><span class="p">,</span> <span class="ss">:year</span><span class="o">]</span><span class="p">,</span>
-              <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_1</span><span class="p">,</span> <span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
-                <span class="no">AutomobileMakeModelYear</span><span class="o">.</span><span class="n">find_by_make_name_and_model_name_and_year</span><span class="p">(</span><span class="n">characteristics</span><span class="o">[</span><span class="ss">:make</span><span class="o">].</span><span class="n">name</span><span class="p">,</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:model</span><span class="o">].</span><span class="n">name</span><span class="p">,</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:year</span><span class="o">].</span><span class="n">year</span><span class="p">)</span>
-            <span class="k">end</span>
-          <span class="k">end</span>
-          </pre></div>
+        <div class='highlight'><pre>          </pre></div>
       </td>
     </tr>
     <tr id='section-Make_year'>
@@ -1688,17 +1674,17 @@ Highways are defined as roads with a speed limit of 45 miles per hour or more.</
         <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:make_year</span> <span class="k">do</span></pre></div>
       </td>
     </tr>
-    <tr id='section-111'>
+    <tr id='section-110'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-111">&#182;</a>
+          <a class="pilcrow" href="#section-110">&#182;</a>
         </div>
         <p>Match <code>make</code> and <code>year</code> to a record in our database.</p>
       </td>
       <td class=code>
         <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from make and year&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:make</span><span class="p">,</span> <span class="ss">:year</span><span class="o">]</span><span class="p">,</span>
               <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_1</span><span class="p">,</span> <span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
-                <span class="no">AutomobileMakeYear</span><span class="o">.</span><span class="n">find_by_make_name_and_year</span><span class="p">(</span><span class="n">characteristics</span><span class="o">[</span><span class="ss">:make</span><span class="o">].</span><span class="n">name</span><span class="p">,</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:year</span><span class="o">].</span><span class="n">year</span><span class="p">)</span>
+                <span class="no">AutomobileMakeYear</span><span class="o">.</span><span class="n">find_by_make_name_and_year</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:make</span><span class="o">].</span><span class="n">name</span><span class="p">,</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:year</span><span class="o">].</span><span class="n">year</span>
             <span class="k">end</span>
           <span class="k">end</span>
           </pre></div>
@@ -1712,25 +1698,11 @@ Highways are defined as roads with a speed limit of 45 miles per hour or more.</
         <h3>Make model</h3>
 
 <p><em>The automobile&rsquo;s <a href="http://data.brighterplanet.com/automobile_make_models">make and model</a>.</em></p>
+
+<p>Match client input to a record in our database.</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:make_model</span> <span class="k">do</span></pre></div>
-      </td>
-    </tr>
-    <tr id='section-113'>
-      <td class=docs>
-        <div class="pilwrap">
-          <a class="pilcrow" href="#section-113">&#182;</a>
-        </div>
-        <p>Match <code>make</code> and <code>model</code> to a record in our database.</p>
-      </td>
-      <td class=code>
-        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from make and model&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:make</span><span class="p">,</span> <span class="ss">:model</span><span class="o">]</span><span class="p">,</span>
-              <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_1</span><span class="p">,</span> <span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
-                <span class="no">AutomobileMakeModel</span><span class="o">.</span><span class="n">find_by_make_name_and_model_name</span><span class="p">(</span><span class="n">characteristics</span><span class="o">[</span><span class="ss">:make</span><span class="o">].</span><span class="n">name</span><span class="p">,</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:model</span><span class="o">].</span><span class="n">name</span><span class="p">)</span>
-            <span class="k">end</span>
-          <span class="k">end</span>
-          </pre></div>
+        <div class='highlight'><pre>          </pre></div>
       </td>
     </tr>
     <tr id='section-Year'>
@@ -1791,10 +1763,10 @@ Highways are defined as roads with a speed limit of 45 miles per hour or more.</
         <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:date</span> <span class="k">do</span></pre></div>
       </td>
     </tr>
-    <tr id='section-118'>
+    <tr id='section-116'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-118">&#182;</a>
+          <a class="pilcrow" href="#section-116">&#182;</a>
         </div>
         <p>Use client input, if available.</p>
       </td>
@@ -1802,10 +1774,10 @@ Highways are defined as roads with a speed limit of 45 miles per hour or more.</
         <div class='highlight'><pre>            </pre></div>
       </td>
     </tr>
-    <tr id='section-119'>
+    <tr id='section-117'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-119">&#182;</a>
+          <a class="pilcrow" href="#section-117">&#182;</a>
         </div>
         <p>Otherwise use the first day of <code>timeframe</code>.</p>
 
