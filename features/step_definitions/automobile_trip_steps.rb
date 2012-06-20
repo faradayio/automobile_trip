@@ -24,14 +24,3 @@ Given /^the geocoder will fail to encode the (.*)$/ do |component|
     Geokit::Geocoders::MultiGeocoder.should_receive(:geocode).with(component_value).and_return code
   end
 end
-
-When /^(make_model(_year)?) is determined$/ do |characteristic, _|
-  result = if @characteristics[:make] and @characteristics[:model]
-    if characteristic == 'make_model'
-      AutomobileMakeModel.where(:make_name => @characteristics[:make].name, :model_name => @characteristics[:model].name).first
-    elsif @characteristics[:year]
-      AutomobileMakeModelYear.where(:make_name => @characteristics[:make].name, :model_name => @characteristics[:model].name, :year => @characteristics[:year].year).first
-    end
-  end
-  @characteristics[characteristic.to_sym] = result unless result.nil?
-end
