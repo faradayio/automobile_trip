@@ -1,1 +1,31 @@
 "VW Jetta 2012" + "diesel" should find "VW Jetta Diesel 2012"
+
+Take fuel efficiency from MakeModel/MakeModelYear even if there's a fuel mismatch:
+
+fuel = characteristics[:automobile_fuel]
+make_model_year = characteristics[:make_model_year]
+primary_fuel = make_model_year.automobile_fuel
+
+if fuel.same_as? primary_fuel
+  make_model_year.fuel_efficiency_city
+elsif fuel.same_as? make_model_year.alt_automobile_fuel
+  make_model_year.alt_fuel_efficiency_city
+elsif fuel.non_liquid?
+  # convert fe to km / l gasoline equivalent
+  if primary_fuel.non_liquid?
+    # km / l gas equiv
+    make_model_year.fuel_efficiency_city
+  else
+    # km / l primary fuel => km / l gas equiv
+    make_model_year.fuel_efficiency_city / primary_fuel.energy_content * AutomobileFuel.gasoline.energy_content
+  end
+else
+  # convert fe to km / l whatever fuel is
+  if primary_fuel.non_liquid?
+    # km / l gas equiv => km / l fuel
+    make_model_year.fuel_efficiency_city / AutomobileFuel.gasoline.energy_content * fuel.energy_content
+  else
+    # km / l fuel => km / l fuel
+    make_model_year.fuel_efficiency_city / primary_fuel.energy_content * fuel.energy_content
+  end
+end
