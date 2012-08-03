@@ -1,3 +1,10 @@
+require 'earth/automobile/automobile_fuel'
+require 'earth/automobile/automobile_make'
+require 'earth/automobile/automobile_model'
+require 'earth/automobile/automobile_size_class'
+require 'earth/automobile/automobile_year'
+require 'earth/locality/country'
+
 module BrighterPlanet
   module AutomobileTrip
     module Relationships
