@@ -28,5 +28,5 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'geokit'
   s.add_runtime_dependency 'earth',     '~>1.0.0'
   s.add_dependency 'emitter', '~> 1.0.0'
-  s.add_development_dependency 'sniff', '~>1.0.1'
+  s.add_development_dependency 'sniff', '~> 1.0.0'
 end
