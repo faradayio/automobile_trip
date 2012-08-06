@@ -1,10 +1,10 @@
 require 'emitter'
 
-require 'automobile/impact_model'
-require 'automobile/characterization'
-require 'automobile/data'
-require 'automobile/relationships'
-require 'automobile/summarization'
+require 'automobile_trip/impact_model'
+require 'automobile_trip/characterization'
+require 'automobile_trip/data'
+require 'automobile_trip/relationships'
+require 'automobile_trip/summarization'
 require 'mapquest_directions'
 require 'geokit'
 
