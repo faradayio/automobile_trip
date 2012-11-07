@@ -208,10 +208,10 @@ Feature: Automobile Trip Committee Calculations
     And the conclusion of the committee should be "<speed>"
     And the conclusion should comply with standards "ghg_protocol_scope_1, ghg_protocol_scope_3, iso"
     Examples:
-      | country | speed | quorum                    |
-      |         |  48.0 | from urbanity             |
-      | GB      |  48.0 | from urbanity             |
-      | US      |  48.0 | from urbanity and country |
+      | country | speed     | quorum                    |
+      |         |  48.00001 | from urbanity             |
+      | GB      |  48.00001 | from urbanity             |
+      | US      |  48.00001 | from urbanity and country |
 
   Scenario Outline: Origin location from geocodeable origin
     Given a characteristic "origin" of address value "<origin>"

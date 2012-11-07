@@ -7,7 +7,7 @@ Gem::Specification.new do |s|
   s.version = BrighterPlanet::AutomobileTrip::VERSION
   
   s.authors = ["Andy Rossmeissl", "Seamus Abshere", "Ian Hough", "Matt Kling", "Derek Kastner"]
-  s.date = "2012-06-11"
+  s.date = "2012-11-07"
   s.summary = %q{A carbon model}
   s.description = %q{A software model in Ruby for the greenhouse gas emissions of an automobile trip}
   s.email = %q{andy@rossmeissl.net}
@@ -26,7 +26,7 @@ Gem::Specification.new do |s|
   
   s.add_runtime_dependency 'mapquest_directions'
   s.add_runtime_dependency 'geokit'
-  s.add_runtime_dependency 'earth',     '~>1.0.0'
+  s.add_runtime_dependency 'earth', '~>1.1.0'
   s.add_runtime_dependency 'emitter', '~> 1.1.0'
-  s.add_development_dependency 'sniff', '~> 1.0.0'
+  s.add_development_dependency 'sniff', '~> 1.1.1'
 end
