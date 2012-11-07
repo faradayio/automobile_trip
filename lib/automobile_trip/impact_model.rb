@@ -326,7 +326,7 @@ module BrighterPlanet
             # Otherwise use the [Mapquest directions API](http://developer.mapquest.com/web/products/dev-services/directions-ws) to calculate the distance by road between `origin_location` and `destination_location` in *km*.
             quorum 'from origin and destination locations', :needs => [:origin_location, :destination_location],
               :complies => [:ghg_protocol_scope_3, :iso] do |characteristics, timeframe|
-                mapquest = ::MapQuestDirections.new characteristics[:origin_location].ll, characteristics[:destination_location].ll
+                mapquest = ::MapQuestDirections.new characteristics[:origin_location], characteristics[:destination_location]
                 mapquest.status.to_i == 0 ? Nokogiri::XML(mapquest.xml).css("distance").first.text.to_f.miles.to(:kilometres) : nil
             end
             
@@ -352,22 +352,22 @@ module BrighterPlanet
           #### Destination location (*lat, lng*)
           # *The latitude and longitude of the trip's destination.*
           committee :destination_location do
-            # Use the [Geokit](http://geokit.rubyforge.org/) geocoder to determine the `destination` location (*lat, lng*).
+            # Use [Geocoder](http://www.rubygeocoder.com/) to determine the `destination` location (*lat, lng*).
             quorum 'from destination', :needs => :destination,
               :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
-                location = ::Geokit::Geocoders::MultiGeocoder.geocode characteristics[:destination].to_s
-                location.success ? location : nil
+                result = Geocoder.coordinates characteristics[:destination]
+                result.join(',') if result
             end
           end
           
           #### Origin location (*lat, lng*)
           # *The latitude and longitude of the trip's origin.*
           committee :origin_location do
-            # Use the [Geokit](http://geokit.rubyforge.org/) geocoder to determine the `origin` location (*lat, lng*).
+            # Use the [Geocoder](http://www.rubygeocoder.com/) to determine the `origin` location (*lat, lng*).
             quorum 'from origin', :needs => :origin,
               :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
-                location = ::Geokit::Geocoders::MultiGeocoder.geocode characteristics[:origin].to_s
-                location.success ? location : nil
+                result = Geocoder.coordinates characteristics[:origin]
+                result.join(',') if result
             end
           end
           

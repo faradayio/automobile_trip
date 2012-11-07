@@ -6,7 +6,7 @@ require 'automobile_trip/data'
 require 'automobile_trip/relationships'
 require 'automobile_trip/summarization'
 require 'mapquest_directions'
-require 'geokit'
+require 'geocoder'
 
 module BrighterPlanet
   module AutomobileTrip

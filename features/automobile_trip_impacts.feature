@@ -144,10 +144,10 @@ Feature: Automobile Trip Emissions Calculations
     And the geocoder will encode the origin as "44,-73.15"
     And it has "destination" of "44.1,-73.15"
     And the geocoder will encode the destination as "44.1,-73.15"
-    And mapquest determines the distance in miles to be "8.142"
+    And mapquest determines the distance in miles to be "8.27"
     When impacts are calculated
-    Then the amount of "carbon" should be within "0.01" of "3.89"
-    And the amount of "energy" should be within "0.01" of "55.82"
+    Then the amount of "carbon" should be within "0.01" of "3.95"
+    And the amount of "energy" should be within "0.01" of "56.70"
     # And the calculation should comply with standards "ghg_protocol_scope_3, iso"
   
   Scenario: Calculations from non-driveable locations

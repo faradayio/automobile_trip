@@ -215,17 +215,17 @@ Feature: Automobile Trip Committee Calculations
 
   Scenario Outline: Origin location from geocodeable origin
     Given a characteristic "origin" of address value "<origin>"
-    And the geocoder will encode the origin as "<geocode>"
+    And the geocoder will encode the origin as "<lat_lng>"
     When the "origin_location" committee reports
     Then the committee should have used quorum "from origin"
-    And the conclusion of the committee should have "ll" of "<location>"
+    And the conclusion of the committee should be "<location>"
     And the conclusion should comply with standards "ghg_protocol_scope_1, ghg_protocol_scope_3, iso"
     Examples:
-      | origin            | geocode                 | location                |
+      | origin            | lat_lng                 | location                |
       | 05753             | 44.0229305,-73.1450146  | 44.0229305,-73.1450146  |
       | San Francisco, CA | 37.7749295,-122.4194155 | 37.7749295,-122.4194155 |
       | Los Angeles, CA   | 34.0522342,-118.2436849 | 34.0522342,-118.2436849 |
-      | London, UK        | 51.5001524,-0.1262362   | 51.5001524,-0.1262362   |
+      | London, UK        | 51.5073346,-0.1276831   | 51.5073346,-0.1276831   |
 
   Scenario: Origin location from non-geocodeable origin
     Given a characteristic "origin" of "Bag End, Hobbiton, Westfarthing, The Shire, Eriador, Middle Earth"
@@ -238,14 +238,14 @@ Feature: Automobile Trip Committee Calculations
     And the geocoder will encode the destination as "<geocode>"
     When the "destination_location" committee reports
     Then the committee should have used quorum "from destination"
-    And the conclusion of the committee should have "ll" of "<location>"
+    And the conclusion of the committee should be "<location>"
     And the conclusion should comply with standards "ghg_protocol_scope_1, ghg_protocol_scope_3, iso"
     Examples:
       | destination       | geocode                 | location                |
       | 05753             | 44.0229305,-73.1450146  | 44.0229305,-73.1450146  |
       | San Francisco, CA | 37.7749295,-122.4194155 | 37.7749295,-122.4194155 |
       | Los Angeles, CA   | 34.0522342,-118.2436849 | 34.0522342,-118.2436849 |
-      | London, UK        | 51.5001524,-0.1262362   | 51.5001524,-0.1262362   |
+      | London, UK        | 51.5073346,-0.1276831   | 51.5073346,-0.1276831   |
 
   Scenario: Destination location from non-geocodeable destination
     Given a characteristic "destination" of "Bag End, Hobbiton, Westfarthing, The Shire, Eriador, Middle Earth"
