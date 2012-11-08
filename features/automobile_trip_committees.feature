@@ -218,7 +218,7 @@ Feature: Automobile Trip Committee Calculations
     And the geocoder will encode the origin as "<lat_lng>"
     When the "origin_location" committee reports
     Then the committee should have used quorum "from origin"
-    And the conclusion of the committee should be "<location>"
+    And the conclusion of the committee should be located at "<location>"
     And the conclusion should comply with standards "ghg_protocol_scope_1, ghg_protocol_scope_3, iso"
     Examples:
       | origin            | lat_lng                 | location                |
@@ -229,7 +229,7 @@ Feature: Automobile Trip Committee Calculations
 
   Scenario: Origin location from non-geocodeable origin
     Given a characteristic "origin" of "Bag End, Hobbiton, Westfarthing, The Shire, Eriador, Middle Earth"
-    And the geocoder will fail to encode the origin
+    And the geocoder will encode the origin as ""
     When the "origin_location" committee reports
     Then the conclusion of the committee should be nil
 
@@ -238,7 +238,7 @@ Feature: Automobile Trip Committee Calculations
     And the geocoder will encode the destination as "<geocode>"
     When the "destination_location" committee reports
     Then the committee should have used quorum "from destination"
-    And the conclusion of the committee should be "<location>"
+    And the conclusion of the committee should be located at "<location>"
     And the conclusion should comply with standards "ghg_protocol_scope_1, ghg_protocol_scope_3, iso"
     Examples:
       | destination       | geocode                 | location                |
@@ -249,7 +249,7 @@ Feature: Automobile Trip Committee Calculations
 
   Scenario: Destination location from non-geocodeable destination
     Given a characteristic "destination" of "Bag End, Hobbiton, Westfarthing, The Shire, Eriador, Middle Earth"
-    And the geocoder will fail to encode the destination
+    And the geocoder will encode the destination as ""
     When the "destination_location" committee reports
     Then the conclusion of the committee should be nil
 
@@ -274,8 +274,8 @@ Feature: Automobile Trip Committee Calculations
       |             |             |           |          |       | GB      | 16.0     | default                               |
       |             |             |           |          |       | US      | 16.0     | from country                          |
       |             |             |           | 7200.0   | 5.0   |         | 10.0     | from duration and speed               |
-      | 44.0,-73.15 | 44.0,-73.15 | 0.0       |          |       |         |  0.0     | from origin and destination locations |
-      | 44.0,-73.15 | 44.1,-73.15 | 8.142     |          |       |         | 13.10328 | from origin and destination locations |
+      | 44.0,-73.15 | 44.0,-73.15 | 0         |          |       |         |  0.0     | from origin and destination locations |
+      | 44.0,-73.15 | 44.1,-73.15 | 8         |          |       |         | 12.87475 | from origin and destination locations |
       | SF, CA      | London, UK  |           |          |       |         | 16.0     | default                               |
 
   Scenario Outline: Distance during timeframe committee

@@ -326,8 +326,8 @@ module BrighterPlanet
             # Otherwise use the [Mapquest directions API](http://developer.mapquest.com/web/products/dev-services/directions-ws) to calculate the distance by road between `origin_location` and `destination_location` in *km*.
             quorum 'from origin and destination locations', :needs => [:origin_location, :destination_location],
               :complies => [:ghg_protocol_scope_3, :iso] do |characteristics, timeframe|
-                mapquest = ::MapQuestDirections.new characteristics[:origin_location], characteristics[:destination_location]
-                mapquest.status.to_i == 0 ? Nokogiri::XML(mapquest.xml).css("distance").first.text.to_f.miles.to(:kilometres) : nil
+                mapquest = ::MapQuestDirections.new characteristics[:origin_location].coordinates.join(','), characteristics[:destination_location].coordinates.join(',')
+                mapquest.status.to_i == 0 ? mapquest.distance_in_miles.miles.to(:kilometres) : nil
             end
             
             # Otherwise divide `duration` (*seconds*) by 3600 (*seconds / hour*) and multiply by `speed` (*km / hour*) to give *km*.
@@ -355,8 +355,7 @@ module BrighterPlanet
             # Use [Geocoder](http://www.rubygeocoder.com/) to determine the `destination` location (*lat, lng*).
             quorum 'from destination', :needs => :destination,
               :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
-                result = Geocoder.coordinates characteristics[:destination]
-                result.join(',') if result
+                Geocoder.search(characteristics[:destination]).first
             end
           end
           
@@ -366,8 +365,7 @@ module BrighterPlanet
             # Use the [Geocoder](http://www.rubygeocoder.com/) to determine the `origin` location (*lat, lng*).
             quorum 'from origin', :needs => :origin,
               :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
-                result = Geocoder.coordinates characteristics[:origin]
-                result.join(',') if result
+                Geocoder.search(characteristics[:origin]).first
             end
           end
           
