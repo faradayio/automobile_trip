@@ -326,7 +326,7 @@ module BrighterPlanet
             # Otherwise use the [Mapquest directions API](http://developer.mapquest.com/web/products/dev-services/directions-ws) to calculate the distance by road between `origin_location` and `destination_location` in *km*.
             quorum 'from origin and destination locations', :needs => [:origin_location, :destination_location],
               :complies => [:ghg_protocol_scope_3, :iso] do |characteristics, timeframe|
-                mapquest = ::MapQuestDirections.new characteristics[:origin_location].coordinates.join(','), characteristics[:destination_location].coordinates.join(',')
+                mapquest = ::MapQuestDirections.new characteristics[:origin_location].values_at(:latitude, :longitude).join(','), characteristics[:destination_location].values_at(:latitude, :longitude).join(',')
                 mapquest.status.to_i == 0 ? mapquest.distance_in_miles.miles.to(:kilometres) : nil
             end
             
@@ -352,20 +352,16 @@ module BrighterPlanet
           #### Destination location (*lat, lng*)
           # *The latitude and longitude of the trip's destination.*
           committee :destination_location do
-            # Use [Geocoder](http://www.rubygeocoder.com/) to determine the `destination` location (*lat, lng*).
-            quorum 'from destination', :needs => :destination,
-              :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
-                Geocoder.search(characteristics[:destination]).first
+            quorum 'from destination', :needs => :destination, :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
+              AutomobileTrip.geocoder.geocode characteristics[:destination]
             end
           end
           
           #### Origin location (*lat, lng*)
           # *The latitude and longitude of the trip's origin.*
           committee :origin_location do
-            # Use the [Geocoder](http://www.rubygeocoder.com/) to determine the `origin` location (*lat, lng*).
-            quorum 'from origin', :needs => :origin,
-              :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
-                Geocoder.search(characteristics[:origin]).first
+            quorum 'from origin', :needs => :origin, :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
+              AutomobileTrip.geocoder.geocode characteristics[:origin]
             end
           end
           
