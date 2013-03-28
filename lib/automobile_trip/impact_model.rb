@@ -352,16 +352,16 @@ module BrighterPlanet
           #### Destination location (*lat, lng*)
           # *The latitude and longitude of the trip's destination.*
           committee :destination_location do
-            quorum 'from destination', :needs => :destination, :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
-              AutomobileTrip.geocoder.geocode characteristics[:destination]
+            quorum 'from destination', :needs => :destination, :appreciates => :country, :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
+              AutomobileTrip.geocoder.geocode characteristics[:destination], characteristics[:country]
             end
           end
           
           #### Origin location (*lat, lng*)
           # *The latitude and longitude of the trip's origin.*
           committee :origin_location do
-            quorum 'from origin', :needs => :origin, :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
-              AutomobileTrip.geocoder.geocode characteristics[:origin]
+            quorum 'from origin', :needs => :origin, :appreciates => :country, :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
+              AutomobileTrip.geocoder.geocode characteristics[:origin], characteristics[:country]
             end
           end
           
