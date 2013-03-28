@@ -15,8 +15,8 @@ module BrighterPlanet
         target.belongs_to :size_class,          :foreign_key => 'size_class_name',      :class_name => 'AutomobileSizeClass'
         target.belongs_to :automobile_fuel,     :foreign_key => 'automobile_fuel_name'
         target.belongs_to :country,             :foreign_key => 'country_iso_3166_code'
-        target.belongs_to :origin_country,      :foreign_key => 'origin_country_iso_3166_code'
-        target.belongs_to :destination_country, :foreign_key => 'destination_country_iso_3166_code'
+        target.belongs_to :origin_country,      :foreign_key => 'origin_country_iso_3166_code', :class_name => 'Country'
+        target.belongs_to :destination_country, :foreign_key => 'destination_country_iso_3166_code', :class_name => 'Country'
       end
     end
   end
