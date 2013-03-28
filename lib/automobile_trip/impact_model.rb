@@ -352,16 +352,20 @@ module BrighterPlanet
           #### Destination location (*lat, lng*)
           # *The latitude and longitude of the trip's destination.*
           committee :destination_location do
-            quorum 'from destination', :needs => [:destination, :country], :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
-              AutomobileTrip.geocoder.geocode characteristics[:destination], characteristics[:country].iso_3166_code
+            quorum 'from destination', :needs => :destination, :appreciates => [:country, :destination_country], :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
+              if country = (characteristics[:destination_country] || characteristics[:country])
+                AutomobileTrip.geocoder.geocode characteristics[:destination], country.iso_3166_code
+              end
             end
           end
           
           #### Origin location (*lat, lng*)
           # *The latitude and longitude of the trip's origin.*
           committee :origin_location do
-            quorum 'from origin', :needs => [:origin, :country], :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
-              AutomobileTrip.geocoder.geocode characteristics[:origin], characteristics[:country].iso_3166_code
+            quorum 'from origin', :needs => :origin, :appreciates => [:country, :origin_country], :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
+              if country = (characteristics[:origin_country] || characteristics[:country])
+                AutomobileTrip.geocoder.geocode characteristics[:origin], country.iso_3166_code
+              end
             end
           end
           
@@ -592,9 +596,25 @@ module BrighterPlanet
           end
           
           #### Country
-          # *The [country](http://data.brighterplanet.com/countries) in which the trip occurred.*
-          #
-          # Use client input, if available.
+          # Returns the `country` in which the trip occurred.
+          committee :country do
+            #### Country from client input
+            # **Complies:** All
+            #
+            # Uses the client-input [country](http://data.brighterplanet.com/countries).
+
+            #### Country from origin country
+            # **Complies:** GHG Protocol Scope 3, ISO 14064-1, Climate Registry Protocol
+            quorum 'from origin country', :needs => :origin_country, :complies => [:ghg_protocol_scope_1, :ghg_protocol_scope_3, :iso] do |characteristics|
+              characteristics[:origin_country]
+            end
+          end
+
+          ### Destination country
+          # Returns the client-input `destination_country`.
+
+          ### Origin country
+          # Returns the client-input `origin_country`.
           
           #### Make model year
           # *The automobile's [make, model, and year](http://data.brighterplanet.com/automobile_make_model_years).*

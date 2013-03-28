@@ -14,6 +14,8 @@ module BrighterPlanet
           has :urbanity
           has :origin
           has :destination
+          has :origin_country
+          has :destination_country
           has :speed,                   :measures => Measurement::BigSpeed
           has :duration,                :measures => :time
           has :distance,                :measures => Measurement::BigLength
